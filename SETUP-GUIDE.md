@@ -10,6 +10,7 @@ You will set up:
 - **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
 - **Part E:** Show health page: green/red keys for every device, and alerts
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
+- **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -27,6 +28,7 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `digico-osc-….tgz`: DiGiCo SD
    - `show-health-….tgz`: show health page (Part E)
    - `echo360-capture-….tgz`: Echo360 recording (Part G)
+   - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A / B / C / D**, skipping the "dev version" steps.
@@ -349,6 +351,42 @@ Universal Capture has no control connection, so Companion sends its keyboard sho
 2. **Give Companion permission:** System Settings → **Privacy & Security → Accessibility** → turn on **Companion**. Without this, macOS blocks the keystrokes; the connection's log will say so.
 3. **Presets → Universal Capture (no status):** PAUSE/RESUME, **HOLD FINISH** (2-second hold), EXTEND, OPEN UC.
 4. The lecturer still clicks **Record** in Universal Capture to start. There's no start shortcut.
+
+---
+
+## Part H: ChamSys MagicQ (lighting)
+
+### H.1 In MagicQ PC
+1. Plug in the **Compact Connect** before you start MagicQ. Without ChamSys hardware, MagicQ PC is in demo mode, and remote control is switched off.
+2. Go to **Setup → View Settings → Network**:
+   - set **OSC mode** to send and receive
+   - set **OSC transmit / receive ports**: note them, e.g. receive 8000, transmit 9000
+   - set **OSC TX IP address** to the Companion Mac's IP, or `127.0.0.1` if it's the same Mac
+
+   Menu names vary a little between MagicQ versions. Look for the OSC settings on the Network page.
+
+### H.2 In Companion
+1. **Connections → + Add connection** → **ChamSys MagicQ OSC**. If it shows a version choice, pick **3.3.0** (or **dev**).
+2. Enter MagicQ's IP and the ports, matching H.1 *the other way round*: Companion sends to MagicQ's receive port and listens on MagicQ's transmit port. Turn **feedback** on. Save.
+
+   ✅ It goes from *Connecting* to **OK** when MagicQ sends its first update. Move a playback fader on MagicQ to trigger one.
+
+   If it keeps flipping to *Disconnected* while MagicQ sits idle, set **No reply timeout** to `0`.
+
+### H.3 On the D200X
+**Presets → ChamSys MagicQ OSC:**
+- **Knobs:**
+  - *selected playback fader* (push = Go)
+  - *choose playback*
+  - *playback 1 fader*
+- **Keys:**
+  - *select PB 1–10*: each shows its level
+  - *Go*, *Pause*, *Release*
+  - *Flash*: only while held
+  - *DBO*, *Swap*
+  - a connection status key
+
+Step size works like the other modules: **1** = tiny, **2** = default, **10** = big.
 
 ---
 

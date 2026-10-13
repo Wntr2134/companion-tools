@@ -1,0 +1,33 @@
+{
+  "name": "chamsys-magicq-osc",
+  "version": "3.3.0",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "format": "prettier -w .",
+    "package": "companion-module-build",
+    "test": "node --test test/knobs.test.mjs"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitfocus/companion-module-chamsys-magicq-osc.git"
+  },
+  "engines": {
+    "node": "^22.20 || ^26",
+    "yarn": "^4"
+  },
+  "dependencies": {
+    "@companion-module/base": "~2.0.4",
+    "osc": "^2.4.5"
+  },
+  "devDependencies": {
+    "@companion-module/tools": "^3.1.0",
+    "prettier": "^3.8.3"
+  },
+  "resolutions": {
+    "ws": "^8.21.3"
+  },
+  "prettier": "@companion-module/tools/.prettierrc.json",
+  "packageManager": "yarn@4.12.0"
+}
