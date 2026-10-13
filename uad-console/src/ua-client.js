@@ -14,6 +14,10 @@ const GET_TIMEOUT_MS = 3000
 // While a knob is turning, ignore echoes from the engine for this long after our own
 // set, so a late echo can't drag the value backwards mid-turn.
 const ECHO_GUARD_MS = 400
+// How often to check whether Apollos were added/removed or channel counts changed
+// (e.g. ADAT channels disappear at higher sample rates).
+const LAYOUT_CHECK_MS = 20000
+const RESCAN_DELAY_MS = 1500
 
 export const GROUPS = ['inputs', 'auxs', 'outputs']
 
@@ -58,12 +62,22 @@ export class UAClient extends EventEmitter {
 	#port = DEFAULT_PORT
 	#stopped = true
 	#lastLocalSet = new Map()
+	#discovering = null
+	#rescanTimer = null
+	#layoutTimer = null
+	#namesChangedTimer = null
 
 	/** Last known value per property path, e.g. "/devices/0/inputs/3/Mute" -> true */
 	values = new Map()
 	/** Discovered layout: [{ id, name, online, channels: [{ key, dev, group, id, name, sends: [] }] }] */
 	devices = []
 	connected = false
+
+	constructor({ layoutCheckMs = LAYOUT_CHECK_MS, rescanDelayMs = RESCAN_DELAY_MS } = {}) {
+		super()
+		this.layoutCheckMs = layoutCheckMs
+		this.rescanDelayMs = rescanDelayMs
+	}
 
 	start(host, port) {
 		this.stop()
@@ -77,6 +91,10 @@ export class UAClient extends EventEmitter {
 		this.#stopped = true
 		clearTimeout(this.#reconnect)
 		clearInterval(this.#keepAlive)
+		clearInterval(this.#layoutTimer)
+		clearTimeout(this.#rescanTimer)
+		clearTimeout(this.#namesChangedTimer)
+		this.#layoutTimer = null
 		this.#reconnect = null
 		this.#keepAlive = null
 		if (this.#socket) {
@@ -100,12 +118,16 @@ export class UAClient extends EventEmitter {
 			this.#setConnected(true)
 			this.#keepAlive = setInterval(() => this.send('set /Sleep false'), KEEP_ALIVE_MS)
 			this.discover().catch((e) => this.emit('log', 'error', `Discovery failed: ${e.message}`))
+			clearInterval(this.#layoutTimer)
+			this.#layoutTimer = setInterval(() => this.#checkLayout().catch(() => null), this.layoutCheckMs)
 		})
 		socket.on('data', (chunk) => this.#onData(chunk))
 		socket.on('error', (e) => this.emit('log', 'debug', `Socket error: ${e.message}`))
 		socket.on('close', () => {
 			clearInterval(this.#keepAlive)
+			clearInterval(this.#layoutTimer)
 			this.#keepAlive = null
+			this.#layoutTimer = null
 			this.#setConnected(false)
 			if (!this.#stopped) this.#reconnect = setTimeout(() => this.#connect(), RECONNECT_MS)
 		})
@@ -150,8 +172,58 @@ export class UAClient extends EventEmitter {
 
 	#store(path, value) {
 		if (this.values.get(path) === value) return
+		const had = this.values.has(path)
 		this.values.set(path, value)
 		this.emit('value', path, value)
+
+		// An Apollo came online or went away: re-read everything.
+		if (had && /^\/devices\/[^/]+\/DeviceOnline$/.test(path)) this.scheduleRescan('a device came online or went offline')
+
+		// A channel was renamed in Console: update its name in place.
+		const m = /^\/devices\/([^/]+)\/(inputs|auxs|outputs)\/([^/]+)\/Name$/.exec(path)
+		if (m) {
+			const ch = this.devices.find((d) => d.id === m[1])?.channels.find((c) => c.group === m[2] && c.id === m[3])
+			if (ch) {
+				const name = String(value || ch.defaultName || ch.name)
+				if (ch.name !== name) {
+					ch.name = name
+					clearTimeout(this.#namesChangedTimer)
+					this.#namesChangedTimer = setTimeout(() => this.emit('devices', this.devices), 300)
+				}
+			}
+		}
+	}
+
+	/** Re-read the whole layout shortly (several triggers in a row cause one rescan). */
+	scheduleRescan(reason) {
+		clearTimeout(this.#rescanTimer)
+		this.#rescanTimer = setTimeout(() => {
+			if (!this.connected) return
+			this.emit('log', 'info', `Re-reading channels: ${reason}`)
+			this.discover().catch((e) => this.emit('log', 'error', `Discovery failed: ${e.message}`))
+		}, this.rescanDelayMs)
+	}
+
+	/** Cheap check: same devices and the same number of channels in each group? */
+	async #checkLayout() {
+		if (!this.connected || this.#discovering) return
+		const root = await this.get('/devices')
+		if (!root) return
+		const ids = Object.keys(root.data?.children ?? {})
+		const known = this.devices.map((d) => d.id)
+		if (ids.length !== known.length || ids.some((id) => !known.includes(id))) {
+			return this.scheduleRescan('Apollo added or removed')
+		}
+		for (const dev of this.devices) {
+			for (const group of GROUPS) {
+				const g = await this.get(`/devices/${dev.id}/${group}`)
+				if (!g) return
+				const count = Object.keys(g.data?.children ?? {}).length
+				if (dev.counts?.[group] !== undefined && dev.counts[group] !== count) {
+					return this.scheduleRescan(`${dev.name} ${group} changed`)
+				}
+			}
+		}
 	}
 
 	send(line) {
@@ -205,6 +277,16 @@ export class UAClient extends EventEmitter {
 
 	/** Walk /devices and record every channel; subscribe to the properties we show. */
 	async discover() {
+		// Several triggers at once share one scan.
+		if (!this.#discovering) {
+			this.#discovering = this.#discover().finally(() => {
+				this.#discovering = null
+			})
+		}
+		return this.#discovering
+	}
+
+	async #discover() {
 		const devices = []
 		const root = await this.get('/devices')
 		for (const devId of Object.keys(root?.data?.children ?? {})) {
@@ -215,12 +297,14 @@ export class UAClient extends EventEmitter {
 				name: String(props.DeviceName?.value ?? `Device ${devId}`),
 				online: props.DeviceOnline?.value,
 				channels: [],
+				counts: {},
 			}
+			// Online state comes from the subscription only, so a rescan can't trigger another rescan.
 			this.subscribe(`/devices/${devId}/DeviceOnline`)
-			if (device.online !== undefined) this.#store(`/devices/${devId}/DeviceOnline`, device.online)
 
 			for (const group of GROUPS) {
 				const g = await this.get(`/devices/${devId}/${group}`)
+				device.counts[group] = Object.keys(g?.data?.children ?? {}).length
 				for (const chId of Object.keys(g?.data?.children ?? {})) {
 					const base = `/devices/${devId}/${group}/${chId}`
 					const ch = await this.get(base)
@@ -232,6 +316,7 @@ export class UAClient extends EventEmitter {
 						group,
 						id: chId,
 						name: String(name),
+						defaultName: String(cp.Name?.default || name),
 						sends: [],
 						preamp: false,
 						// Unused channels (no ADAT connected, "N/A", hidden in Console) still exist in the engine.
@@ -239,6 +324,8 @@ export class UAClient extends EventEmitter {
 					}
 
 					if (group === 'outputs' && !('CRMonitorLevel' in cp)) continue // only keep the monitor output
+					if (cp.Name?.value !== undefined) this.#store(`${base}/Name`, cp.Name.value)
+					this.subscribe(`${base}/Name`)
 					for (const prop of CHANNEL_PROPS[group]) {
 						if (!(prop in cp)) continue
 						const v = cp[prop]?.value

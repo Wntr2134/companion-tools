@@ -7,9 +7,10 @@ import net from 'node:net'
 import { UAClient, normalisePath, extractValue } from '../src/ua-client.js'
 import { getActions, getFeedbacks, getVariableValues, getVariableDefinitions, getPresets, stepDb } from '../src/controls.js'
 
-const engine = { props: new Map(), sets: [], subs: new Set(), splitWrites: true }
+const engine = { props: new Map(), sets: [], subs: new Set(), splitWrites: true, inputCount: 4 }
 const P = (k, v) => engine.props.set(k, v)
 function resetEngine() {
+	engine.inputCount = 4
 	engine.props.clear()
 	engine.sets = []
 	for (let i = 0; i < 4; i++) {
@@ -41,7 +42,7 @@ function reply(path) {
 	if (path === '/devices') return { path, data: { properties: { Type: { type: 'string', value: 'container' } }, children: kids(['0']) } }
 	if (parts.length === 2) return { path, data: { properties: { DeviceName: { value: 'Apollo Twin X' }, DeviceOnline: { value: true } }, children: kids(['inputs', 'auxs', 'outputs']) } }
 	if (parts.length === 3) {
-		const ids = { inputs: ['0', '1', '2', '3'], auxs: ['0', '1'], outputs: ['0', '1'] }[parts[2]]
+		const ids = { inputs: Array.from({ length: engine.inputCount }, (_, i) => String(i)), auxs: ['0', '1'], outputs: ['0', '1'] }[parts[2]]
 		return { path, data: { properties: {}, children: kids(ids) } }
 	}
 	if (parts.length === 4) {
@@ -114,9 +115,9 @@ after(() => {
 	server.close()
 })
 
-async function connected() {
+async function connected(opts) {
 	resetEngine()
-	const client = new UAClient()
+	const client = new UAClient(opts)
 	clients.add(client)
 	const ready = new Promise((r) => client.once('devices', r))
 	client.start('127.0.0.1', server.address().port)
@@ -228,5 +229,41 @@ test('reconnects after the engine drops the connection', async () => {
 	assert.equal(client.connected, false)
 	await reconnected
 	assert.equal(client.connected, true)
+	client.stop()
+})
+
+test('channel renamed in Console updates names live', async () => {
+	const { client, self } = await connected()
+	const changed = new Promise((r) => client.once('devices', r))
+	for (const s of sockets) write(s, { path: '/devices/0/inputs/1/Name/value', data: 'Snare Top' })
+	await changed
+	assert.equal(getVariableValues(self).in_2_name, 'Snare Top')
+	// clearing the custom name falls back to Console's default name
+	const back = new Promise((r) => client.once('devices', r))
+	for (const s of sockets) write(s, { path: '/devices/0/inputs/1/Name/value', data: '' })
+	await back
+	assert.equal(getVariableValues(self).in_2_name, 'Analog 2')
+	client.stop()
+})
+
+test('channel count change (e.g. sample rate) triggers a rescan', async () => {
+	const { client } = await connected({ layoutCheckMs: 100, rescanDelayMs: 50 })
+	assert.equal(client.devices[0].channels.filter((c) => c.group === 'inputs').length, 4)
+	const rescanned = new Promise((r) => client.once('devices', r))
+	engine.inputCount = 6
+	await rescanned
+	assert.equal(client.devices[0].channels.filter((c) => c.group === 'inputs').length, 6)
+	client.stop()
+})
+
+test('device going offline/online triggers one rescan, not a loop', async () => {
+	const { client } = await connected({ layoutCheckMs: 60000, rescanDelayMs: 50 })
+	let scans = 0
+	client.on('devices', () => scans++)
+	for (const s of sockets) write(s, { path: '/devices/0/DeviceOnline/value', data: true })
+	await tick(150) // first report just records the state
+	for (const s of sockets) write(s, { path: '/devices/0/DeviceOnline/value', data: false })
+	await tick(1500)
+	assert.equal(scans, 1)
 	client.stop()
 })

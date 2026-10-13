@@ -203,3 +203,10 @@ Buttons made with the earlier free-number step are converted to the nearest size
 - Commands are queued and spaced, time out after 2 s, and are never automatically retried. A retry could make a relative move happen twice.
 - Camera error replies (`er1`/`er2`/`er3`) are logged.
 - Camera events split or joined across TCP packets are handled.
+
+## Preset buttons: press to recall, hold 5 s to save
+
+Presets → **Save/Recall button** → *Preset N: press = recall, hold 5 s = save*.
+- **Short press:** recall preset N. The button turns green while it's the last preset recalled from Companion.
+- **Hold 5 seconds:** save the camera's current position as preset N. It saves while you're still holding, the button flashes **SAVED**, and letting go doesn't also recall.
+- **Hold again** any time to overwrite it.

@@ -471,5 +471,29 @@ export function getFeedbackDefinitions(self) {
 		}
 	}
 
+	if (SERIES.actions.preset) {
+		const presetChoice = {
+			type: 'dropdown',
+			label: 'Preset Nr.',
+			id: 'val',
+			default: '00',
+			choices: Array.from({ length: 100 }, (_, i) => ({ id: String(i).padStart(2, '0'), label: 'Preset ' + (i + 1) })),
+		}
+		feedbacks.presetSaved = {
+			type: 'boolean',
+			name: 'Preset - Just saved (shows for 2.5 s)',
+			defaultStyle: { bgcolor: combineRgb(200, 0, 0), color: foregroundColor, text: 'SAVED' },
+			options: [presetChoice],
+			callback: (fb) => !!self.presetSaved && self.presetSaved.val === fb.options.val,
+		}
+		feedbacks.presetActive = {
+			type: 'boolean',
+			name: 'Preset - Last recalled from Companion',
+			defaultStyle: { bgcolor: combineRgb(0, 120, 0), color: foregroundColor },
+			options: [presetChoice],
+			callback: (fb) => self.presetRecalled === fb.options.val,
+		}
+	}
+
 	return feedbacks
 }
