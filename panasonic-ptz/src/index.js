@@ -8,6 +8,11 @@ import { ConfigFields, applyConfigDefaults } from './config.js'
 import * as net from 'net'
 import got from 'got'
 import EventEmitter from 'events'
+import { CameraTransport, setStatus } from './transport.js'
+import { StepController, parsePosition } from './steps.js'
+
+// Short timeout and no automatic retries for every direct request.
+const GOT_OPTIONS = { timeout: { request: 2000 }, retry: { limit: 0 } }
 
 // ########################
 // #### Instance setup ####
@@ -21,7 +26,7 @@ class PanasonicPTZInstance extends InstanceBase {
 		}
 
 		try {
-			await got.get(url)
+			await got.get(url, GOT_OPTIONS)
 
 			this.log('info', 'un-subscribed: ' + url)
 		} catch (err) {
@@ -37,15 +42,15 @@ class PanasonicPTZInstance extends InstanceBase {
 		}
 
 		try {
-			await got.get(url)
+			await got.get(url, GOT_OPTIONS)
 
 			this.log('info', 'subscribed: ' + url)
 
-			this.updateStatus(InstanceStatus.Ok)
+			setStatus(this, InstanceStatus.Ok)
 		} catch (err) {
 			this.log('error', 'Error from PTZ: ' + String(err))
 
-			this.updateStatus(InstanceStatus.Disconnected)
+			setStatus(this, InstanceStatus.Disconnected)
 		}
 	}
 
@@ -85,23 +90,31 @@ class PanasonicPTZInstance extends InstanceBase {
 				this.tcpPortOld = tcpPortOld
 				this.clients.push(socket)
 
-				// Receive data from the client.
+				// Receive data from the client. TCP can split or join messages, so buffer
+				// until complete lines arrive and keep only printable command lines
+				// (each event also carries a binary header).
+				let pending = ''
 				socket.on('data', (data) => {
-					// TODO - TCP doesn't guarantee messages will be chunked sensibly. When it doesnt, this logic will breaks
-					let str_raw = data.toString()
-					str_raw = str_raw.split('\r\n') // Split Data in order to remove data before and after command
-					let str = str_raw[1].trim() // remove new line, carage return and so on.
-					if (this.config.debug) {
-						this.log('info', 'Recived CMD: ' + String(str))
+					pending += data.toString('latin1')
+					const lines = pending.split('\r\n')
+					pending = lines.pop() ?? ''
+					if (pending.length > 4096) pending = ''
+
+					let stored = false
+					for (const raw of lines) {
+						const line = raw.trim()
+						if (!line || !/^[\x20-\x7E]+$/.test(line)) continue
+						if (this.config.debug) {
+							this.log('info', 'Recived CMD: ' + line)
+						}
+						this.storeData(line.split(':'))
+						stored = true
 					}
-					str = str.split(':') // Split Commands and data
 
-					// Store Data
-					this.storeData(str)
-
-					// Update Varibles and Feedbacks
-					this.checkVariables()
-					this.checkFeedbacks()
+					if (stored) {
+						this.checkVariables()
+						this.checkFeedbacks()
+					}
 				})
 			})
 
@@ -158,7 +171,7 @@ class PanasonicPTZInstance extends InstanceBase {
 			const url = `http://${this.config.host}:${this.config.httpPort}/live/camdata.html`
 
 			got
-				.get(url)
+				.get(url, GOT_OPTIONS)
 				.then((response) => {
 					if (response.body) {
 						const lines = response.body.split('\r\n') // Split Data in order to remove data before and after command
@@ -183,6 +196,12 @@ class PanasonicPTZInstance extends InstanceBase {
 		}
 	}
 	storeData(str) {
+		if (!str || !str[0]) return
+
+		// Lens / head positions (axz…, axf…, aPC…), from events or camdata.html
+		const pos = parsePosition(str[0])
+		if (Object.keys(pos).length) this.steps?.store(pos)
+
 		if (str[0].substring(0, 3) === 'rER') {
 			if (str[0] === 'rER00') {
 				this.data.error = 'No Errors'
@@ -299,6 +318,8 @@ class PanasonicPTZInstance extends InstanceBase {
 	}
 	// When module gets deleted
 	async destroy() {
+		this.stopPositionPoll()
+
 		// Remove TCP Server and close all connections
 		if (this.server) {
 			// Stop getting Status Updates
@@ -310,8 +331,26 @@ class PanasonicPTZInstance extends InstanceBase {
 		}
 	}
 	// Initalize module
+	startPositionPoll() {
+		this.stopPositionPoll()
+		const seconds = Number(this.config.positionPoll)
+		if (!this.config.host || !(seconds > 0)) return
+		this.positionTimer = setInterval(() => {
+			this.steps.refreshPositions().catch(() => null)
+		}, seconds * 1000)
+		this.steps.refreshPositions().catch(() => null)
+	}
+
+	stopPositionPoll() {
+		if (this.positionTimer) clearInterval(this.positionTimer)
+		this.positionTimer = undefined
+	}
+
 	async init(config) {
-		this.config = config
+		this.config = applyConfigDefaults(config)
+		this.transport = new CameraTransport(this)
+		this.steps = new StepController(this)
+		this.speedChangeEmitter = new EventEmitter()
 
 		this.data = {
 			debug: false,
@@ -372,12 +411,11 @@ class PanasonicPTZInstance extends InstanceBase {
 		this.checkVariables()
 		this.init_feedbacks()
 		this.checkFeedbacks()
-
-		this.speedChangeEmitter = new EventEmitter()
+		this.startPositionPoll()
 	}
 	// Update module after a config change
 	async configUpdated(config) {
-		this.config = config
+		this.config = applyConfigDefaults(config)
 		this.updateStatus(InstanceStatus.Connecting)
 		this.getCameraInformation()
 		this.init_tcp()
@@ -387,6 +425,7 @@ class PanasonicPTZInstance extends InstanceBase {
 		this.checkVariables()
 		this.init_feedbacks()
 		this.checkFeedbacks()
+		this.startPositionPoll()
 	}
 
 	// Return config fields for web config

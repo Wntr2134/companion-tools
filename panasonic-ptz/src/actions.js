@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { c } from './choices.js'
 import { getAndUpdateSeries } from './common.js'
-import got from 'got'
+import { baseUrl } from './transport.js'
+import { getStepActionDefinitions } from './steps.js'
 
 // ########################
 // #### Value Look Ups ####
@@ -21,58 +22,16 @@ for (let i = 0; i < 100; ++i) {
 // ######################
 
 export async function sendPTZ(self, str) {
-	if (str) {
-		const url = `http://${self.config.host}:${self.config.httpPort}/cgi-bin/aw_ptz?cmd=%23${str}&res=1`
-		if (self.config.debug) {
-			self.log('debug', `Sending : ${url}`)
-		}
-
-		try {
-			const response = await got.get(url)
-
-			// console.log("Result from REST:" + result.data);
-		} catch (err) {
-			throw new Error(`Action failed: ${url}`)
-		}
-	}
+	if (str) return self.transport.get(`${baseUrl(self)}/cgi-bin/aw_ptz?cmd=%23${str}&res=1`)
 }
 
 export async function sendCam(self, str) {
-	if (str) {
-		const url = `http://${self.config.host}:${self.config.httpPort}/cgi-bin/aw_cam?cmd=${str}&res=1`
-
-		if (self.config.debug) {
-			self.log('debug', `Sending : ${url}`)
-		}
-
-		try {
-			const response = await got.get(url)
-
-			// console.log("Result from REST:" + result.data);
-		} catch (err) {
-			throw new Error(`Action failed: ${url}`)
-		}
-	}
+	if (str) return self.transport.get(`${baseUrl(self)}/cgi-bin/aw_cam?cmd=${str}&res=1`)
 }
 
 export async function sendWeb(self, str) {
 	// Currently Only for web commands that don't requre Admin rights
-
-	if (str) {
-		const url = `http://${self.config.host}:${self.config.httpPort}/cgi-bin/${str}`
-
-		if (self.config.debug) {
-			self.log('debug', `Sending : ${url}`)
-		}
-
-		try {
-			const response = await got.get(url)
-
-			// console.log("Result from REST:" + result.data);
-		} catch (err) {
-			throw new Error(`Action failed: ${url}`)
-		}
-	}
+	if (str) return self.transport.get(`${baseUrl(self)}/cgi-bin/${str}`)
 }
 
 // ##########################
@@ -107,13 +66,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + string + '50')
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							n = parseInt(50 - self.ptSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'PTS' + string + '50')
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						n = parseInt(50 - self.ptSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'PTS' + string + '50')
+					})
 				}
 			},
 		}
@@ -134,11 +92,10 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + parseInt(50 + self.ptSpeed) + '50')
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							await sendPTZ(self, 'PTS' + parseInt(50 + self.ptSpeed) + '50')
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						await sendPTZ(self, 'PTS' + parseInt(50 + self.ptSpeed) + '50')
+					})
 				}
 			},
 		}
@@ -159,11 +116,10 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS50' + parseInt(50 + self.ptSpeed))
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							await sendPTZ(self, 'PTS50' + parseInt(50 + self.ptSpeed))
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						await sendPTZ(self, 'PTS50' + parseInt(50 + self.ptSpeed))
+					})
 				}
 			},
 		}
@@ -187,13 +143,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS50' + string)
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							n = parseInt(50 - self.ptSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'PTS50' + string)
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						n = parseInt(50 - self.ptSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'PTS50' + string)
+					})
 				}
 			},
 		}
@@ -217,13 +172,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + string + parseInt(50 + self.tSpeed))
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							n = parseInt(50 - self.pSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'PTS' + string + parseInt(50 + self.tSpeed))
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						n = parseInt(50 - self.pSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'PTS' + string + parseInt(50 + self.tSpeed))
+					})
 				}
 			},
 		}
@@ -244,11 +198,10 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + parseInt(50 + self.tSpeed))
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + parseInt(50 + self.tSpeed))
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + parseInt(50 + self.tSpeed))
+					})
 				}
 			},
 		}
@@ -274,15 +227,14 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + pString + tString)
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							np = parseInt(50 - self.pSpeed)
-							nt = parseInt(50 - self.tSpeed)
-							pString = '' + (np < 10 ? '0' + np : np)
-							tString = '' + (nt < 10 ? '0' + nt : nt)
-							await sendPTZ(self, 'PTS' + pString + tString)
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						np = parseInt(50 - self.pSpeed)
+						nt = parseInt(50 - self.tSpeed)
+						pString = '' + (np < 10 ? '0' + np : np)
+						tString = '' + (nt < 10 ? '0' + nt : nt)
+						await sendPTZ(self, 'PTS' + pString + tString)
+					})
 				}
 			},
 		}
@@ -306,13 +258,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + string)
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('ptSpeed').then(
-						self.speedChangeEmitter.on('ptSpeed', async () => {
-							n = parseInt(50 - self.tSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + string)
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('ptSpeed')
+					self.speedChangeEmitter.on('ptSpeed', async () => {
+						n = parseInt(50 - self.tSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'PTS' + parseInt(50 + self.pSpeed) + string)
+					})
 				}
 			},
 		}
@@ -553,11 +504,10 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'Z' + parseInt(50 + self.zSpeed))
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('zSpeed').then(
-						self.speedChangeEmitter.on('zSpeed', async () => {
-							await sendPTZ(self, 'Z' + parseInt(50 + self.zSpeed))
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('zSpeed')
+					self.speedChangeEmitter.on('zSpeed', async () => {
+						await sendPTZ(self, 'Z' + parseInt(50 + self.zSpeed))
+					})
 				}
 			},
 		}
@@ -581,13 +531,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'Z' + string)
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('zSpeed').then(
-						self.speedChangeEmitter.on('zSpeed', async () => {
-							n = parseInt(50 - self.zSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'Z' + string)
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('zSpeed')
+					self.speedChangeEmitter.on('zSpeed', async () => {
+						n = parseInt(50 - self.zSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'Z' + string)
+					})
 				}
 			},
 		}
@@ -681,13 +630,12 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'F' + string)
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('fSpeed').then(
-						self.speedChangeEmitter.on('fSpeed', async () => {
-							n = parseInt(50 - self.fSpeed)
-							string = '' + (n < 10 ? '0' + n : n)
-							await sendPTZ(self, 'F' + string)
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('fSpeed')
+					self.speedChangeEmitter.on('fSpeed', async () => {
+						n = parseInt(50 - self.fSpeed)
+						string = '' + (n < 10 ? '0' + n : n)
+						await sendPTZ(self, 'F' + string)
+					})
 				}
 			},
 		}
@@ -708,11 +656,10 @@ export function getActionDefinitions(self) {
 				await sendPTZ(self, 'F' + parseInt(50 + self.fSpeed))
 
 				if (action.options.liveSpeed) {
-					self.speedChangeEmitter.removeAllListeners('fSpeed').then(
-						self.speedChangeEmitter.on('fSpeed', async () => {
-							await sendPTZ(self, 'F' + parseInt(50 + self.fSpeed))
-						})
-					)
+					self.speedChangeEmitter.removeAllListeners('fSpeed')
+					self.speedChangeEmitter.on('fSpeed', async () => {
+						await sendPTZ(self, 'F' + parseInt(50 + self.fSpeed))
+					})
 				}
 			},
 		}
@@ -1538,6 +1485,8 @@ export function getActionDefinitions(self) {
 			}
 		}
 	}
+
+	Object.assign(actions, getStepActionDefinitions(self))
 
 	return actions
 }

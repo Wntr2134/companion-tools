@@ -168,3 +168,29 @@ A list of all the available Feedbacks in this module sorted into the following c
 Current support is based on "HD/4K Integrated Camera Interface Specifications" version 1.12 from Apr. 27, 2020.
 
 For additional actions, please raise a feature request on [GitHub](https://github.com/bitfocus/companion-module-panasonic-ptz/).
+
+## Knob (encoder) control: Will's additions
+
+These are for rotary controls like the Ulanzi D200X knobs or a Stream Deck +. Each knob click moves the camera **one fixed step**. Turning fast adds up the clicks instead of losing them or running the lens to the end.
+
+**Quick start:** drag a preset from the **Knobs** category (Pan, Tilt, Zoom, Focus) onto a knob's button. Rotary actions are already on, and the button shows the live position.
+
+| Action | What it does |
+|---|---|
+| Knob - Pan/Tilt step | Relative move (`#RPC`), the same size both ways. Step in camera units (1280 = hex 0500). |
+| Knob - Zoom step | Moves to an exact zoom position (`#AXZ`), step in % of the range. "Camera web step" method = `directctrl?zoom=±1`. |
+| Knob - Focus step | Moves to an exact focus position (`#AXF`), step in %. Can switch the camera to manual focus first. |
+| Lens - Go to zoom/focus position (%) | 0% = wide / near, 100% = tele / far. |
+| Position - Refresh … variables | Reads the current positions now. |
+
+**Variables:** `zoomPosition`, `focusPosition` (%), `zoomPositionRaw`, `focusPositionRaw`, `panPosition`, `tiltPosition`.
+
+**Settings:**
+- **Minimum gap between commands**, default 130 ms (Panasonic's minimum). Raise it if fast spins still drop steps.
+- **Position read interval**, default 3 s; 0 = off.
+
+**Other fixes in this version:**
+- Ticking "adjust on speed change" no longer throws an error.
+- Commands are queued and spaced, time out after 2 s, and are never automatically retried. A retry could make a relative move happen twice.
+- Camera error replies (`er1`/`er2`/`er3`) are logged.
+- Camera events split or joined across TCP packets are handled.

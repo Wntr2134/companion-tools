@@ -55,6 +55,12 @@ export function setVariables(self) {
 	variables.push({ variableId: 'tSpeedVar', name: 'Tilt Speed' })
 	variables.push({ variableId: 'zSpeedVar', name: 'Zoom Speed' })
 	variables.push({ variableId: 'fSpeedVar', name: 'Focus Speed' })
+	variables.push({ variableId: 'zoomPosition', name: 'Zoom position (%: 0 = wide, 100 = tele)' })
+	variables.push({ variableId: 'zoomPositionRaw', name: 'Zoom position (raw hex 555-FFF)' })
+	variables.push({ variableId: 'focusPosition', name: 'Focus position (%: 0 = near, 100 = far)' })
+	variables.push({ variableId: 'focusPositionRaw', name: 'Focus position (raw hex 555-FFF)' })
+	variables.push({ variableId: 'panPosition', name: 'Pan position (raw hex)' })
+	variables.push({ variableId: 'tiltPosition', name: 'Tilt position (raw hex)' })
 	return variables
 }
 
