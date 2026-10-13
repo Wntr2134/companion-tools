@@ -1,0 +1,21 @@
+{
+	"id": "uad-console",
+	"name": "uad-console",
+	"shortname": "UAD Console",
+	"description": "Control Universal Audio Apollo interfaces through UAD Console (UA Mixer Engine): mutes, solos, faders, sends, preamps and monitor.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "Universal Audio",
+	"products": ["Apollo (UAD Console)"],
+	"keywords": ["audio", "apollo", "uad", "console", "universal audio"]
+}
