@@ -1,5 +1,7 @@
 # companion-tools
 
+> **New Mac, or setting up from scratch? Start with [SETUP-GUIDE.md](SETUP-GUIDE.md).** It's step-by-step for everything here.
+
 Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, and UAD Console control.
 
 | Folder | What it is | Status |
