@@ -14,7 +14,7 @@ Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ kno
 | [`digico-sd/`](digico-sd/) | DiGiCo SD/Quantum module (upstream v0.9.1 rewrite) plus fixes and a D200X knob layer: fader/send steps, mute/solo feedback, snapshot names, selected-channel strip | Builds and unit-tested; needs a test on the SD9 |
 | [`show-health/`](show-health/) | Watches a list of show devices by ping or TCP port: a green/red key each, plus ALL OK | Built and tested |
 | [`tools/mac-kit/`](tools/mac-kit/) | macOS probes: D200X USB/HID check, D200X HID probe, UA Mixer Engine probe | Working |
-| [`docs/`](docs/) | Notes: UAD protocol, HE40 knob commands, [DiGiCo SD9 research](docs/digico-sd9-research.md), [how it works (teaching notes)](docs/how-it-works.md), [upstream plan](docs/upstream-plan.md) | Reference |
+| [`docs/`](docs/) | Notes: UAD protocol, HE40 knob commands, [DiGiCo SD9 research](docs/digico-sd9-research.md), [show cues: desk + cameras + lights](docs/show-cues.md), [how it works (teaching notes)](docs/how-it-works.md), [upstream plan](docs/upstream-plan.md) | Reference |
 
 ## Using these as Companion developer modules
 

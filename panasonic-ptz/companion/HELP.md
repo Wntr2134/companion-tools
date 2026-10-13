@@ -219,3 +219,8 @@ Presets → **Save/Recall button** → *Preset N: press = recall, hold 5 s = sav
 4. For each knob, drag **Presets → Knobs (selected camera)** from camera 1's connection. Then, in the button, add the same knob actions from camera 2's connection (and camera 3's…), with **Only when this camera is selected** ticked.
 
 Turning a knob then only moves the selected camera.
+
+## Preset by number (for linking)
+**Preset - Recall by number (variables allowed)** accepts a number or a variable, plus an optional offset.
+
+Example: `$(digico-osc:snap_current_num)` recalls the camera preset that matches the console's current snapshot. Put it in a trigger on that variable. See `docs/show-cues.md` in the repo.
