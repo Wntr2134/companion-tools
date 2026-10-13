@@ -20,10 +20,11 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
 
 1. Install **Companion** (step 0.5 below).
 2. Open <https://github.com/Wntr2134/companion-tools/releases/tag/latest> and download the `.tgz` file for each module you need:
-   - `companion-surface-ulanzi-stream-controller-….tgz`: D200X
+   - `ulanzi-stream-controller-….tgz`: D200X
    - `panasonic-ptz-….tgz`: PTZ cameras
    - `uad-console-….tgz`: Apollo / UAD Console
    - `digico-osc-….tgz`: DiGiCo SD
+   - `show-health-….tgz`: show health page (Part E)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A / B / C / D**, skipping the "dev version" steps.
