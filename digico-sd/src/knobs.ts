@@ -2,7 +2,7 @@
 // style as the companion-tools UAD and Panasonic modules: one click = one step (size 1-10),
 // fast turns count every click, plain on/off feedbacks, channel/snapshot variables, and a
 // "selected channel" strip.
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { combineRgb } from '@companion-module/base'
 import type ModuleInstance from './main.js'
 
@@ -17,7 +17,12 @@ const FADER_FLOOR = -60 // turning up from -inf starts here
 export type StripType = 'input' | 'aux' | 'group' | 'matrix' | 'cg'
 
 export const STRIPS: Record<StripType, { root: string; label: string; short: string; name: (n: number) => string }> = {
-	input: { root: 'Input_Channels', label: 'Input', short: 'In', name: (n) => `/Input_Channels/${n}/Channel_Input/name` },
+	input: {
+		root: 'Input_Channels',
+		label: 'Input',
+		short: 'In',
+		name: (n) => `/Input_Channels/${n}/Channel_Input/name`,
+	},
 	aux: { root: 'Aux_Outputs', label: 'Aux', short: 'Aux', name: (n) => `/Aux_Outputs/${n}/Buss_Trim/name` },
 	group: { root: 'Group_Outputs', label: 'Group', short: 'Grp', name: (n) => `/Group_Outputs/${n}/Buss_Trim/name` },
 	matrix: { root: 'Matrix_Outputs', label: 'Matrix', short: 'Mtx', name: (n) => `/Matrix_Outputs/${n}/Buss_Trim/name` },
@@ -49,10 +54,10 @@ export function formatDb(value: unknown): string {
 	return (n > 0 ? '+' : '') + n.toFixed(1)
 }
 
-export const faderPath = (t: StripType, n: number) => `/${STRIPS[t].root}/${n}/fader`
-export const mutePath = (t: StripType, n: number) => `/${STRIPS[t].root}/${n}/mute`
-export const soloPath = (n: number) => `/Input_Channels/${n}/solo`
-export const sendPath = (input: number, aux: number) => `/Input_Channels/${input}/Aux_Send/${aux}/send_level`
+export const faderPath = (t: StripType, n: number): string => `/${STRIPS[t].root}/${n}/fader`
+export const mutePath = (t: StripType, n: number): string => `/${STRIPS[t].root}/${n}/mute`
+export const soloPath = (n: number): string => `/Input_Channels/${n}/solo`
+export const sendPath = (input: number, aux: number): string => `/Input_Channels/${input}/Aux_Send/${aux}/send_level`
 
 const isOn = (v: unknown) => v === true || v === 1 || v === '1' || (typeof v === 'number' && v >= 0.5)
 
@@ -88,7 +93,8 @@ const sizeOption = {
 	default: DEFAULT_STEP_SIZE,
 	choices: STEP_SIZES.map((n) => ({
 		id: n,
-		label: n === 1 ? '1 (tiny, smoothest)' : n === DEFAULT_STEP_SIZE ? `${n} (default)` : n === 10 ? '10 (huge)' : String(n),
+		label:
+			n === 1 ? '1 (tiny, smoothest)' : n === DEFAULT_STEP_SIZE ? `${n} (default)` : n === 10 ? '10 (huge)' : String(n),
 	})),
 	tooltip: 'dB per click: 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 10',
 } as const
@@ -310,7 +316,12 @@ function currentSnapshot(self: ModuleInstance): { number: string; name: string; 
 		return m ? { number: m[1], name: m[2] } : { number: '', name: text }
 	}
 	const cur = split(label(pos))
-	return { number: cur.number || (Number.isFinite(index) && index >= 0 ? String(index) : ''), name: cur.name, next: split(label(pos + 1)).name, prev: split(label(pos - 1)).name }
+	return {
+		number: cur.number || (Number.isFinite(index) && index >= 0 ? String(index) : ''),
+		name: cur.name,
+		next: split(label(pos + 1)).name,
+		prev: split(label(pos - 1)).name,
+	}
 }
 
 export function getKnobVariableDefinitions(self: ModuleInstance): Record<string, { name: string }> {
@@ -342,7 +353,10 @@ export function getKnobVariableValues(self: ModuleInstance): Record<string, stri
 	const snap = currentSnapshot(self)
 	const values: Record<string, string> = {
 		connected: self.isConsoleOnline ? 'yes' : 'no',
-		console_name: String(self.getCached('/Console/Name') ?? ''),
+		console_name: (() => {
+			const name = self.getCached('/Console/Name')
+			return typeof name === 'string' || typeof name === 'number' ? String(name) : ''
+		})(),
 		snap_current_num: snap.number,
 		snap_current_name: snap.name,
 		snap_next_name: snap.next,
@@ -384,9 +398,15 @@ export function getKnobPresets(self: ModuleInstance): { structure: any[]; preset
 		name,
 	})
 
-	presets.snap_prev = button('◀ SNAP\\n' + v('snap_prev_name'), { down: [{ actionId: '/Snapshots/Fire_Prev_Snapshot', options: {} }] })
-	presets.snap_current = button(`SNAP ${v('snap_current_num')}\\n${v('snap_current_name')}`, { down: [{ actionId: '/Snapshots/Fire_Selected_Snapshot', options: {} }] })
-	presets.snap_next = button('SNAP ▶\\n' + v('snap_next_name'), { down: [{ actionId: '/Snapshots/Fire_Next_Snapshot', options: {} }] })
+	presets.snap_prev = button('◀ SNAP\\n' + v('snap_prev_name'), {
+		down: [{ actionId: '/Snapshots/Fire_Prev_Snapshot', options: {} }],
+	})
+	presets.snap_current = button(`SNAP ${v('snap_current_num')}\\n${v('snap_current_name')}`, {
+		down: [{ actionId: '/Snapshots/Fire_Selected_Snapshot', options: {} }],
+	})
+	presets.snap_next = button('SNAP ▶\\n' + v('snap_next_name'), {
+		down: [{ actionId: '/Snapshots/Fire_Next_Snapshot', options: {} }],
+	})
 	presets.snap_undo = button('UNDO\\nSNAP', { down: [{ actionId: '/Snapshots/Undo_Snapshot', options: {} }] })
 
 	presets.sel_fader_knob = knob(
@@ -419,21 +439,33 @@ export function getKnobPresets(self: ModuleInstance): { structure: any[]; preset
 	const channelKeys: string[] = []
 	for (let n = 1; n <= Math.min(count(self, 'input') || 0, 64); n++) {
 		const id = `in_${n}_mute`
-		presets[id] = button(`${v(`input_${n}_name`)}\\nMUTE`, { down: [{ actionId: 'strip_mute', options: { strip: 'input', index: n, mode: 'toggle' } }] }, [
-			{ feedbackId: 'strip_muted', options: { strip: 'input', index: n }, style: { bgcolor: red, color: white } },
-		])
+		presets[id] = button(
+			`${v(`input_${n}_name`)}\\nMUTE`,
+			{ down: [{ actionId: 'strip_mute', options: { strip: 'input', index: n, mode: 'toggle' } }] },
+			[{ feedbackId: 'strip_muted', options: { strip: 'input', index: n }, style: { bgcolor: red, color: white } }],
+		)
 		const sel = `in_${n}_select`
-		presets[sel] = button(`${v(`input_${n}_name`)}`, { down: [{ actionId: 'sel_select', options: { strip: 'input', index: n } }] }, [
-			{ feedbackId: 'sel_is', options: { strip: 'input', index: n }, style: { bgcolor: combineRgb(0, 90, 200), color: white } },
-		])
+		presets[sel] = button(
+			`${v(`input_${n}_name`)}`,
+			{ down: [{ actionId: 'sel_select', options: { strip: 'input', index: n } }] },
+			[
+				{
+					feedbackId: 'sel_is',
+					options: { strip: 'input', index: n },
+					style: { bgcolor: combineRgb(0, 90, 200), color: white },
+				},
+			],
+		)
 		channelKeys.push(id, sel)
 	}
 	const cgKeys: string[] = []
 	for (let n = 1; n <= Math.min(count(self, 'cg') || 0, 32); n++) {
 		const id = `cg_${n}_mute`
-		presets[id] = button(`${v(`cg_${n}_name`)}\\nMUTE`, { down: [{ actionId: 'strip_mute', options: { strip: 'cg', index: n, mode: 'toggle' } }] }, [
-			{ feedbackId: 'strip_muted', options: { strip: 'cg', index: n }, style: { bgcolor: red, color: white } },
-		])
+		presets[id] = button(
+			`${v(`cg_${n}_name`)}\\nMUTE`,
+			{ down: [{ actionId: 'strip_mute', options: { strip: 'cg', index: n, mode: 'toggle' } }] },
+			[{ feedbackId: 'strip_muted', options: { strip: 'cg', index: n }, style: { bgcolor: red, color: white } }],
+		)
 		const kid = `cg_${n}_knob`
 		presets[kid] = knob(
 			`Control Group ${n} fader knob (push = mute)`,
@@ -442,13 +474,23 @@ export function getKnobPresets(self: ModuleInstance): { structure: any[]; preset
 			{ actionId: 'knob_fader_step', options: { strip: 'cg', index: n, direction: 'up', size: DEFAULT_STEP_SIZE } },
 			{ actionId: 'strip_mute', options: { strip: 'cg', index: n, mode: 'toggle' } },
 		)
-		presets[kid].feedbacks = [{ feedbackId: 'strip_muted', options: { strip: 'cg', index: n }, style: { bgcolor: red, color: white } }]
+		presets[kid].feedbacks = [
+			{ feedbackId: 'strip_muted', options: { strip: 'cg', index: n }, style: { bgcolor: red, color: white } },
+		]
 		cgKeys.push(id, kid)
 	}
 
 	const structure = [
-		{ id: 'knob_snapshots', name: 'Snapshots (D200X)', definitions: ['snap_prev', 'snap_current', 'snap_next', 'snap_undo'] },
-		{ id: 'knob_selected', name: 'Selected channel strip (knobs)', definitions: ['sel_fader_knob', 'sel_send_knob', 'sel_pick_knob', 'sel_aux_knob'] },
+		{
+			id: 'knob_snapshots',
+			name: 'Snapshots (D200X)',
+			definitions: ['snap_prev', 'snap_current', 'snap_next', 'snap_undo'],
+		},
+		{
+			id: 'knob_selected',
+			name: 'Selected channel strip (knobs)',
+			definitions: ['sel_fader_knob', 'sel_send_knob', 'sel_pick_knob', 'sel_aux_knob'],
+		},
 		{ id: 'knob_inputs', name: 'Inputs: mute + select keys', definitions: channelKeys },
 		{ id: 'knob_cgs', name: 'Control Groups', definitions: cgKeys },
 	].filter((section) => section.definitions.length)

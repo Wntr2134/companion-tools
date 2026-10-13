@@ -93,15 +93,13 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		if (this.knobTimer) return
 		this.knobTimer = setTimeout(() => {
 			this.knobTimer = undefined
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.setVariableValues(getKnobVariableValues(this) as any)
+			this.setVariableValues(getKnobVariableValues(this))
 			this.checkFeedbacks('strip_muted', 'strip_soloed', 'sel_is', 'sel_muted', 'snapshot_is', 'console_online')
 		}, 50)
 	}
 
 	private updateKnobPresets(): void {
 		const { structure, presets } = getKnobPresets(this)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.setPresetDefinitions(structure as any, presets as any)
 	}
 
@@ -169,13 +167,11 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		const existing = this.pendingValueReads.get(cacheKey)
 		if (existing) return existing
 		const mixer = this.mixer
-		const request = mixer
-			.queryOsc(path, queryIndex, timeoutMs)
-			.then(async () => {
-				if (this.dataStore.has(cacheKey)) return this.dataStore.get(cacheKey)
-				await mixer.queryOsc(path, queryIndex, timeoutMs) // one retry: UDP can drop a packet
-				return this.dataStore.get(cacheKey)
-			})
+		const request = mixer.queryOsc(path, queryIndex, timeoutMs).then(async () => {
+			if (this.dataStore.has(cacheKey)) return this.dataStore.get(cacheKey)
+			await mixer.queryOsc(path, queryIndex, timeoutMs) // one retry: UDP can drop a packet
+			return this.dataStore.get(cacheKey)
+		})
 		this.pendingValueReads.set(cacheKey, request)
 		try {
 			return await request
@@ -472,7 +468,12 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		const suppressLog = this.shouldSuppressIpadFilenameReply(path)
 		const incoming = args.map(truncateFloat)
 		const ownChange = this.localSetAt.get(path)
-		if (ownChange !== undefined && Date.now() - ownChange < 400 && incoming.length === 1 && typeof incoming[0] === 'number')
+		if (
+			ownChange !== undefined &&
+			Date.now() - ownChange < 400 &&
+			incoming.length === 1 &&
+			typeof incoming[0] === 'number'
+		)
 			return // late echo of a value we just sent
 		const record = parseEntityRecord(path, incoming)
 		const root = record ? record.schemaPath.split('/').filter(Boolean)[0] : undefined

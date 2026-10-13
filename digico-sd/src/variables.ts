@@ -28,6 +28,5 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	for (const [key, label] of Object.entries(MODULE_VARIABLES) as Array<[ModuleVariableKey, string]>) {
 		definitions[key] = { name: label }
 	}
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	self.setVariableDefinitions({ ...definitions, ...getKnobVariableDefinitions(self) } as any)
+	self.setVariableDefinitions({ ...definitions, ...getKnobVariableDefinitions(self) })
 }
