@@ -1,0 +1,19 @@
+{
+	"name": "grandma2-plus",
+	"version": "0.1.0",
+	"main": "src/main.js",
+	"type": "module",
+	"scripts": {
+		"test": "node --test test/ma2.test.mjs"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": "^22.8"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.14.1"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.8.0"
+	}
+}

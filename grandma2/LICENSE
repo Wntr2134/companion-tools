@@ -1,0 +1,30 @@
+MIT License
+
+Copyright (c) 2026 Will Petts
+
+Portions (the hard-key list in src/choices.js, the upgrade script and the ids and options of the
+command, button, wheel, encoder and encoder_p actions) come from
+bitfocus/companion-module-malighting-grandma2:
+Copyright (c) 2018 Bitfocus AS, William Viker & Håkon Nessjøen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Not affiliated with, endorsed by or supported by MA Lighting International GmbH.
+"grandMA2" and "MA Lighting" are trademarks of MA Lighting International GmbH,
+used here only to describe what this software works with.
