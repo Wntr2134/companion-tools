@@ -41,6 +41,9 @@ jobs:
           - dir: show-health
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build
+          - dir: grandma2
+            install: npm install --ignore-scripts --no-audit --no-fund
+            build: npx companion-module-build
           - dir: ulanzi-d200x
             install: corepack enable && yarn install
             build: yarn build && yarn companion-surface-build

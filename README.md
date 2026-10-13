@@ -4,7 +4,7 @@
 >
 > **Just want to install?** Download the ready-made `.tgz` packages from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), then in Companion go to **Modules → Import module package**. No Terminal needed.
 
-Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, and UAD Console control.
+Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD and grandMA2 control.
 
 | Folder | What it is | Status |
 |---|---|---|
@@ -14,15 +14,16 @@ Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ kno
 | [`digico-sd/`](digico-sd/) | DiGiCo SD/Quantum module (upstream v0.9.1 rewrite) plus fixes and a D200X knob layer: fader/send steps, mute/solo feedback, snapshot names, selected-channel strip | Builds and unit-tested; needs a test on the SD9 |
 | [`echo360-capture/`](echo360-capture/) | Echo360 lecture capture: REC/pause/HOLD STOP/extend with a live timer for Pro/Pod boxes, plus keyboard-shortcut keys for Universal Capture (no status) | Built and tested against a fake device; needs a test on the auditorium Pro |
 | [`magicq/`](magicq/) | ChamSys MagicQ (OSC) module (upstream v3.2.1) plus fixes and a D200X knob layer: playback fader knobs, selected-playback strip, Go/Pause/Release/Flash, feedback | Built and tested against a fake MagicQ; needs a test with Will's Compact Connect |
+| [`grandma2/`](grandma2/) | New module: grandMA2 console / onPC over Telnet, with optional Web Remote readback. Executor fader knobs (1-10 steps), Go/Go-/Pause/Flash/Temp keys, selected-executor strip, names, levels and cue names. Keeps the store module's actions | Built and tested against a fake console; needs a test on onPC 3.9.60.89 |
 | [`show-health/`](show-health/) | Watches a list of show devices by ping or TCP port: a green/red key each, plus ALL OK | Built and tested |
 | [`tools/mac-kit/`](tools/mac-kit/) | macOS probes: D200X USB/HID check, D200X HID probe, UA Mixer Engine probe | Working |
-| [`docs/`](docs/) | Notes: UAD protocol, HE40 knob commands, [DiGiCo SD9 research](docs/digico-sd9-research.md), [show cues: desk + cameras + lights](docs/show-cues.md), [Echo360 research](docs/echo360-research.md), [how it works (teaching notes)](docs/how-it-works.md), [upstream plan](docs/upstream-plan.md) | Reference |
+| [`docs/`](docs/) | Notes: UAD protocol, HE40 knob commands, [DiGiCo SD9 research](docs/digico-sd9-research.md), [show cues: desk + cameras + lights](docs/show-cues.md), [Echo360 research](docs/echo360-research.md), [lighting research: grandMA2, grandMA3, MagicQ](docs/lighting-research.md), [how it works (teaching notes)](docs/how-it-works.md), [upstream plan](docs/upstream-plan.md) | Reference |
 
 ## Using these as Companion developer modules
 
 1. Clone this repo to your Mac, e.g. `~/companion-tools`.
 2. Run `bash ~/companion-tools/update.sh`. It pulls the latest from GitHub and installs/builds every module. Run it again whenever there are changes.
-3. In Companion: **Settings → Advanced → Developer**. Turn on **Enable Developer Modules** and set the path to the **repo folder** (`~/companion-tools`). Companion looks one level down and finds `ulanzi-d200x/`, `panasonic-ptz/`, `uad-console/` and `digico-sd/`.
+3. In Companion: **Settings → Advanced → Developer**. Turn on **Enable Developer Modules** and set the path to the **repo folder** (`~/companion-tools`). Companion looks one level down and finds `ulanzi-d200x/`, `panasonic-ptz/`, `uad-console/`, `digico-sd/`, `grandma2/` and the rest.
 4. Restart Companion. On each connection or surface integration, set the module version to the **dev** version (the pencil next to the version number). Otherwise Companion keeps using its store copy.
 
 ## Why not run straight from GitHub?

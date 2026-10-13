@@ -1,0 +1,21 @@
+{
+	"id": "grandma2-plus",
+	"name": "grandma2-plus",
+	"shortname": "grandMA2 (knobs)",
+	"description": "grandMA2 console and onPC over Telnet, with optional Web Remote readback: executor fader knobs, Go/Back/Pause/Flash/Temp keys, a selected-executor strip, names, levels and cue names.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "MA Lighting",
+	"products": ["grandMA2", "grandMA2 onPC"],
+	"keywords": ["lighting", "grandma2", "ma2", "ma lighting", "telnet", "executor", "fader"]
+}

@@ -11,6 +11,7 @@ echo "== echo360-capture"; (cd echo360-capture && yarn install)
 echo "== magicq"; (cd magicq && yarn install)
 echo "== show-health"; (cd show-health && yarn install)
 echo "== digico-sd"; (cd digico-sd && yarn install && yarn build)
+echo "== grandma2"; (cd grandma2 && yarn install)
 echo
 echo "Done. Companion normally reloads developer modules when their files change."
 echo "If a module still shows the old behaviour, restart Companion."

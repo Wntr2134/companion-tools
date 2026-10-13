@@ -9,6 +9,7 @@ You will set up:
 
 - **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
 - **Part E:** Show health page: green/red keys for every device, and alerts
+- **Part F:** grandMA2 (lighting): executor faders on the knobs, Go/Pause/Flash keys with cue names
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
 - **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 
@@ -27,11 +28,12 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `uad-console-….tgz`: Apollo / UAD Console
    - `digico-osc-….tgz`: DiGiCo SD
    - `show-health-….tgz`: show health page (Part E)
+   - `grandma2-plus-….tgz`: grandMA2 lighting (Part F)
    - `echo360-capture-….tgz`: Echo360 recording (Part G)
    - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A / B / C / D**, skipping the "dev version" steps.
+5. Carry on from **Part A to H**, skipping the "dev version" steps.
 
 To update later: download the new files from the same page and import them again.
 
@@ -314,6 +316,67 @@ To get told when something drops mid-show:
 
 ---
 
+## Part F: grandMA2 (lighting)
+
+This drives grandMA2 **onPC** (or a console) from the D200X: executor faders on the knobs, Go+ / Go- / Pause / Flash / Temp keys, and the executor names, levels and cue names on the keys. Written for onPC **3.9.60.89**.
+
+It talks two ways:
+- **Telnet** sends every command. This is the part that must work.
+- **Web Remote** (optional) reads names, fader levels and cue names back. It's worked out from other people's projects, not from MA's documentation, and hasn't been tried on 3.9.60.89 yet. If it doesn't work, the keys and knobs still do.
+
+### F.1 On the onPC computer
+1. In grandMA2 onPC, open **Setup → Console → Global Settings**.
+2. Set **Telnet** to **Login Enabled**.
+3. Set **Remotes** to **Login Enabled**. (Skip this and F.2 if you only want Telnet.)
+4. Windows may ask whether to allow grandMA2 onPC on the network. Click **Allow** for **private** networks. If it never asked: Windows Security → Firewall → Allow an app → tick grandMA2 onPC for Private.
+5. Note the PC's IP address: Windows Settings → Network → your network → **IPv4 address**.
+
+### F.2 A user for the Web Remote
+The Web Remote **won't let Administrator log in**, so make a user just for Companion.
+1. **Setup → Console → User & Profiles Setup**.
+2. Add a user called `companion` with a **password**, and rights of at least **Playback** (use **Setup** if commands get refused).
+3. **Check:** on the Mac, open `http://PC-IP/` in a browser (use the IP from F.1).
+
+   ✅ The MA web remote login page appears, and the `companion` user can log in. Log out again afterwards.
+
+Only **3 remote users** can be logged in at once (browsers, phones and Companion all count).
+
+### F.3 In Companion
+1. **Connections → + Add connection** → search **grandMA2** → choose **grandMA2 (knobs)** (`grandma2-plus`), **dev** version. (The store's "grandma2" is the old module; this one is separate.)
+2. **Console / onPC IP:** the IP from F.1.
+3. **Telnet user / password:** `administrator` and its password (onPC's default is `admin`).
+4. For readback: tick **Use the Web Remote** and enter the `companion` user and password from F.2.
+5. **Executors:** the faders you use, e.g. `1-15`. These get variables, presets and readback. Leave **Start page** on 1.
+6. Save.
+
+✅ The status goes from *Connecting* to **OK** within a few seconds. If you turned on the Web Remote, open **Variables** → this connection: `exec_1_name` and the rest show your executor names within a second.
+- *Connecting* that never finishes: check the IP, that Telnet is **Login Enabled**, and the firewall (F.1 step 4).
+- *Login refused*: the Telnet user or password is wrong.
+- OK, but with *Web Remote login refused* after it: the Web Remote user or password is wrong, it's Administrator, or 3 remotes are already logged in.
+
+### F.4 Put it on the D200X
+**Buttons → Presets → grandMA2 (knobs):**
+- **D200X: knobs** (turns go on row 3, pushes on row 4):
+  - **Knob 1:** *selected executor fader*. Push: pick **Go+**, **Flash while held**, or **fader to 0 / back**.
+  - **Knob 2:** *fader of the executor after the selected one*. Push: **select the next executor**.
+  - **Knob 3:** *grand master*. Push: **next page**.
+- **D200X: selected executor keys:** ◀ / ▶ to choose the executor, **GO+** (shows the next cue's name), **GO-**, **PAUSE** (green while the executor runs), **FLASH** and **TEMP** (only while held), **OFF**.
+- **Quick select:** one key per executor with its name and level. Blue = selected.
+
+Step size works like the other modules: **1** = 1 % per click, **2** (default) = 2 %, **10** = 20 %.
+
+A **Go+ is never sent twice**: if the connection is down when you press it, nothing happens (the log says so), rather than firing late and skipping a cue.
+
+### F.5 Test checklist (first time on onPC)
+Tick these off and send the results, including the connection's **Logs**:
+1. Status turns **OK**.
+2. **GO+** runs the next cue on the selected executor; **GO-** and **PAUSE** work.
+3. Knob 1 moves the executor's fader on screen, smoothly, in both directions.
+4. Knob 3 moves the grand master.
+5. **FLASH** flashes only while held.
+6. With the Web Remote on: names, levels and cue names appear, and moving a fader on onPC updates the key.
+
+Anything that doesn't work is probably one of the guesses listed in `grandma2/NOTES.md`; most can be fixed from the connection's **Advanced** settings.
 ## Part G: Echo360 lecture recording
 
 ### G.1 Auditorium (Echo360 Pro box)
@@ -412,5 +475,6 @@ Companion normally picks up the change by itself. If a module still behaves the 
 | D200X goes black after about a minute | Run `update.sh` (the keep-alive fix is in the dev version), and check the screensaver is off (A.5). |
 | A knob moves the wrong way | Swap the actions under **Rotate left** and **Rotate right**. |
 | Panasonic connection is red | Check the camera IP. Open `http://CAMERA-IP` in a browser: the camera's web page should load. |
+| grandMA2 connection stuck on Connecting | Check the IP, **Telnet = Login Enabled** in Setup → Console → Global Settings, and the Windows firewall (F.1). |
 | UAD connection is red | Open UAD Console once, then check the IP is `127.0.0.1` on the same Mac. Then run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs`. It should list your devices. |
 | Anything else | Copy the connection's or surface's **Logs** and send them over. |
