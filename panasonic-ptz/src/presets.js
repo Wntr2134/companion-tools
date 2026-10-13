@@ -2040,5 +2040,68 @@ export function getPresetDefinitions(self) {
 		}
 	}
 
+	// ##############################
+	// #### Knob (encoder) Presets ####
+	// ##############################
+	// Rotary buttons: turn = one fixed step per click. Push = the action shown.
+	const label = self.label || 'Panasonic-PTZ'
+	const knob = (id, name, text, left, right, push) => {
+		presets[id] = {
+			type: 'button',
+			category: 'Knobs',
+			name,
+			options: { rotaryActions: true },
+			style: {
+				text,
+				size: '14',
+				color: foregroundColor,
+				bgcolor: combineRgb(40, 40, 40),
+			},
+			steps: [
+				{
+					down: push ? [push] : [],
+					up: [],
+					rotate_left: [left],
+					rotate_right: [right],
+				},
+			],
+			feedbacks: [],
+		}
+	}
+	if (seriesActions.panTilt) {
+		knob(
+			'knob-pan',
+			'Pan knob',
+			`PAN\\n$(${label}:panPosition)`,
+			{ actionId: 'knobPanTiltStep', options: { direction: 'left', step: 1280 } },
+			{ actionId: 'knobPanTiltStep', options: { direction: 'right', step: 1280 } }
+		)
+		knob(
+			'knob-tilt',
+			'Tilt knob',
+			`TILT\\n$(${label}:tiltPosition)`,
+			{ actionId: 'knobPanTiltStep', options: { direction: 'down', step: 1280 } },
+			{ actionId: 'knobPanTiltStep', options: { direction: 'up', step: 1280 } }
+		)
+	}
+	if (seriesActions.zoom) {
+		knob(
+			'knob-zoom',
+			'Zoom knob',
+			`ZOOM\\n$(${label}:zoomPosition)%`,
+			{ actionId: 'knobZoomStep', options: { direction: 'out', step: 2, method: 'position' } },
+			{ actionId: 'knobZoomStep', options: { direction: 'in', step: 2, method: 'position' } }
+		)
+	}
+	if (seriesActions.focus) {
+		knob(
+			'knob-focus',
+			'Focus knob',
+			`FOCUS\\n$(${label}:focusPosition)%`,
+			{ actionId: 'knobFocusStep', options: { direction: 'near', step: 1, manual: true } },
+			{ actionId: 'knobFocusStep', options: { direction: 'far', step: 1, manual: true } }
+		)
+	}
+
 	return presets
 }
