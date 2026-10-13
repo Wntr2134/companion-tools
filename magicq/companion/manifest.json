@@ -1,0 +1,32 @@
+{
+	"$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+	"type": "connection",
+	"id": "chamsys-magicq-osc",
+	"name": "chamsys-magicq-osc",
+	"shortname": "magicq",
+	"description": "Module to control Chamsys consoles",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-chamsys-magicq-osc.git",
+	"bugs": "https://github.com/bitfocus/companion-module-chamsys-magicq-osc/issues",
+	"maintainers": [
+		{
+			"name": "Per Røine",
+			"email": "per.roine@gmail.com"
+		},
+		{
+			"name": "Elliot Matson",
+			"email": "ematson5897@gmail.com"
+		}
+	],
+	"legacyIds": ["chamsys"],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "ChamSys",
+	"products": ["MagicQ"],
+	"keywords": ["Lighting"]
+}
