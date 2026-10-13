@@ -91,7 +91,7 @@ function channelChoices(client, groups) {
 	const list = allChannels(client).filter((c) => groups.includes(c.group))
 	return list.map((c) => ({
 		id: c.key,
-		label: `${c.multi ? c.deviceName + ' ' : ''}${GROUP_LABEL[c.group]} ${Number(c.id) + 1}: ${c.name}`,
+		label: `${c.multi ? c.deviceName + ' ' : ''}${GROUP_LABEL[c.group]} ${Number(c.id) + 1}: ${c.name}${c.active === false ? ' (unused)' : ''}`,
 	}))
 }
 
@@ -139,10 +139,10 @@ export function getActions(self) {
 	const monitor = channelOption(c, ['outputs'], 'Monitor output')
 
 	const sendChoices = []
-	const auxNames = new Map(allChannels(c).filter((ch) => ch.group === 'auxs').map((ch) => [ch.id, ch.name]))
+	const sendNames = Object.assign({}, ...c.devices.map((d) => d.sendNames ?? {}))
 	const sendIds = [...new Set(allChannels(c).flatMap((ch) => ch.sends))].sort((a, b) => a - b)
 	for (const id of sendIds.length ? sendIds : ['0', '1', '2', '3']) {
-		sendChoices.push({ id, label: `Send ${Number(id) + 1}${auxNames.has(id) ? ': ' + auxNames.get(id) : ''}` })
+		sendChoices.push({ id, label: `Send ${Number(id) + 1}${sendNames[id] ? ': ' + sendNames[id] : ''}` })
 	}
 	const sendOption = {
 		type: 'dropdown',
@@ -417,9 +417,11 @@ export function getPresets(self) {
 	const red = combineRgb(200, 0, 0)
 
 	for (const ch of allChannels(c)) {
+		if (ch.active === false) continue // keep the preset list to channels actually in use
 		const p = varPrefix(ch)
 		const key = ch.key
-		const cat = ch.group === 'outputs' ? 'Monitor' : `${GROUP_LABEL[ch.group]} ${Number(ch.id) + 1}: ${ch.name}`
+		const dev = ch.multi ? `${ch.deviceName}: ` : ''
+		const cat = ch.group === 'outputs' ? `${dev}Monitor` : `${dev}${GROUP_LABEL[ch.group]} ${Number(ch.id) + 1}: ${ch.name}`
 
 		if (ch.group === 'outputs') {
 			presets[`${p}_knob`] = {

@@ -226,7 +226,17 @@ export class UAClient extends EventEmitter {
 					const ch = await this.get(base)
 					const cp = ch?.data?.properties ?? {}
 					const name = cp.Name?.value || cp.Name?.default || `${group} ${chId}`
-					const channel = { key: `${devId}/${group}/${chId}`, dev: devId, group, id: chId, name: String(name), sends: [], preamp: false }
+					const channel = {
+						key: `${devId}/${group}/${chId}`,
+						dev: devId,
+						group,
+						id: chId,
+						name: String(name),
+						sends: [],
+						preamp: false,
+						// Unused channels (no ADAT connected, "N/A", hidden in Console) still exist in the engine.
+						active: cp.Active?.value !== false && cp.ChannelHidden?.value !== true && !/^N\/A\b/.test(String(name)),
+					}
 
 					if (group === 'outputs' && !('CRMonitorLevel' in cp)) continue // only keep the monitor output
 					for (const prop of CHANNEL_PROPS[group]) {
@@ -240,6 +250,15 @@ export class UAClient extends EventEmitter {
 					if (kids.includes('sends')) {
 						const sends = await this.get(`${base}/sends`)
 						channel.sends = Object.keys(sends?.data?.children ?? {})
+						// Send names (e.g. "AUX 1", "CUE 1") are the same for every channel: read them once.
+						if (!device.sendNames) {
+							device.sendNames = {}
+							for (const sid of channel.sends) {
+								const sp = (await this.get(`${base}/sends/${sid}`))?.data?.properties ?? {}
+								const sname = sp.Name?.value || sp.Name?.default
+								if (sname) device.sendNames[sid] = String(sname)
+							}
+						}
 					}
 					if (group === 'inputs' && kids.includes('preamps')) {
 						channel.preamp = true

@@ -33,6 +33,7 @@ function resetEngine() {
 	P('/devices/0/outputs/0/DimOn', false)
 }
 const NAMES = { 'inputs/0': 'Kick', 'inputs/1': 'Snare', 'inputs/2': '', 'inputs/3': 'Vox', 'auxs/0': 'Cue 1', 'auxs/1': 'Cue 2', 'outputs/0': 'Monitor', 'outputs/1': 'Line 1' }
+const INACTIVE = new Set(['inputs/2'])
 
 function reply(path) {
 	const parts = path.split('/').filter(Boolean)
@@ -45,7 +46,7 @@ function reply(path) {
 	}
 	if (parts.length === 4) {
 		const base = '/' + parts.join('/')
-		const props = { Name: { value: NAMES[`${parts[2]}/${parts[3]}`], default: `Analog ${Number(parts[3]) + 1}` } }
+		const props = { Name: { value: NAMES[`${parts[2]}/${parts[3]}`], default: `Analog ${Number(parts[3]) + 1}` }, Active: { value: !INACTIVE.has(`${parts[2]}/${parts[3]}`) } }
 		for (const [k, v] of engine.props) {
 			const rest = k.slice(base.length + 1)
 			if (k.startsWith(base + '/') && !rest.includes('/')) props[rest] = { value: v }
@@ -54,6 +55,7 @@ function reply(path) {
 		return { path, data: { properties: props, children } }
 	}
 	if (parts.length === 5 && parts[4] === 'sends') return { path, data: { properties: {}, children: kids(['0', '1']) } }
+	if (parts.length === 6 && parts[4] === 'sends') return { path, data: { properties: { Name: { value: ['AUX 1', 'CUE 1'][parts[5]] } }, children: {} } }
 	const key = normalisePath(path)
 	if (engine.props.has(key)) return { path: key, data: { properties: { value: { value: engine.props.get(key) } } } }
 	return { path, data: null }
@@ -153,6 +155,10 @@ test('discovers channels, names, monitor output only, sends', async () => {
 	assert.equal(vars.mon_1_level, '-20.0')
 	assert.ok(getVariableDefinitions(self).some((d) => d.variableId === 'aux_2_mute'))
 	assert.ok(Object.keys(getPresets(self)).includes('in_1_mute_hold'))
+	assert.ok(!Object.keys(getPresets(self)).includes('in_3_mute'), 'no presets for unused channels')
+	assert.deepEqual(client.devices[0].sendNames, { 0: 'AUX 1', 1: 'CUE 1' })
+	const sendOpt = getActions(self).sendStep.options.find((o) => o.id === 'send')
+	assert.equal(sendOpt.choices[1].label, 'Send 2: CUE 1')
 	client.stop()
 })
 
