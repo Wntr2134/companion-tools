@@ -9,6 +9,7 @@ You will set up:
 
 - **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
 - **Part E:** Show health page: green/red keys for every device, and alerts
+- **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -25,6 +26,7 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `uad-console-….tgz`: Apollo / UAD Console
    - `digico-osc-….tgz`: DiGiCo SD
    - `show-health-….tgz`: show health page (Part E)
+   - `echo360-capture-….tgz`: Echo360 recording (Part G)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A / B / C / D**, skipping the "dev version" steps.
@@ -307,6 +309,46 @@ To get told when something drops mid-show:
 2. Event: **Variable changed**. Variable: `$(show-health:down_count)`.
 3. Condition: value is greater than 0.
 4. Action: for example jump the D200X to the health page, flash a key, or send a message with a webhook module (Pushover, Slack, Discord).
+
+---
+
+## Part G: Echo360 lecture recording
+
+### G.1 Auditorium (Echo360 Pro box)
+1. **Ask Collarts AV/IT** for three things:
+   - the Pro's **IP address**
+   - whether the Companion Mac can reach it (port **8443**, or **8080**)
+   - the **Local Generic User Login** (Echo360 → Settings → Device Defaults)
+
+   Use the generic user, never the admin login.
+2. **Optional check from Terminal** on that Mac. It only reads, so it can't change anything:
+   ```bash
+   curl -sk -u 'instructor:PASSWORD' https://DEVICE-IP:8443/status/monitoring
+   ```
+   - XML text back means it's reachable.
+   - A connection error: try `http://DEVICE-IP:8080/status/monitoring` instead.
+3. **Add the connection:** Companion → **Connections → + Add connection** → **Echo360 Capture**.
+   - **Device type:** Echo360 Pro / Pod / SafeCapture HD
+   - **Host:** the IP
+   - **Protocol and port:** whichever worked in step 2
+   - **Username and password:** the generic user
+   - Save.
+
+   ✅ It goes green, and the **Default capture profile** list fills in from the box.
+4. **Presets → Echo360 Capture:**
+   - **REC**: shows state + elapsed time. One press starts an ad hoc recording; pressing again while recording does nothing.
+   - **PAUSE / RESUME**
+   - **HOLD STOP**: you must hold it for 2 seconds, because stopping uploads straight away.
+   - **+5 / +15 min**
+   - **Next capture**: when the next scheduled recording starts.
+5. **Test first** with the module's **test mode**. It makes a practice recording that is never uploaded. Do this in a free room before using it with a class.
+
+### G.2 Every other room (Universal Capture on the lectern Mac)
+Universal Capture has no control connection, so Companion sends its keyboard shortcuts instead. That means **the keys can't show whether it's recording**; they say *NO STATUS*.
+1. **Add the connection:** **Connections → + Add connection** → **Echo360 Capture**. Set **Device type** to *Universal Capture on this Mac (keyboard shortcuts)*.
+2. **Give Companion permission:** System Settings → **Privacy & Security → Accessibility** → turn on **Companion**. Without this, macOS blocks the keystrokes; the connection's log will say so.
+3. **Presets → Universal Capture (no status):** PAUSE/RESUME, **HOLD FINISH** (2-second hold), EXTEND, OPEN UC.
+4. The lecturer still clicks **Record** in Universal Capture to start. There's no start shortcut.
 
 ---
 
