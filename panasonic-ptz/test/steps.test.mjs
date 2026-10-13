@@ -215,3 +215,20 @@ test('selected camera: knob only moves the camera whose number is selected', asy
 	await idle(self)
 	assert.equal(cam.log.filter((l) => l.cmd?.startsWith('#RPC')).length, 2)
 })
+
+test('recall preset by number from a variable (snapshot -> camera preset)', async () => {
+	const { getActionDefinitions } = await import('../src/actions.js')
+	cam.log = []
+	const self = makeSelf()
+	self.config.model = 'AW-HE40'
+	self.data = { model: 'AW-HE40', modelTCP: 'AW-HE40', series: 'Auto' }
+	self.checkFeedbacks = () => {}
+	const defs = getActionDefinitions(self)
+	const context = { parseVariablesInString: async (t) => (t === '$(digico-osc:snap_current_num)' ? '3' : t) }
+	await defs.recallPsetNumber.callback({ options: { number: '$(digico-osc:snap_current_num)', offset: '10' } }, context)
+	await idle(self)
+	assert.deepEqual(cam.log.map((l) => l.cmd), ['#R12'], 'snapshot 3 + offset 10 = preset 13 = R12')
+	await defs.recallPsetNumber.callback({ options: { number: 'abc', offset: '0' } }, context)
+	await idle(self)
+	assert.equal(cam.log.length, 1, 'bad number sends nothing')
+})

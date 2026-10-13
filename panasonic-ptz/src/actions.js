@@ -1213,6 +1213,41 @@ export function getActionDefinitions(self) {
 		}
 	}
 	if (seriesActions.preset) {
+		actions.recallPsetNumber = {
+			name: 'Preset - Recall by number (variables allowed)',
+			description:
+				'For linking: e.g. $(digico-osc:snap_current_num) recalls the camera preset with the same number as the current console snapshot. Numbers are 1-100 as shown on the camera.',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Preset number (1-100)',
+					id: 'number',
+					default: '1',
+					useVariables: true,
+				},
+				{
+					type: 'textinput',
+					label: 'Add (offset), e.g. 10 to map snapshot 1 to preset 11',
+					id: 'offset',
+					default: '0',
+					useVariables: true,
+				},
+			],
+			callback: async (action, context) => {
+				const parse = context?.parseVariablesInString ?? ((t) => self.parseVariablesInString(t))
+				const n = Math.round(Number(await parse(String(action.options.number))) + Number(await parse(String(action.options.offset ?? '0'))))
+				if (!Number.isFinite(n) || n < 1 || n > 100) {
+					self.log('warn', `Preset number "${action.options.number}" is not 1-100; nothing recalled`)
+					return
+				}
+				const val = String(n - 1).padStart(2, '0')
+				await sendPTZ(self, 'R' + val)
+				self.presetRecalled = val
+				self.checkFeedbacks('presetActive')
+			},
+		}
+	}
+	if (seriesActions.preset) {
 		actions.recallModePset = {
 			name: 'Preset - Mode A, B, C',
 			options: [
