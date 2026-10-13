@@ -1,14 +1,16 @@
 import { Regex, combineRgb } from '@companion-module/base'
+import { getKnobFeedbacks } from './knobs.js'
 
 export default function UpdateFeedbacks(self) {
 	if (!self.feedbackEnabled()) {
-		// Publish an empty set, so turning feedback off clears any
-		// previously registered feedbacks rather than leaving them behind.
-		self.setFeedbackDefinitions({})
+		// Publish only the knob layer's feedbacks (they work from what Companion sent), so
+		// turning feedback off clears the console-state ones rather than leaving them behind.
+		self.setFeedbackDefinitions(getKnobFeedbacks(self))
 		return
 	}
 
 	self.setFeedbackDefinitions({
+		...getKnobFeedbacks(self),
 		pb: {
 			type: 'boolean',
 			name: 'Playback Level',

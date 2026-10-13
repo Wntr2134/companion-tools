@@ -1,10 +1,20 @@
-import { InstanceBase, InstanceStatus } from '@companion-module/base'
+import { InstanceBase, InstanceStatus, Regex } from '@companion-module/base'
 import osc from 'osc'
 
 import UpdateActions from './actions.js'
 import UpdateFeedbacks from './feedbacks.js'
 import UpdateVariableDefinitions from './variables.js'
 import UpgradeScripts from './upgrades.js'
+import { getKnobPresets, getKnobVariableValues, KNOB_FEEDBACK_IDS, clamp } from './knobs.js'
+
+/** How often the heartbeat runs. */
+export const HEARTBEAT_MS = 5000
+/** Re-send the feedback subscription after this long without hearing from MagicQ. */
+export const RESUBSCRIBE_MS = 10000
+/** Default for "No reply timeout": this long without any message from MagicQ = Disconnected. */
+export const DEFAULT_SILENCE_S = 30
+/** After sending a level ourselves, ignore the console's report of that playback for this long. */
+export const ECHO_GUARD_MS = 400
 
 export default class MagicQInstance extends InstanceBase {
 	constructor(internal) {
@@ -28,7 +38,18 @@ export default class MagicQInstance extends InstanceBase {
 		}
 		// desk black out state, tracked so the DBO toggle has something to read
 		this.dbo = 0
+		// add/swap mode, tracked the same way for the Swap toggle
+		this.swapMode = 0
 		this.variables = {}
+
+		// connection tracking (heartbeat)
+		this.lastSeen = 0
+		this.consoleOnline = false
+		this.hadConnection = false
+		this.heartbeatTimer = undefined
+		this.knobTimer = undefined
+		/** When we last set each playback level ourselves, so a late echo can't drag it backwards. */
+		this.localSetAt = new Map()
 	}
 
 	async init(config) {
@@ -42,8 +63,135 @@ export default class MagicQInstance extends InstanceBase {
 		// they are registered only in that case.
 		this.updateVariableDefinitions()
 		this.updateFeedbacks()
+		this.updatePresets()
 
 		this.setupOSC()
+		this.refreshKnobValues()
+	}
+
+	updatePresets() {
+		const { structure, presets } = getKnobPresets(this)
+		this.setPresetDefinitions(structure, presets)
+	}
+
+	// ---------- playback state (shared with the knob layer) ----------
+
+	// Playbacks above 10 get a slot on first use. MagicQ never reports them, so their level is
+	// whatever Companion last sent.
+	playbackState(pbId) {
+		const n = Number(pbId)
+		if (this.playbacks[n] === undefined) {
+			this.playbacks[n] = { value: 0, flash: 0 }
+		}
+		return this.playbacks[n]
+	}
+
+	playbackLevel(pbId) {
+		return this.playbacks[Number(pbId)]?.value ?? 0
+	}
+
+	playbackFlash(pbId) {
+		return this.playbacks[Number(pbId)]?.flash ?? 0
+	}
+
+	/** Send a level (0-100, whole percent) and keep it as the local target straight away. */
+	setPlaybackLevel(pbId, pct) {
+		const n = Number(pbId)
+		const value = clamp(Math.round(pct), 0, 100)
+		this.sendOSC('/pb/' + n, { type: 'i', value })
+		this.playbackState(n).value = value
+		this.localSetAt.set(n, Date.now())
+		if (n <= 10) {
+			this.setTrackedVariables({ ['pb' + n]: value })
+		}
+		this.checkFeedbacks('pb')
+		this.refreshKnobValues()
+	}
+
+	setPlaybackFlash(pbId, value) {
+		const n = Number(pbId)
+		this.playbackState(n).flash = value
+		if (n <= 10) {
+			this.setTrackedVariables({ ['pb' + n + '_flash']: value })
+		}
+		this.checkFeedbacks('pbFlash')
+		this.refreshKnobValues()
+	}
+
+	/** Re-publish knob-layer variables and feedbacks (batched: faders can report many times a second). */
+	refreshKnobValues() {
+		if (this.knobTimer) return
+		this.knobTimer = setTimeout(() => {
+			this.knobTimer = undefined
+			this.setVariableValues(getKnobVariableValues(this))
+			this.checkFeedbacks(...KNOB_FEEDBACK_IDS)
+		}, 50)
+	}
+
+	// ---------- connection / heartbeat ----------
+
+	get isConsoleOnline() {
+		return this.consoleOnline
+	}
+
+	connectionText() {
+		if (!this.config || !this.feedbackEnabled()) return 'send only'
+		if (this.consoleOnline) return 'connected'
+		return this.hadConnection ? 'disconnected' : 'waiting'
+	}
+
+	silenceTimeoutMs() {
+		const s = Number(this.config?.silenceTimeout ?? DEFAULT_SILENCE_S)
+		return Number.isFinite(s) && s > 0 ? s * 1000 : 0
+	}
+
+	/** Any message from MagicQ proves it's there. Coming back after a drop-out: subscribe again. */
+	markConsoleSeen(now = Date.now()) {
+		this.lastSeen = now
+		if (this.consoleOnline) return
+		const wasDown = this.hadConnection
+		this.consoleOnline = true
+		this.hadConnection = true
+		this.updateStatus(InstanceStatus.Ok)
+		if (wasDown) {
+			this.log('info', 'MagicQ is back: subscribing to feedback again')
+			this.sendOSC('/feedback/pb+exec')
+		}
+		this.refreshKnobValues()
+	}
+
+	// MagicQ has no "are you there" message over OSC, and only sends feedback when something
+	// changes. So: re-send the feedback subscription while it's quiet (this also gets feedback
+	// back after MagicQ restarts), and after the No reply timeout mark it Disconnected.
+	heartbeatTick(now = Date.now()) {
+		if (!this.osc || !this.feedbackEnabled()) return
+		const quietFor = now - this.lastSeen
+		if (quietFor >= RESUBSCRIBE_MS) {
+			this.sendOSC('/feedback/pb+exec')
+		}
+		const timeout = this.silenceTimeoutMs()
+		if (this.consoleOnline && timeout > 0 && quietFor > timeout) {
+			this.consoleOnline = false
+			this.updateStatus(InstanceStatus.Disconnected, 'Nothing from MagicQ for ' + timeout / 1000 + ' s')
+			this.refreshKnobValues()
+		}
+	}
+
+	startHeartbeat() {
+		this.stopHeartbeat()
+		this.heartbeatTimer = setInterval(() => this.heartbeatTick(), HEARTBEAT_MS)
+	}
+
+	stopHeartbeat() {
+		if (this.heartbeatTimer) clearInterval(this.heartbeatTimer)
+		this.heartbeatTimer = undefined
+	}
+
+	resetConnection() {
+		this.stopHeartbeat()
+		this.lastSeen = 0
+		this.consoleOnline = false
+		this.hadConnection = false
 	}
 
 	feedbackEnabled() {
@@ -129,7 +277,8 @@ export default class MagicQInstance extends InstanceBase {
 	// outside the range has no slot in this.playbacks, so it is ignored rather
 	// than allowed to throw.
 	isKnownPlayback(pbId) {
-		if (this.playbacks[pbId] !== undefined) {
+		const n = Number(pbId)
+		if (n >= 1 && n <= 10) {
 			return true
 		}
 		this.log('debug', 'Ignoring OSC message for playback ' + pbId + ', outside the 1-10 range MagicQ addresses')
@@ -141,36 +290,57 @@ export default class MagicQInstance extends InstanceBase {
 		const pbFlashRegex = /\/pb\/(\d+)\/flash$/ // regex for /pb/<pbId (int)>/flash
 		const execRegex = /\/exec\/(\d+)\/(\d+)$/ // regex for /exec/<exeP (int)>/<exeNr (int)>
 
+		if (typeof msg?.address !== 'string') {
+			return
+		}
+
 		if (pbRegex.test(msg.address)) {
-			const pbId = msg.address.match(pbRegex)[1]
+			const pbId = Number(msg.address.match(pbRegex)[1])
 			if (!this.isKnownPlayback(pbId)) {
 				return
 			}
-			const pbVal = parseFloat(msg.args)
-			const pbValPercent = Math.round(pbVal * 100)
+			const pbVal = firstNumber(msg.args)
+			if (pbVal === undefined) {
+				this.log('debug', 'Ignoring ' + msg.address + ' without a numeric level')
+				return
+			}
+			// A knob is mid-turn: the console's report is older than the level we just sent
+			if (Date.now() - (this.localSetAt.get(Number(pbId)) ?? 0) < ECHO_GUARD_MS) {
+				return
+			}
+			const pbValPercent = clamp(Math.round(pbVal * 100), 0, 100)
 			this.playbacks[pbId].value = pbValPercent
 			this.setTrackedVariables({
 				['pb' + pbId]: pbValPercent,
 			})
 			this.checkFeedbacks('pb')
+			this.refreshKnobValues()
 			this.log('debug', 'pbId: ' + pbId + ' value: ' + pbValPercent)
 		} else if (pbFlashRegex.test(msg.address)) {
-			const pbId = msg.address.match(pbFlashRegex)[1]
+			const pbId = Number(msg.address.match(pbFlashRegex)[1])
 			if (!this.isKnownPlayback(pbId)) {
 				return
 			}
-			const pbFlash = parseInt(msg.args)
+			const flashVal = firstNumber(msg.args)
+			if (flashVal === undefined) {
+				return
+			}
+			const pbFlash = flashVal >= 0.5 ? 1 : 0
 			this.playbacks[pbId].flash = pbFlash
 			this.setTrackedVariables({
 				['pb' + pbId + '_flash']: pbFlash,
 			})
 			this.checkFeedbacks('pbFlash')
+			this.refreshKnobValues()
 			this.log('debug', 'pbId: ' + pbId + ' flash: ' + pbFlash)
 		} else if (execRegex.test(msg.address)) {
 			const execPage = msg.address.match(execRegex)[1]
 			const execNr = msg.address.match(execRegex)[2]
-			const execVal = parseFloat(msg.args)
-			const execValPercent = Math.round(execVal * 100)
+			const execVal = firstNumber(msg.args)
+			if (execVal === undefined) {
+				return
+			}
+			const execValPercent = clamp(Math.round(execVal * 100), 0, 100)
 			this.log('debug', 'execPage: ' + execPage + ' execNr: ' + execNr + ' value: ' + execValPercent)
 			this.ensureExecVariable(execPage, execNr)
 			this.setTrackedVariables({
@@ -201,6 +371,7 @@ export default class MagicQInstance extends InstanceBase {
 
 	async setupOSC() {
 		this.closeOSC()
+		this.resetConnection()
 
 		const remotePort = this.parsePort(this.config.port)
 		if (!this.config.host || remotePort === undefined) {
@@ -263,14 +434,18 @@ export default class MagicQInstance extends InstanceBase {
 			if (feedbackEnabled) {
 				// Stay in Connecting until the console actually sends something back
 				this.sendOSC('/feedback/pb+exec')
+				this.startHeartbeat()
 			} else {
 				// Send-only on a connectionless socket, so there is nothing to wait for
 				this.updateStatus(InstanceStatus.Ok)
 			}
 		})
 		oscPort.on('message', (msg) => {
+			if (this.osc !== oscPort) {
+				return // a late message on a socket we've already replaced
+			}
 			this.log('debug', 'OSC message: ' + msg.address + ' ' + msg.args)
-			this.updateStatus(InstanceStatus.Ok)
+			this.markConsoleSeen()
 
 			// checkVariables is async, so an unhandled rejection here would be
 			// fatal - a malformed message must never take the module down
@@ -280,14 +455,28 @@ export default class MagicQInstance extends InstanceBase {
 
 			// check if we need to forward the message to Companion
 			if (this.companionOsc) {
-				this.companionOsc.send({
-					address: msg.address,
-					args: msg.args,
-				})
-				this.log('debug', 'Forwarding OSC message to Companion: ' + msg.address + ' ' + msg.args)
+				try {
+					this.companionOsc.send({
+						address: msg.address,
+						args: msg.args,
+					})
+					this.log('debug', 'Forwarding OSC message to Companion: ' + msg.address + ' ' + msg.args)
+				} catch (err) {
+					this.log('debug', 'Could not forward OSC message: ' + err)
+				}
 			}
 		})
 		oscPort.on('error', (err) => {
+			if (this.osc !== oscPort) {
+				return
+			}
+			// osc.js reports a packet it can't decode through the same 'error' event as a socket
+			// failure. A stray bad packet isn't a connection problem, so only socket errors
+			// (which carry a code such as EADDRINUSE) change the status.
+			if (!err?.code) {
+				this.log('debug', 'Ignoring OSC packet that could not be decoded: ' + (err?.message ?? err))
+				return
+			}
 			this.log('error', 'OSC error: ' + err)
 			this.updateStatus(InstanceStatus.ConnectionFailure, err.message)
 		})
@@ -306,20 +495,27 @@ export default class MagicQInstance extends InstanceBase {
 			args = []
 		}
 		this.log('debug', 'sendOSC: ' + cmd + ' ' + JSON.stringify(args))
-		this.osc.send({
-			address: cmd,
-			args: args,
-		})
+		try {
+			this.osc.send({
+				address: cmd,
+				args: args,
+			})
+		} catch (err) {
+			this.log('error', 'Could not send OSC ' + cmd + ': ' + err)
+		}
 	}
 
 	async destroy() {
 		this.log('debug', 'destroy')
+		this.resetConnection()
+		if (this.knobTimer) clearTimeout(this.knobTimer)
+		this.knobTimer = undefined
 		this.closeOSC()
 	}
 
 	async configUpdated(config) {
 		this.config = config
-		this.init(config)
+		await this.init(config)
 	}
 
 	getConfigFields() {
@@ -368,6 +564,18 @@ export default class MagicQInstance extends InstanceBase {
 				isVisibleExpression: '$(options:enableFeedback) == true',
 			},
 			{
+				type: 'number',
+				id: 'silenceTimeout',
+				label: 'No reply timeout (seconds, 0 = never)',
+				tooltip:
+					'Show Disconnected after this long without any OSC from MagicQ. Companion re-sends the feedback request every 10 s while it is quiet. If an idle console shows Disconnected, set this to 0.',
+				default: DEFAULT_SILENCE_S,
+				min: 0,
+				max: 3600,
+				width: 4,
+				isVisibleExpression: '$(options:enableFeedback) == true',
+			},
+			{
 				type: 'checkbox',
 				id: 'forwardOSC',
 				label: 'Forward OSC messages to Companion',
@@ -390,6 +598,14 @@ export default class MagicQInstance extends InstanceBase {
 			},
 		]
 	}
+}
+
+/** First numeric OSC argument (osc.js gives an array of values, or a single value). */
+export function firstNumber(args) {
+	const raw = Array.isArray(args) ? args[0] : args
+	const value = typeof raw === 'object' && raw !== null && 'value' in raw ? raw.value : raw
+	const n = typeof value === 'number' ? value : typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN
+	return Number.isFinite(n) ? n : undefined
 }
 
 export { UpgradeScripts }

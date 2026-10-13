@@ -1,5 +1,9 @@
+import { getKnobVariableDefinitions } from './knobs.js'
+
 export default function UpdateVariableDefinitions(self) {
-	self.variables = {}
+	// The knob layer's variables are always there: they show what Companion sent when
+	// feedback is off.
+	self.variables = getKnobVariableDefinitions()
 
 	if (self.feedbackEnabled()) {
 		for (let i = 1; i <= 10; i++) {

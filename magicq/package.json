@@ -1,11 +1,12 @@
 {
   "name": "chamsys-magicq-osc",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "main": "src/main.js",
   "type": "module",
   "scripts": {
     "format": "prettier -w .",
-    "package": "companion-module-build"
+    "package": "companion-module-build",
+    "test": "node --test test/knobs.test.mjs"
   },
   "license": "MIT",
   "repository": {
@@ -13,7 +14,7 @@
     "url": "git+https://github.com/bitfocus/companion-module-chamsys-magicq-osc.git"
   },
   "engines": {
-    "node": "^22.20",
+    "node": "^22.20 || ^26",
     "yarn": "^4"
   },
   "dependencies": {

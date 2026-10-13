@@ -1,4 +1,5 @@
 import { Regex } from '@companion-module/base'
+import { getKnobActions } from './knobs.js'
 
 export default function UpdateActions(self) {
 	self.setActionDefinitions({
@@ -30,17 +31,8 @@ export default function UpdateActions(self) {
 					return
 				}
 
-				const arg = {
-					type: 'i',
-					value: pbVal,
-				}
-				self.sendOSC('/pb/' + pbId, arg)
-				// set the value in the playbacks array since magicQ does not send feedback for OSC commands
-				self.playbacks[pbId].value = pbVal
-				self.setTrackedVariables({
-					['pb' + pbId]: pbVal,
-				})
-				self.checkFeedbacks('pb')
+				// also keeps the level locally, since magicQ does not send feedback for OSC commands
+				self.setPlaybackLevel(pbId, pbVal)
 			},
 		},
 
@@ -80,17 +72,8 @@ export default function UpdateActions(self) {
 					pbNewLevel = 0
 				}
 
-				const arg = {
-					type: 'i',
-					value: pbNewLevel,
-				}
-				self.sendOSC('/pb/' + pbId, arg)
-				// set the value in the playbacks array since magicQ does not send feedback for OSC commands
-				self.playbacks[pbId].value = pbNewLevel
-				self.setTrackedVariables({
-					['pb' + pbId]: pbNewLevel,
-				})
-				self.checkFeedbacks('pb')
+				// also keeps the level locally, since magicQ does not send feedback for OSC commands
+				self.setPlaybackLevel(pbId, pbNewLevel)
 			},
 		},
 
@@ -162,11 +145,7 @@ export default function UpdateActions(self) {
 				self.sendOSC('/pb/' + pbId + '/flash', arg)
 				// set the value in the playbacks array since magicQ does not send feedback for OSC commands
 				// store the resolved value, not the dropdown id, so toggle and the feedback agree
-				self.playbacks[pbId].flash = flashVal
-				self.setTrackedVariables({
-					['pb' + pbId + '_flash']: flashVal,
-				})
-				self.checkFeedbacks('pbFlash')
+				self.setPlaybackFlash(pbId, flashVal)
 			},
 		},
 
@@ -278,6 +257,7 @@ export default function UpdateActions(self) {
 				// magicQ does not send feedback for OSC commands, so track the
 				// resolved state here for the next toggle
 				self.dbo = dboVal
+				self.refreshKnobValues()
 			},
 		},
 
@@ -306,6 +286,8 @@ export default function UpdateActions(self) {
 					value: swapVal,
 				}
 				self.sendOSC('/swap', arg)
+				self.swapMode = swapVal
+				self.refreshKnobValues()
 			},
 		},
 
@@ -508,5 +490,7 @@ export default function UpdateActions(self) {
 				self.sendOSC('/rpc', arg)
 			},
 		},
+
+		...getKnobActions(self),
 	})
 }
