@@ -195,3 +195,57 @@ Console
        OSC commands / control
                  UDP 7001
 ```
+
+
+---
+
+## Knob & D200X additions (companion-tools version)
+
+This copy adds an encoder-friendly layer on top of the module above. Everything above still works.
+
+**Fixes compared with v0.9.1:**
+- **Port defaults** now match this guide: Companion listens on 7000 and sends to 7001.
+- **Toggles and knob steps** use the value Companion just sent. They now work with *Suppress OSC Retransmit* on, and every click of a fast turn counts.
+- **Relative changes** are clamped to the parameter's range.
+- **A new cross-fade** on the same control stops the old one.
+- **Connection status:**
+  - it shows *Connecting* until the console actually replies
+  - Companion asks the console for its name every 5 s
+  - no reply for 15 s means *Disconnected*
+  - when the console comes back, everything is re-read
+- **Queries** wait 400 ms (it was 150 ms) and retry once.
+
+**New actions** (named `[Knob]`, `[Strip]` and `[Selected]`):
+- **[Knob] Fader step:** Input, Aux, Group, Matrix or Control Group. Step size runs from 1 to 10 dB per click: 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 10. Turning up from −∞ starts at −60 dB.
+- **[Knob] Input → aux send step**
+- **[Strip] Mute / Input solo:** Toggle, On or Off. For a momentary mute, use On on press and Off on release.
+- **[Selected]:**
+  - pick a channel and an aux with keys, or turn a knob to step through them
+  - then the fader knob, send-to-aux knob and mute act on that channel
+
+**New feedbacks:**
+- Muted, Soloed, Selected
+- Current snapshot is N
+- Console connected
+
+**New variables:**
+- `snap_current_num`, `snap_current_name`, `snap_next_name`, `snap_prev_name`
+- `sel_name`, `sel_label`, `sel_level`, `sel_mute`, `sel_aux_name`, `sel_send_level`
+- `input_N_name` / `input_N_level`, and the same for `aux_`, `group_`, `matrix_` and `cg_`
+- `connected`, `console_name`
+
+**Presets:**
+- **Snapshots (D200X):** ◀ prev, current (name), next ▶, undo
+- **Selected channel strip:** knobs for fader (push = mute), send to aux, choose channel, choose aux
+- **Inputs:** mute and select keys
+- **Control Groups:** mute keys, and fader knobs (push = mute)
+
+**Talkback and mute groups:** the console doesn't offer these over this protocol. Instead:
+1. Build a console **macro** that does it.
+2. Assign the macro to an **OSC macro button** in the Macro Editor.
+3. Use the module's *Macros / Buttons / press* action on a key.
+
+**Not yet tested on a real SD9.** Please report:
+- whether the console echoes changes back to Companion
+- whether faders and mutes moved on the desk show up in Companion
+- whether macro numbers are off by one

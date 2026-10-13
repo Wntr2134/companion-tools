@@ -1,5 +1,6 @@
 import type ModuleInstance from './main.js'
 import { entityRoots } from './entityRecords.js'
+import { getKnobVariableDefinitions } from './knobs.js'
 
 export const PARAMETER_MAXIMUMS = {
 	input_channels: 'Input Channels',
@@ -27,5 +28,6 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	for (const [key, label] of Object.entries(MODULE_VARIABLES) as Array<[ModuleVariableKey, string]>) {
 		definitions[key] = { name: label }
 	}
-	self.setVariableDefinitions(definitions)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	self.setVariableDefinitions({ ...definitions, ...getKnobVariableDefinitions(self) } as any)
 }

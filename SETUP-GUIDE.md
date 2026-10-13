@@ -7,6 +7,8 @@ You will set up:
 - **Part B:** Panasonic PTZ (AW-HE40): knob pan/tilt/zoom/focus and hold-to-save presets
 - **Part C:** UAD Console (Apollo): mutes, faders, monitor
 
+- **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
+
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
 ---
@@ -219,6 +221,39 @@ If you have more than one camera: in Companion, **Connections** → click the Pa
 - **Meters:** in the connection's settings, **Level meters** = *Selected channel only* (default) or *Every channel in use*. The fader knob preset shows a bar like `████░░░░`.
 
 The module keeps itself up to date on its own: renamed channels, Apollos plugged in or unplugged, sample-rate changes.
+
+---
+
+## Part D: DiGiCo SD9
+
+### D.1 On the console
+1. **Master screen → Setup → External Control.** Set **Enable External Control** to **Yes**.
+2. **Add Device → DiGiCo Pad.**
+   - **IP:** your Mac's IP address. On the Mac: System Settings → Network.
+   - **Send:** `7000`
+   - **Rcv:** `7001`
+   - **Enabled:** ticked
+3. Load the command set **`iPadv2sd8-9-11-12`**. Without it, the console ignores Companion.
+4. Set **Suppress OSC Retransmit** to **On**. This version of the module works either way.
+5. Only **one** DiGiCo Pad connection works at a time. If you also use the DiGiCo iPad app, see "iPad relay" in the module's help.
+
+### D.2 In Companion
+1. **Connections → + Add connection** → search **DiGiCo** → **digico-osc** → choose the **dev** version.
+2. **Mixer IP:** the console's IP. Leave the ports on their defaults: Companion listens on 7000 and sends to 7001. Save.
+
+✅ The status goes from *Connecting* to **OK** within a few seconds. If it stays on Connecting, the console isn't answering: check the IP, the ports, and that the command set is loaded.
+
+### D.3 Put it on the D200X
+**Buttons → Presets → digico-osc:**
+- **Snapshots (D200X):** ◀ prev / current (shows the name) / next ▶ / undo
+- **Selected channel strip:**
+  - *fader knob* (push = mute) on knob 1
+  - *send to aux knob* on knob 2
+  - *choose channel knob* on knob 3
+- **Inputs:** *select* keys pick the channel for the strip; *mute* keys mute directly.
+- **Control Groups:** a mute key, plus a fader knob (push = mute).
+
+Step size works like the other modules: **1** = tiny, **2** = default, **10** = big.
 
 ---
 

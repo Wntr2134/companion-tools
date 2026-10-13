@@ -1,6 +1,6 @@
 {
 	"name": "digico",
-	"version": "0.9.1",
+	"version": "2.0.0",
 	"main": "dist/main.js",
 	"type": "module",
 	"scripts": {
@@ -12,7 +12,8 @@
 		"build:main": "tsc6 -p tsconfig.build.json",
 		"dev": "tsc6 -p tsconfig.build.json --watch",
 		"lint:raw": "eslint",
-		"lint": "run lint:raw ."
+		"lint": "run lint:raw .",
+		"test": "run build && node --test test/knobs.test.mjs"
 	},
 	"license": "MIT",
 	"repository": {
@@ -20,7 +21,7 @@
 		"url": "git+https://github.com/bitfocus/companion-module-your-module-name.git"
 	},
 	"engines": {
-		"node": "^26.00",
+		"node": "^22.20 || ^26",
 		"yarn": "^4"
 	},
 	"dependencies": {
