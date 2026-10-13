@@ -22,6 +22,31 @@ Every channel gets its own preset category:
 - **Solo (toggle)**: inputs only.
 - **Monitor**: level knob (push = mute) and Dim.
 
+### Talkback
+Presets → **Talkback**:
+- **Talkback (hold to talk)**: press and hold to talk.
+- **Talkback (press on / press off)**: latches.
+
+The key turns orange while talkback is on. The module works out how your Console version switches talkback: a talkback switch on the device or monitor if there is one, otherwise un-muting the TALKBACK channel. The `talkback_method` variable shows which it picked. If TALK doesn't do the right thing, run `node tools/mac-kit/ua-probe.mjs --watch`, click TALK in Console, and send the output.
+
+### Cue strip (selected channel)
+A cuefinger-style headphone-mix page for the D200X. You pick a **channel** and a **cue/aux**, and the knobs work on that pair.
+- **Presets → Cue strip (selected channel): channel buttons**: one key per channel in use. The key turns blue when that channel is selected.
+- **Presets → Cue strip (selected channel)**:
+  - **Select AUX/CUE** keys
+  - **Knob: selected channel → selected cue level**
+  - **Knob: selected channel fader**: shows a meter bar
+  - **Knob: choose channel**: turn to step through channels
+  - **Mute selected channel in selected cue**
+
+Variables: `sel_name`, `sel_level`, `sel_send_name`, `sel_send_level`, `sel_send_mute`, `sel_meter`, `sel_meterbar`.
+
+### Meters
+Connection setting **Level meters**:
+- **Off**
+- **Selected channel only** (default)
+- **Every channel in use**: adds `in_N_meter` and `in_N_meterbar` variables. It's more network traffic; button updates are capped at 10 per second.
+
 ### Actions
 | Action | Notes |
 |---|---|

@@ -262,6 +262,29 @@ const sizeOption = {
 	tooltip: 'How far one knob click moves. 1 = tiny steps for smooth continuous turning, 10 = big jumps.',
 }
 
+// ---------- selected camera ----------
+// Several cameras can share the same knobs: each knob action is put on the button once per
+// camera, with "Only when this camera is selected" ticked. A Companion custom variable
+// (default $(custom:ptz_cam)) holds the selected camera number; each connection has its own
+// number in its settings.
+
+export const DEFAULT_SELECT_VARIABLE = '$(custom:ptz_cam)'
+
+export async function isSelectedCamera(self, context) {
+	const parse = context?.parseVariablesInString ?? self.parseVariablesInString?.bind(self)
+	if (!parse) return true
+	const value = String(await parse(self.config.selectVariable || DEFAULT_SELECT_VARIABLE)).trim()
+	return value === String(self.config.cameraNumber ?? 1).trim()
+}
+
+const onlySelectedOption = {
+	type: 'checkbox',
+	id: 'onlyIfSelected',
+	label: 'Only when this camera is selected',
+	default: false,
+	tooltip: 'Tick this to share one knob between several cameras. See "Selected camera" in the help.',
+}
+
 export function getStepActionDefinitions(self) {
 	const steps = () => self.steps
 	const lensUnits = (options) =>
@@ -285,8 +308,10 @@ export function getStepActionDefinitions(self) {
 					],
 				},
 				sizeOption,
+				onlySelectedOption,
 			],
-			callback: async (action) => {
+			callback: async (action, context) => {
+				if (action.options.onlyIfSelected && !(await isSelectedCamera(self, context))) return
 				const n = PAN_TILT_STEP_UNITS[stepLevel(action.options) - 1]
 				const d = action.options.direction
 				steps().stepPanTilt(d === 'right' ? n : d === 'left' ? -n : 0, d === 'up' ? n : d === 'down' ? -n : 0)
@@ -319,8 +344,10 @@ export function getStepActionDefinitions(self) {
 					],
 					tooltip: 'Use "Camera web step" only if exact position does not work on your camera. Step size does not apply to it.',
 				},
+				onlySelectedOption,
 			],
-			callback: async (action) => {
+			callback: async (action, context) => {
+				if (action.options.onlyIfSelected && !(await isSelectedCamera(self, context))) return
 				const sign = action.options.direction === 'out' ? -1 : 1
 				if (action.options.method === 'web') {
 					await self.transport.get(`${baseUrl(self)}/cgi-bin/directctrl?zoom=${sign}`)
@@ -351,8 +378,10 @@ export function getStepActionDefinitions(self) {
 					label: 'Switch camera to manual focus first',
 					default: true,
 				},
+				onlySelectedOption,
 			],
-			callback: async (action) => {
+			callback: async (action, context) => {
+				if (action.options.onlyIfSelected && !(await isSelectedCamera(self, context))) return
 				if (action.options.manual && self.data.oaf !== 'Manual') {
 					await self.transport.get(`${baseUrl(self)}/cgi-bin/aw_ptz?cmd=%23D10&res=1`)
 					self.data.oaf = 'Manual'
@@ -377,8 +406,10 @@ export function getStepActionDefinitions(self) {
 					],
 				},
 				{ type: 'number', id: 'percent', label: 'Position (%)', default: 0, min: 0, max: 100, step: 0.1 },
+				onlySelectedOption,
 			],
-			callback: async (action) => {
+			callback: async (action, context) => {
+				if (action.options.onlyIfSelected && !(await isSelectedCamera(self, context))) return
 				await steps().setLens(action.options.axis, percentToLens(Number(action.options.percent)))
 			},
 		},

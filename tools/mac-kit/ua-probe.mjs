@@ -5,6 +5,7 @@
 //   node ua-probe.mjs                     read-only: list devices, inputs, mute + fader state
 //   node ua-probe.mjs --dump /devices/0/inputs/0      print the raw JSON for any path
 //   node ua-probe.mjs --test-mute 0 0     toggle mute on device 0 input 0, then put it back
+//   node ua-probe.mjs --watch             print every change while you click things in Console (e.g. TALK)
 //   node ua-probe.mjs --host 192.168.1.20 ...         talk to another Mac on the network
 
 import net from 'node:net'
@@ -85,6 +86,55 @@ async function finish(code = 0) {
 	clearInterval(keepAlive)
 	sock.end()
 	process.exit(code)
+}
+
+if (opt('--watch')) {
+	// Subscribe to every property on each device, its monitor output and talkback channel,
+	// then print each change. Click TALK / DIM / etc. in Console to see what they change.
+	const root = await get('/devices')
+	const watched = []
+	for (const d of children(root)) {
+		const paths = [`/devices/${d}`]
+		const outs = await get(`/devices/${d}/outputs`)
+		for (const o of children(outs)) {
+			const om = await get(`/devices/${d}/outputs/${o}`)
+			if (om?.data?.properties?.CRMonitorLevel) paths.push(`/devices/${d}/outputs/${o}`)
+		}
+		const ins = await get(`/devices/${d}/inputs`)
+		for (const i of children(ins)) {
+			const im = await get(`/devices/${d}/inputs/${i}`)
+			const n = im?.data?.properties?.Name
+			if (/talk/i.test(`${n?.value ?? ''} ${n?.default ?? ''}`)) paths.push(`/devices/${d}/inputs/${i}`)
+		}
+		for (const p of paths) {
+			const m = await get(p)
+			for (const k of Object.keys(m?.data?.properties ?? {})) {
+				send(`subscribe ${p}/${k}`)
+				watched.push(`${p}/${k}`)
+			}
+		}
+	}
+	console.log(`Watching ${watched.length} values. Click TALK, DIM, MUTE etc. in UAD Console now. Ctrl+C to stop.\n`)
+	const seen = new Map()
+	sock.removeAllListeners('data') // from here on, print changes instead of answering get()s
+	let wbuf = Buffer.alloc(0)
+	sock.on('data', (chunk) => {
+		wbuf = Buffer.concat([wbuf, chunk])
+		let nul
+		while ((nul = wbuf.indexOf(0)) !== -1) {
+			const text = wbuf.subarray(0, nul).toString('utf8')
+			wbuf = wbuf.subarray(nul + 1)
+			try {
+				const m = JSON.parse(text)
+				const v = JSON.stringify(m.data?.properties?.value?.value ?? m.data)
+				const p = String(m.path).replace(/\/value$/, '')
+				if (/Meter/.test(p)) continue
+				if (seen.has(p) && seen.get(p) !== v) console.log(`${new Date().toLocaleTimeString()}  ${p}  ${seen.get(p)} -> ${v}`)
+				seen.set(p, v)
+			} catch {}
+		}
+	})
+	await new Promise(() => {})
 }
 
 const dump = opt('--dump')

@@ -210,3 +210,12 @@ Presets → **Save/Recall button** → *Preset N: press = recall, hold 5 s = sav
 - **Short press:** recall preset N. The button turns green while it's the last preset recalled from Companion.
 - **Hold 5 seconds:** save the camera's current position as preset N. It saves while you're still holding, the button flashes **SAVED**, and letting go doesn't also recall.
 - **Hold again** any time to overwrite it.
+
+## Selected camera: one set of knobs for several cameras
+
+1. **Variables** page → add a **custom variable** called `ptz_cam` with value `1`.
+2. On each Panasonic connection, set **Camera number** (1, 2, 3…) in its settings.
+3. Make camera select keys. Action: **internal → Custom variable: Set value**, `ptz_cam` = 1 (or 2, 3…). For the highlight, add the Panasonic feedback **Camera - This camera is the selected one** from that camera's connection.
+4. For each knob, drag **Presets → Knobs (selected camera)** from camera 1's connection. Then, in the button, add the same knob actions from camera 2's connection (and camera 3's…), with **Only when this camera is selected** ticked.
+
+Turning a knob then only moves the selected camera.

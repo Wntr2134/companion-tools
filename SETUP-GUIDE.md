@@ -172,6 +172,13 @@ How the D200X maps onto Companion's grid:
    3. Later, **tap the key** to go back there. It turns green as the last preset recalled.
    4. Hold it for 5 seconds again any time to overwrite it.
 
+### B.4 One set of knobs for several cameras (optional)
+If you have more than one camera: in Companion, **Connections** → click the Panasonic connection → **Help** (the ? icon), section **Selected camera**. In short:
+1. Give each camera a **Camera number** in its connection settings.
+2. Make a custom variable `ptz_cam`.
+3. Make "Cam 1 / Cam 2" keys that set it.
+4. Use the **Knobs (selected camera)** presets.
+
 ---
 
 ## Part C: UAD Console (Apollo)
@@ -200,6 +207,16 @@ How the D200X maps onto Companion's grid:
 3. Under the **Monitor** category:
    - **Monitor level knob**: turn = volume, push = mute.
    - **Dim**
+
+### C.4 Talkback, cue mixes and meters
+- **Talkback:** **Presets → UAD Console → Talkback** → *Talkback (hold to talk)*. Hold the key to talk; it turns orange while talking.
+  - If it doesn't switch talkback, run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs --watch`, click **TALK** in Console, and send the output.
+- **Cue mix page** (a performer's headphone mix on the D200X):
+  1. Drag the **Cue strip (selected channel): channel buttons** onto the keys: one per instrument.
+  2. Drag **Select CUE 1** (2, 3…) onto keys.
+  3. Drag **Knob: selected channel → selected cue level** onto a TURN button, and optionally **Knob: selected channel fader**.
+  4. To use it: tap an instrument key, tap the cue, turn the knob.
+- **Meters:** in the connection's settings, **Level meters** = *Selected channel only* (default) or *Every channel in use*. The fader knob preset shows a bar like `████░░░░`.
 
 The module keeps itself up to date on its own: renamed channels, Apollos plugged in or unplugged, sample-rate changes.
 

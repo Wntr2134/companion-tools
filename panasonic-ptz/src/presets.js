@@ -2042,10 +2042,11 @@ export function getPresetDefinitions(self) {
 	// ##############################
 	// Rotary buttons: turn = one fixed step per click. Push = the action shown.
 	const label = self.label || 'Panasonic-PTZ'
+	let knobCategory = 'Knobs'
 	const knob = (id, name, text, left, right, push) => {
 		presets[id] = {
 			type: 'button',
-			category: 'Knobs',
+			category: knobCategory,
 			name,
 			options: { rotaryActions: true },
 			style: {
@@ -2097,6 +2098,43 @@ export function getPresetDefinitions(self) {
 			`FOCUS\\n$(${label}:focusPosition)%`,
 			{ actionId: 'knobFocusStep', options: { direction: 'near', size: 2, manual: true } },
 			{ actionId: 'knobFocusStep', options: { direction: 'far', size: 2, manual: true } }
+		)
+	}
+
+	// Same knobs, but they only move this camera while it is the selected one.
+	knobCategory = 'Knobs (selected camera)'
+	if (seriesActions.panTilt) {
+		knob(
+			'knob-sel-pan',
+			'Pan knob',
+			`PAN\\n$(${label}:panPosition)`,
+			{ actionId: 'knobPanTiltStep', options: { onlyIfSelected: true, direction: 'left', size: 2 } },
+			{ actionId: 'knobPanTiltStep', options: { onlyIfSelected: true, direction: 'right', size: 2 } }
+		)
+		knob(
+			'knob-sel-tilt',
+			'Tilt knob',
+			`TILT\\n$(${label}:tiltPosition)`,
+			{ actionId: 'knobPanTiltStep', options: { onlyIfSelected: true, direction: 'down', size: 2 } },
+			{ actionId: 'knobPanTiltStep', options: { onlyIfSelected: true, direction: 'up', size: 2 } }
+		)
+	}
+	if (seriesActions.zoom) {
+		knob(
+			'knob-sel-zoom',
+			'Zoom knob',
+			`ZOOM\\n$(${label}:zoomPosition)%`,
+			{ actionId: 'knobZoomStep', options: { onlyIfSelected: true, direction: 'out', size: 2, method: 'position' } },
+			{ actionId: 'knobZoomStep', options: { onlyIfSelected: true, direction: 'in', size: 2, method: 'position' } }
+		)
+	}
+	if (seriesActions.focus) {
+		knob(
+			'knob-sel-focus',
+			'Focus knob',
+			`FOCUS\\n$(${label}:focusPosition)%`,
+			{ actionId: 'knobFocusStep', options: { onlyIfSelected: true, direction: 'near', size: 2, manual: true } },
+			{ actionId: 'knobFocusStep', options: { onlyIfSelected: true, direction: 'far', size: 2, manual: true } }
 		)
 	}
 
