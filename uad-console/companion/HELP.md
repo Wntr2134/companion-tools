@@ -7,7 +7,12 @@ UA doesn't document this protocol. It was worked out from UA-Midi-Control and cu
 ### Setup
 - UAD Console must have been opened at least once since boot. Mixer Engine keeps running after you close the window.
 - **Host:** `127.0.0.1` if Companion runs on the same Mac as the Apollo. Otherwise use that Mac's IP; Mixer Engine also accepts network connections.
-- Channel names are read when the module connects. Use **Advanced - Re-read channels** after renaming channels in Console.
+- The module reads **whatever Apollos the Mac has** when it connects, and keeps the lists up to date by itself:
+  - channel renamed in Console: updated straight away
+  - Apollo connected or disconnected: everything re-read
+  - channel count changed (e.g. ADAT channels at a higher sample rate): picked up within 20 s
+  - **Advanced - Re-read channels** forces a re-read if you ever need it.
+- Buttons store a device number + channel number. On a different Mac or interface, check each button's channel dropdown.
 
 ### Presets (easiest way to start)
 Every channel gets its own preset category:

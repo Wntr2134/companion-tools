@@ -1623,12 +1623,13 @@ export function getPresetDefinitions(self) {
 
 	if (seriesActions.preset) {
 		for (let save = 0; save < 100; save++) {
+			const nr = save.toString(10).padStart(2, '0').slice(-2)
 			presets[`save-recall-presets-${save}`] = {
 				type: 'button',
 				category: 'Save/Recall button',
-				name: 'Save Recall Preset ' + parseInt(save + 1),
+				name: `Preset ${save + 1}: press = recall, hold 5 s = save`,
 				style: {
-					text: 'Recall\n' + parseInt(save + 1),
+					text: 'PRESET\\n' + parseInt(save + 1),
 					textExpression: false,
 					size: 'auto',
 					color: 16777215,
@@ -1637,22 +1638,18 @@ export function getPresetDefinitions(self) {
 				steps: [
 					{
 						down: [],
-						up: [
-							{
-								actionId: 'recallPset',
-								options: {
-									val: save.toString(10).padStart(2, '0').slice(-2),
-								},
-							},
-						],
-						2000: [
-							{
-								actionId: 'savePset',
-								options: {
-									val: save.toString(10).padStart(2, '0').slice(-2),
-								},
-							},
-						],
+						// Short press: recall
+						up: [{ actionId: 'recallPset', options: { val: nr } }],
+						// Held for 5 s: save the current camera position (fires while still held)
+						5000: { options: { runWhileHeld: true }, actions: [{ actionId: 'savePset', options: { val: nr } }] },
+					},
+				],
+				feedbacks: [
+					{ feedbackId: 'presetActive', options: { val: nr }, style: { bgcolor: combineRgb(0, 120, 0), color: 16777215 } },
+					{
+						feedbackId: 'presetSaved',
+						options: { val: nr },
+						style: { bgcolor: combineRgb(200, 0, 0), color: 16777215, text: 'SAVED\\n' + parseInt(save + 1) },
 					},
 				],
 			}

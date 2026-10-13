@@ -1182,6 +1182,14 @@ export function getActionDefinitions(self) {
 			],
 			callback: async (action) => {
 				await sendPTZ(self, 'M' + action.options.val)
+				// Flash "SAVED" on buttons showing this preset for a couple of seconds
+				self.presetSaved = { val: action.options.val, at: Date.now() }
+				self.checkFeedbacks('presetSaved')
+				clearTimeout(self.presetSavedTimer)
+				self.presetSavedTimer = setTimeout(() => {
+					self.presetSaved = null
+					self.checkFeedbacks('presetSaved')
+				}, 2500)
 			},
 		}
 	}
@@ -1199,6 +1207,8 @@ export function getActionDefinitions(self) {
 			],
 			callback: async (action) => {
 				await sendPTZ(self, 'R' + action.options.val)
+				self.presetRecalled = action.options.val
+				self.checkFeedbacks('presetActive')
 			},
 		}
 	}
