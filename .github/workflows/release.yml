@@ -32,6 +32,9 @@ jobs:
           - dir: digico-sd
             install: npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps
             build: npx tsc6 -p tsconfig.build.json && npx companion-module-build
+          - dir: echo360-capture
+            install: npm install --ignore-scripts --no-audit --no-fund
+            build: npx companion-module-build
           - dir: show-health
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build

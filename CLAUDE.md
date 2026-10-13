@@ -7,6 +7,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console and Di
 - Panasonic module: run `node --test test/steps.test.mjs` in `panasonic-ptz/` before merging.
 - UAD module: run `node --test test/ua.test.mjs` in `uad-console/` before merging.
 - DiGiCo module: `npx tsc6 -p tsconfig.build.json && node --test test/knobs.test.mjs` in `digico-sd/`.
+- Echo360 module: `node --test test/echo.test.mjs` in `echo360-capture/`.
 - Show Health module: `node --test test/health.test.mjs` in `show-health/`.
 - Ulanzi plugin: `yarn build` (or `tsc --noEmit`) in `ulanzi-d200x/` must pass.
 - Plain Australian English in docs. No model names in commits or code.

@@ -1,0 +1,21 @@
+{
+	"id": "echo360-capture",
+	"name": "echo360-capture",
+	"shortname": "Echo360 Capture",
+	"description": "Start, pause, resume, extend and stop Echo360 lecture captures on a Pro, Pod or SafeCapture HD through the device's local Capture API, with recording state and timers on the buttons.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "Echo360",
+	"products": ["Echo360 Pro", "Echo360 Pod", "SafeCapture HD"],
+	"keywords": ["lecture capture", "recording", "echo360", "echovideo", "education"]
+}
