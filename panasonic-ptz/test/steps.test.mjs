@@ -194,3 +194,24 @@ test('upgrade converts old numeric step to the 1-10 size', async () => {
 	assert.deepEqual(res.updatedActions[0].options, { direction: 'left', size: 4 })
 	assert.deepEqual(res.updatedActions[1].options, { direction: 'in', size: 4, method: 'position' })
 })
+
+test('selected camera: knob only moves the camera whose number is selected', async () => {
+	const { getStepActionDefinitions } = await import('../src/steps.js')
+	cam.log = []
+	const self = makeSelf({ cameraNumber: 2, selectVariable: '$(custom:ptz_cam)' })
+	const defs = getStepActionDefinitions(self)
+	let selected = '1'
+	const context = { parseVariablesInString: async (t) => (t === '$(custom:ptz_cam)' ? selected : t) }
+	await defs.knobPanTiltStep.callback({ options: { direction: 'right', size: 2, onlyIfSelected: true } }, context)
+	await idle(self)
+	assert.equal(cam.log.filter((l) => l.cmd?.startsWith('#RPC')).length, 0, 'camera 2 ignores knob while camera 1 is selected')
+	selected = '2'
+	await defs.knobPanTiltStep.callback({ options: { direction: 'right', size: 2, onlyIfSelected: true } }, context)
+	await idle(self)
+	assert.equal(cam.log.filter((l) => l.cmd?.startsWith('#RPC')).length, 1)
+	// without the tick box it always moves
+	selected = '1'
+	await defs.knobPanTiltStep.callback({ options: { direction: 'right', size: 2 } }, context)
+	await idle(self)
+	assert.equal(cam.log.filter((l) => l.cmd?.startsWith('#RPC')).length, 2)
+})

@@ -4,7 +4,8 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
 import net from 'node:net'
-import { UAClient, normalisePath, extractValue } from '../src/ua-client.js'
+import { UAClient, normalisePath, extractValue, findTalkback } from '../src/ua-client.js'
+import { getExtraActions, getExtraVariableValues, getExtraFeedbacks, getExtraPresets, selection, meterBar } from '../src/extras.js'
 import { getActions, getFeedbacks, getVariableValues, getVariableDefinitions, getPresets, stepDb } from '../src/controls.js'
 
 const engine = { props: new Map(), sets: [], subs: new Set(), splitWrites: true, inputCount: 4 }
@@ -29,6 +30,7 @@ function resetEngine() {
 		P(`/devices/0/auxs/${i}/Mute`, false)
 		P(`/devices/0/auxs/${i}/FaderLevel`, 0)
 	}
+	P('/devices/0/TalkbackOn', false)
 	P('/devices/0/outputs/0/Mute', false)
 	P('/devices/0/outputs/0/CRMonitorLevel', -20)
 	P('/devices/0/outputs/0/DimOn', false)
@@ -40,8 +42,8 @@ function reply(path) {
 	const parts = path.split('/').filter(Boolean)
 	const kids = (o) => Object.fromEntries(o.map((k) => [k, {}]))
 	if (path === '/devices') return { path, data: { properties: { Type: { type: 'string', value: 'container' } }, children: kids(['0']) } }
-	if (parts.length === 2) return { path, data: { properties: { DeviceName: { value: 'Apollo Twin X' }, DeviceOnline: { value: true } }, children: kids(['inputs', 'auxs', 'outputs']) } }
-	if (parts.length === 3) {
+	if (parts.length === 2) return { path, data: { properties: { DeviceName: { value: 'Apollo Twin X' }, DeviceOnline: { value: true }, TalkbackOn: { value: engine.props.get('/devices/0/TalkbackOn') } }, children: kids(['inputs', 'auxs', 'outputs']) } }
+	if (parts.length === 3 && ['inputs', 'auxs', 'outputs'].includes(parts[2])) {
 		const ids = { inputs: Array.from({ length: engine.inputCount }, (_, i) => String(i)), auxs: ['0', '1'], outputs: ['0', '1'] }[parts[2]]
 		return { path, data: { properties: {}, children: kids(ids) } }
 	}
@@ -85,6 +87,7 @@ before(async () => {
 	server = net.createServer((sock) => {
 		sockets.add(sock)
 		sock.on('close', () => sockets.delete(sock))
+		sock.on('error', () => sockets.delete(sock))
 		let buf = ''
 		sock.on('data', (d) => {
 			buf += d.toString()
@@ -265,5 +268,70 @@ test('device going offline/online triggers one rescan, not a loop', async () => 
 	for (const s of sockets) write(s, { path: '/devices/0/DeviceOnline/value', data: false })
 	await tick(1500)
 	assert.equal(scans, 1)
+	client.stop()
+})
+
+test('talkback detection prefers a real switch, falls back to the TALKBACK channel', () => {
+	assert.equal(findTalkback({ id: '0', propNames: ['DeviceName', 'TalkbackOn'], channels: [] }).path, '/devices/0/TalkbackOn')
+	const mon = { key: '0/outputs/18', group: 'outputs', propNames: ['Mute', 'CRMonitorLevel', 'TalkBack'] }
+	assert.equal(findTalkback({ id: '0', propNames: ['DeviceName'], channels: [mon] }).path, '/devices/0/outputs/18/TalkBack')
+	const tb = findTalkback({ id: '0', propNames: [], channels: [], talkbackChannel: '0/inputs/22' })
+	assert.deepEqual([tb.path, tb.invert], ['/devices/0/inputs/22/Mute', true])
+	assert.equal(findTalkback({ id: '0', propNames: [], channels: [] }), null)
+})
+
+test('talkback hold: press talks, release stops', async () => {
+	const { client, self } = await connected()
+	self.config = {}
+	const x = getExtraActions(self)
+	await x.talkback.callback({ options: { device: 'all', mode: 'on' } })
+	await tick()
+	assert.equal(engine.props.get('/devices/0/TalkbackOn'), true)
+	assert.equal(getExtraFeedbacks(self).talkbackOn.callback({ options: { device: 'all' } }), true)
+	await x.talkback.callback({ options: { device: 'all', mode: 'off' } })
+	await tick()
+	assert.equal(engine.props.get('/devices/0/TalkbackOn'), false)
+	assert.match(getExtraVariableValues(self).talkback_method, /device TalkbackOn/)
+	client.stop()
+})
+
+test('cue strip: select channel + send, knob changes that send only', async () => {
+	const { client, self } = await connected()
+	self.config = {}
+	self.refreshAll = () => {}
+	const x = getExtraActions(self)
+	assert.equal(selection(self).channel, '0/inputs/0', 'defaults to first active input')
+	await x.selectChannelStep.callback({ options: { direction: 'up' } })
+	assert.equal(selection(self).channel, '0/inputs/1')
+	await x.selectChannelStep.callback({ options: { direction: 'up' } })
+	assert.equal(selection(self).channel, '0/inputs/3', 'skips the unused channel')
+	await x.selectSend.callback({ options: { send: '1' } })
+	for (let i = 0; i < 3; i++) await x.selectedSendStep.callback({ options: { direction: 'up', size: 2 } })
+	await tick(60)
+	assert.equal(engine.props.get('/devices/0/inputs/3/sends/1/Gain'), -59)
+	assert.equal(engine.props.get('/devices/0/inputs/3/sends/0/Gain'), -144)
+	const vals = getExtraVariableValues(self)
+	assert.equal(vals.sel_name, 'Vox')
+	assert.equal(vals.sel_send_name, 'CUE 1')
+	assert.equal(vals.sel_send_level, '-59.0')
+	await x.selectedMute.callback({ options: { what: 'send' } })
+	await tick()
+	assert.equal(engine.props.get('/devices/0/inputs/3/sends/1/Bypass'), true)
+	assert.ok(Object.keys(getExtraPresets(self)).includes('sel_send_knob'))
+	client.stop()
+})
+
+test('meters: selected channel subscribed, bar drawn', async () => {
+	const { client, self } = await connected()
+	self.config = { meters: 'selected' }
+	self.refreshAll = () => {}
+	await getExtraActions(self).selectChannel.callback({ options: { channel: '0/inputs/0' } })
+	await tick(60)
+	assert.ok(engine.subs.has('/devices/0/inputs/0/meters/0/MeterLevel'))
+	for (const s of sockets) write(s, { path: '/devices/0/inputs/0/meters/0/MeterLevel/value', data: -30 })
+	await tick(60)
+	assert.equal(getExtraVariableValues(self).sel_meter, '-30.0')
+	assert.equal(getExtraVariableValues(self).sel_meterbar, '████░░░░')
+	assert.equal(meterBar(-100), '░░░░░░░░')
 	client.stop()
 })

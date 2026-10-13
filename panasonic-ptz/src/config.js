@@ -12,6 +12,8 @@ export function applyConfigDefaults(config) {
 		debug: config.debug ?? false,
 		commandInterval: config.commandInterval ?? DEFAULT_COMMAND_INTERVAL,
 		positionPoll: config.positionPoll ?? 3,
+		cameraNumber: config.cameraNumber ?? 1,
+		selectVariable: config.selectVariable ?? '$(custom:ptz_cam)',
 	}
 }
 
@@ -142,6 +144,23 @@ export const ConfigFields = [
 		default: 3,
 		min: 0,
 		max: 60,
+	},
+	{
+		type: 'number',
+		id: 'cameraNumber',
+		label: 'Camera number (for shared "selected camera" knobs)',
+		width: 4,
+		default: 1,
+		min: 1,
+		max: 99,
+	},
+	{
+		type: 'textinput',
+		id: 'selectVariable',
+		label: 'Variable holding the selected camera number',
+		width: 4,
+		default: '$(custom:ptz_cam)',
+		tooltip: 'Create a custom variable called ptz_cam (Variables page), and buttons that set it to 1, 2, 3…',
 	},
 	{
 		type: 'static-text',

@@ -1,0 +1,47 @@
+name: test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  panasonic-ptz:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: panasonic-ptz
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund --legacy-peer-deps @companion-module/base@1.4.3 got@12
+      - run: node --test test/steps.test.mjs
+
+  uad-console:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: uad-console
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund
+      - run: node --test test/ua.test.mjs
+
+  ulanzi-d200x:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ulanzi-d200x
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: yarn install
+      - run: yarn build

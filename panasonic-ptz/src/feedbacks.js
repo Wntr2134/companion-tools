@@ -1,5 +1,6 @@
 import { combineRgb } from '@companion-module/base'
 import { getAndUpdateSeries } from './common.js'
+import { isSelectedCamera } from './steps.js'
 
 // ##########################
 // #### Define Feedbacks ####
@@ -493,6 +494,15 @@ export function getFeedbackDefinitions(self) {
 			options: [presetChoice],
 			callback: (fb) => self.presetRecalled === fb.options.val,
 		}
+	}
+
+	feedbacks.cameraSelected = {
+		type: 'boolean',
+		name: 'Camera - This camera is the selected one',
+		description: 'True when the selected-camera variable equals this connection\'s camera number.',
+		defaultStyle: { bgcolor: combineRgb(0, 90, 200), color: foregroundColor },
+		options: [],
+		callback: async (_fb, context) => isSelectedCamera(self, context),
 	}
 
 	return feedbacks

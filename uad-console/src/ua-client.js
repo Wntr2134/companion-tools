@@ -52,6 +52,27 @@ export function formatValue(value) {
 	return String(value)
 }
 
+export const keyPath = (key) => {
+	const [dev, group, id] = String(key).split('/')
+	return `/devices/${dev}/${group}/${id}`
+}
+
+/**
+ * Find how this Console version switches talkback on. UA doesn't document it, so look for
+ * a talkback switch on the device, then on the monitor output, and otherwise fall back to
+ * un-muting the TALKBACK input channel.
+ */
+export function findTalkback(device) {
+	const prop = (names) => names?.find((n) => /^talk\s*back(on|active|enabled)?$/i.test(n) || /^talkbackon$/i.test(n))
+	const devProp = prop(device.propNames)
+	if (devProp) return { path: `/devices/${device.id}/${devProp}`, invert: false, how: `device ${devProp}` }
+	const mon = device.channels.find((c) => c.group === 'outputs')
+	const monProp = mon && prop(mon.propNames)
+	if (monProp) return { path: `${keyPath(mon.key)}/${monProp}`, invert: false, how: `monitor ${monProp}` }
+	if (device.talkbackChannel) return { path: `${keyPath(device.talkbackChannel)}/Mute`, invert: true, how: 'TALKBACK channel mute' }
+	return null
+}
+
 export class UAClient extends EventEmitter {
 	#socket = null
 	#buffer = Buffer.alloc(0)
@@ -275,6 +296,30 @@ export class UAClient extends EventEmitter {
 		this.send(`subscribe ${normalisePath(path)}`)
 	}
 
+	unsubscribe(path) {
+		this.send(`unsubscribe ${normalisePath(path)}`)
+	}
+
+	#meterKeys = new Set()
+
+	/** Subscribe to the level meters of these channel keys ("0/inputs/3") only. Meters are chatty. */
+	setMeterChannels(keys) {
+		const next = new Set(keys)
+		for (const key of this.#meterKeys) {
+			if (!next.has(key)) for (const side of [0, 1]) this.unsubscribe(`${keyPath(key)}/meters/${side}/MeterLevel`)
+		}
+		for (const key of next) {
+			if (!this.#meterKeys.has(key)) for (const side of [0, 1]) this.subscribe(`${keyPath(key)}/meters/${side}/MeterLevel`)
+		}
+		this.#meterKeys = next
+	}
+
+	#resubscribeMeters() {
+		const keys = [...this.#meterKeys]
+		this.#meterKeys = new Set()
+		this.setMeterChannels(keys)
+	}
+
 	/** Walk /devices and record every channel; subscribe to the properties we show. */
 	async discover() {
 		// Several triggers at once share one scan.
@@ -298,6 +343,8 @@ export class UAClient extends EventEmitter {
 				online: props.DeviceOnline?.value,
 				channels: [],
 				counts: {},
+				propNames: Object.keys(props),
+				talkback: null,
 			}
 			// Online state comes from the subscription only, so a rescan can't trigger another rescan.
 			this.subscribe(`/devices/${devId}/DeviceOnline`)
@@ -323,7 +370,11 @@ export class UAClient extends EventEmitter {
 						active: cp.Active?.value !== false && cp.ChannelHidden?.value !== true && !/^N\/A\b/.test(String(name)),
 					}
 
+					if (group === 'inputs' && /talk\s*back/i.test(`${cp.Name?.value ?? ''} ${cp.Name?.default ?? ''}`)) {
+						device.talkbackChannel = `${devId}/${group}/${chId}`
+					}
 					if (group === 'outputs' && !('CRMonitorLevel' in cp)) continue // only keep the monitor output
+					channel.propNames = Object.keys(cp)
 					if (cp.Name?.value !== undefined) this.#store(`${base}/Name`, cp.Name.value)
 					this.subscribe(`${base}/Name`)
 					for (const prop of CHANNEL_PROPS[group]) {
@@ -354,9 +405,15 @@ export class UAClient extends EventEmitter {
 					device.channels.push(channel)
 				}
 			}
+			device.talkback = findTalkback(device)
+			if (device.talkback) {
+				this.subscribe(device.talkback.path)
+				this.read(device.talkback.path).catch(() => null)
+			}
 			devices.push(device)
 		}
 		this.devices = devices
+		this.#resubscribeMeters()
 		this.emit('devices', devices)
 		return devices
 	}
