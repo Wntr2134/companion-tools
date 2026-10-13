@@ -9,8 +9,8 @@ You will set up:
 
 - **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
 - **Part E:** Show health page: green/red keys for every device, and alerts
-- **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
+- **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
