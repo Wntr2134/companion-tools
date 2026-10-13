@@ -1,0 +1,747 @@
+{
+  "version": 12,
+  "type": "page",
+  "page": {
+    "name": "D200X Layout",
+    "controls": {
+      "0": {
+        "0": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 0 col 0",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "1": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 0 col 1",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "2": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 0 col 2",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "3": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 0 col 3",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "4": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 0 col 4",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        }
+      },
+      "1": {
+        "0": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 1 col 0",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "1": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 1 col 1",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "2": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 1 col 2",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "3": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 1 col 3",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "4": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 1 col 4",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        }
+      },
+      "2": {
+        "0": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 2 col 0",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "1": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 2 col 1",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "2": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KEY\nrow 2 col 2",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2046559,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "3": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "WIDE KEY\nrow 2 col 3",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 3038782,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "4": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "(no key on\nD200X)",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 2105376,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        }
+      },
+      "3": {
+        "0": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "PAGE ◀\nhardware\n(auto)",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 5917210,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "1": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": true
+          },
+          "style": {
+            "text": "KNOB 1\n◀ TURN ▶",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 8003359,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": [],
+                "rotate_left": [],
+                "rotate_right": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "2": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": true
+          },
+          "style": {
+            "text": "KNOB 2\n◀ TURN ▶",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 8003359,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": [],
+                "rotate_left": [],
+                "rotate_right": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "3": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": true
+          },
+          "style": {
+            "text": "KNOB 3\n◀ TURN ▶",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 8003359,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": [],
+                "rotate_left": [],
+                "rotate_right": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "4": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "PAGE ▶\nhardware\n(auto)",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 5917210,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        }
+      },
+      "4": {
+        "1": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KNOB 1\nPUSH",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 4860522,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "2": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KNOB 2\nPUSH",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 4860522,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        },
+        "3": {
+          "type": "button",
+          "options": {
+            "stepProgression": "auto",
+            "rotaryActions": false
+          },
+          "style": {
+            "text": "KNOB 3\nPUSH",
+            "textExpression": false,
+            "size": "auto",
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 16777215,
+            "bgcolor": 4860522,
+            "show_topbar": false,
+            "png64": null
+          },
+          "feedbacks": [],
+          "localVariables": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "gridSize": {
+      "minColumn": 0,
+      "maxColumn": 4,
+      "minRow": 0,
+      "maxRow": 4
+    }
+  },
+  "instances": {},
+  "connectionCollections": [],
+  "oldPageNumber": 1
+}

@@ -1,0 +1,71 @@
+{
+	"id": "panasonic-ptz",
+	"name": "panasonic-ptz",
+	"shortname": "Panasonic-PTZ",
+	"description": "Companion module for Panasonic PTZ Cameras",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-panasonic-ptz.git",
+	"bugs": "https://github.com/bitfocus/companion-module-panasonic-ptz/issues",
+	"maintainers": [
+		{
+			"name": "Andreas H. Thomsen",
+			"email": "mc-hauge@hotmail.com"
+		},
+		{
+			"name": "Per Røine",
+			"email": "per.roine@gmail.com"
+		},
+		{
+			"name": "Joseph Adams",
+			"email": "josephdadams@gmail.com"
+		},
+		{
+			"name": "Cyprien Tonnelier",
+			"email": "2521106+cyprient@users.noreply.github.com"
+		}
+	],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node18",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/index.js"
+	},
+	"manufacturer": "Panasonic",
+	"products": [
+		"AW-HE2",
+		"AW-HE35",
+		"AW-HE38",
+		"AW-HE40",
+		"AW-HE42",
+		"AW-HE48",
+		"AW-HE50",
+		"AW-HE58",
+		"AW-HE60",
+		"AW-HE65",
+		"AW-HE68",
+		"AW-HE70",
+		"AW-HE75",
+		"AW-HE120",
+		"AW-HE130",
+		"AW HEF5",
+		"AW-HN38",
+		"AW-HN40",
+		"AW-HN65",
+		"AW-HN70",
+		"AW-HR140",
+		"AW-SFU01",
+		"AK-UB300",
+		"AW-UE4",
+		"AW-UE63",
+		"AW-UE65",
+		"AW-UE70",
+		"AW-UE100",
+		"AW-UE150",
+		"AW-UE155",
+		"AW-UN70",
+		"AW-UN145"
+	],
+	"keywords": ["ptz", "Camera"]
+}

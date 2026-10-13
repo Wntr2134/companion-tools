@@ -1,0 +1,27 @@
+{
+	"name": "panasonic-ptz",
+	"version": "2.6.1",
+	"main": "src/index.js",
+	"type": "module",
+	"scripts": {
+		"lint:raw": "eslint",
+		"lint": "yarn lint:raw .",
+		"format": "prettier -w .",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-panasonic-ptz.git"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.4.3",
+		"got": "^12.5.3"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.8.0",
+		"eslint": "^8.57.1",
+		"prettier": "^2.8.8"
+	},
+	"prettier": "@companion-module/tools/.prettierrc.json"
+}
