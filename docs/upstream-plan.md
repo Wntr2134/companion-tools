@@ -12,6 +12,19 @@ so Will clicks **Fork** on GitHub and a session does the rest.
 | Panasonic PTZ | [Wntr2134/companion-module-panasonic-ptz](https://github.com/Wntr2134/companion-module-panasonic-ptz) | `fix/live-speed-retries-tcp`, then `feature/knob-steps` |
 | MagicQ | [Wntr2134/companion-module-chamsys-magicq-osc](https://github.com/Wntr2134/companion-module-chamsys-magicq-osc) | `fix/regex-import`, then `feature/status-and-knobs` |
 
+**Open PRs (opened 13 Oct 2026):**
+- Ulanzi: [#25 control IDs](https://github.com/bitfocus/companion-surface-ulanzi-stream-controller/pull/25), [#26 keep-alive](https://github.com/bitfocus/companion-surface-ulanzi-stream-controller/pull/26)
+- Panasonic: [#121 fixes](https://github.com/bitfocus/companion-module-panasonic-ptz/pull/121)
+- DiGiCo: [#24 fixes](https://github.com/bitfocus/companion-module-digico-osc/pull/24), [#25 knob layer](https://github.com/bitfocus/companion-module-digico-osc/pull/25) (also carries #24's commit)
+- MagicQ: [#45 Regex import](https://github.com/bitfocus/companion-module-chamsys-magicq-osc/pull/45)
+
+Still to open once the fix above is merged: Ulanzi knob push, Panasonic knob steps, MagicQ status and knobs.
+
+Claude sessions can't read comments on these (Bitfocus repos are outside session access): paste
+reviewer comments into a session and it pushes changes to the fork branch, which updates the PR.
+To find PR numbers: `git ls-remote https://github.com/bitfocus/<repo> 'refs/pull/*/head'` and match
+the fork branch's commit.
+
 Feature branches are built on their fix branch, so open the feature PR after the fix is merged
 (or it shows both commits). Opening the PRs is done by Will: they go to Bitfocus under his name.
 
