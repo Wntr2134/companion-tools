@@ -1,0 +1,25 @@
+{
+	"records": {
+		"/Macros/Buttons/state/*": {
+			"responsePath": "/Macros/Buttons/state",
+			"fields": "index,state,name",
+			"queryPath": "/Macros/Buttons",
+			"countPath": "/Macros/Buttons/count",
+			"emptyChoicesLabel": "No OSC macro buttons found"
+		},
+		"/Macros/name": { "responsePath": "/Macros/name", "fields": "index,name" },
+		"/Presets/name": {
+			"responsePath": "/Presets/name",
+			"fields": "index,channelCount,unknown,section,group,name"
+		},
+		"/Snapshots/name": {
+			"responsePath": "/Snapshots/name",
+			"fields": "index,num/100/2,group,name"
+		},
+		"/Snapshots/notes": {
+			"responsePath": "/Snapshots/notes",
+			"fields": "index,_1,_2,_3,note"
+		}
+	},
+	"targetCounts": { "FX": 16 }
+}
