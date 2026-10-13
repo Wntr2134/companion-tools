@@ -1,0 +1,76 @@
+name: release
+
+# Builds an installable package of every module on each merge to main and
+# publishes them on the "latest" GitHub release. In Companion:
+# Modules -> Import module package -> pick the .tgz. No Node or Terminal needed.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dir: panasonic-ptz
+            install: npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps
+            build: npx companion-module-build
+          - dir: uad-console
+            install: npm install --ignore-scripts --no-audit --no-fund
+            build: npx companion-module-build
+          - dir: digico-sd
+            install: npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps
+            build: npx tsc6 -p tsconfig.build.json && npx companion-module-build
+          - dir: ulanzi-d200x
+            install: corepack enable && yarn install
+            build: yarn build && yarn companion-surface-build
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: ${{ matrix.install }}
+      - run: ${{ matrix.build }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.dir }}
+          path: ${{ matrix.dir }}/*.tgz
+          if-no-files-found: error
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-*
+          merge-multiple: true
+          path: packages
+      - name: Publish the "latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -l packages
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest packages/*.tgz \
+            --title "Latest build ($(date -u +%Y-%m-%d) ${GITHUB_SHA::7})" \
+            --notes "Installable Companion module packages, built from main at ${GITHUB_SHA::7}.
+
+          **Install:** Companion → **Modules** → **Import module package** → choose the .tgz. Then pick that version on the connection / surface integration.
+
+          See SETUP-GUIDE.md for the full walkthrough."

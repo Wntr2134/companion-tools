@@ -1,6 +1,8 @@
 # companion-tools
 
 > **New Mac, or setting up from scratch? Start with [SETUP-GUIDE.md](SETUP-GUIDE.md).** It's step-by-step for everything here.
+>
+> **Just want to install?** Download the ready-made `.tgz` packages from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), then in Companion go to **Modules → Import module package**. No Terminal needed.
 
 Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, and UAD Console control.
 

@@ -1,6 +1,6 @@
 {
 	"name": "uad-console",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
@@ -12,5 +12,8 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.14.1"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.8.0"
 	}
 }
