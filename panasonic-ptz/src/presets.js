@@ -2073,15 +2073,15 @@ export function getPresetDefinitions(self) {
 			'knob-pan',
 			'Pan knob',
 			`PAN\\n$(${label}:panPosition)`,
-			{ actionId: 'knobPanTiltStep', options: { direction: 'left', step: 1280 } },
-			{ actionId: 'knobPanTiltStep', options: { direction: 'right', step: 1280 } }
+			{ actionId: 'knobPanTiltStep', options: { direction: 'left', size: 2 } },
+			{ actionId: 'knobPanTiltStep', options: { direction: 'right', size: 2 } }
 		)
 		knob(
 			'knob-tilt',
 			'Tilt knob',
 			`TILT\\n$(${label}:tiltPosition)`,
-			{ actionId: 'knobPanTiltStep', options: { direction: 'down', step: 1280 } },
-			{ actionId: 'knobPanTiltStep', options: { direction: 'up', step: 1280 } }
+			{ actionId: 'knobPanTiltStep', options: { direction: 'down', size: 2 } },
+			{ actionId: 'knobPanTiltStep', options: { direction: 'up', size: 2 } }
 		)
 	}
 	if (seriesActions.zoom) {
@@ -2089,8 +2089,8 @@ export function getPresetDefinitions(self) {
 			'knob-zoom',
 			'Zoom knob',
 			`ZOOM\\n$(${label}:zoomPosition)%`,
-			{ actionId: 'knobZoomStep', options: { direction: 'out', step: 2, method: 'position' } },
-			{ actionId: 'knobZoomStep', options: { direction: 'in', step: 2, method: 'position' } }
+			{ actionId: 'knobZoomStep', options: { direction: 'out', size: 2, method: 'position' } },
+			{ actionId: 'knobZoomStep', options: { direction: 'in', size: 2, method: 'position' } }
 		)
 	}
 	if (seriesActions.focus) {
@@ -2098,8 +2098,8 @@ export function getPresetDefinitions(self) {
 			'knob-focus',
 			'Focus knob',
 			`FOCUS\\n$(${label}:focusPosition)%`,
-			{ actionId: 'knobFocusStep', options: { direction: 'near', step: 1, manual: true } },
-			{ actionId: 'knobFocusStep', options: { direction: 'far', step: 1, manual: true } }
+			{ actionId: 'knobFocusStep', options: { direction: 'near', size: 2, manual: true } },
+			{ actionId: 'knobFocusStep', options: { direction: 'far', size: 2, manual: true } }
 		)
 	}
 

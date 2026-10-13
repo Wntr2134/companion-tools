@@ -237,20 +237,35 @@ export class StepController {
 
 // ---------- action definitions ----------
 
-const lensStepOption = (def) => ({
-	type: 'number',
-	id: 'step',
-	label: 'Step size (% of full range per click)',
-	default: def,
-	min: 0.1,
-	max: 50,
-	step: 0.1,
-	tooltip: 'Each knob click moves this much. 1% ≈ 27 camera units.',
-})
+// Step size 1 (tiny, smooth when turned continuously) to 10 (huge). Default 2.
+export const STEP_SIZES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+export const DEFAULT_STEP_SIZE = 2
+// Pan/tilt: camera units per click (1280 = hex 0500).
+export const PAN_TILT_STEP_UNITS = [256, 640, 1024, 1280, 1920, 2560, 3584, 5120, 7168, 10240]
+// Zoom/focus: % of the full lens range per click.
+export const LENS_STEP_PERCENT = [0.4, 1, 1.5, 2, 3, 4, 6, 8, 12, 16]
+
+export function stepLevel(options) {
+	const n = Math.round(Number(options?.size))
+	return STEP_SIZES.includes(n) ? n : DEFAULT_STEP_SIZE
+}
+
+const sizeOption = {
+	type: 'dropdown',
+	id: 'size',
+	label: 'Step size',
+	default: DEFAULT_STEP_SIZE,
+	choices: STEP_SIZES.map((n) => ({
+		id: n,
+		label: n === 1 ? '1 (tiny, smoothest)' : n === DEFAULT_STEP_SIZE ? `${n} (default)` : n === 10 ? '10 (huge)' : String(n),
+	})),
+	tooltip: 'How far one knob click moves. 1 = tiny steps for smooth continuous turning, 10 = big jumps.',
+}
 
 export function getStepActionDefinitions(self) {
 	const steps = () => self.steps
-	const pctToUnits = (pct) => Math.max(1, Math.round((Number(pct) / 100) * (LENS_MAX - LENS_MIN)))
+	const lensUnits = (options) =>
+		Math.max(1, Math.round((LENS_STEP_PERCENT[stepLevel(options) - 1] / 100) * (LENS_MAX - LENS_MIN)))
 
 	return {
 		knobPanTiltStep: {
@@ -269,18 +284,10 @@ export function getStepActionDefinitions(self) {
 						{ id: 'down', label: 'Tilt down' },
 					],
 				},
-				{
-					type: 'number',
-					id: 'step',
-					label: 'Step size (camera units, 1280 = hex 0500)',
-					default: 1280,
-					min: 16,
-					max: 16000,
-					tooltip: 'Same size in both directions. Smaller = finer. 512 is fine, 2560 is big.',
-				},
+				sizeOption,
 			],
 			callback: async (action) => {
-				const n = Number(action.options.step) || 1280
+				const n = PAN_TILT_STEP_UNITS[stepLevel(action.options) - 1]
 				const d = action.options.direction
 				steps().stepPanTilt(d === 'right' ? n : d === 'left' ? -n : 0, d === 'up' ? n : d === 'down' ? -n : 0)
 			},
@@ -300,7 +307,7 @@ export function getStepActionDefinitions(self) {
 						{ id: 'out', label: 'Zoom out (wide)' },
 					],
 				},
-				lensStepOption(2),
+				sizeOption,
 				{
 					type: 'dropdown',
 					id: 'method',
@@ -310,7 +317,7 @@ export function getStepActionDefinitions(self) {
 						{ id: 'position', label: 'Exact position (recommended)' },
 						{ id: 'web', label: 'Camera web step (directctrl zoom=±1)' },
 					],
-					tooltip: 'Use "Camera web step" only if exact position does not work on your camera. Step size is ignored for it.',
+					tooltip: 'Use "Camera web step" only if exact position does not work on your camera. Step size does not apply to it.',
 				},
 			],
 			callback: async (action) => {
@@ -319,7 +326,7 @@ export function getStepActionDefinitions(self) {
 					await self.transport.get(`${baseUrl(self)}/cgi-bin/directctrl?zoom=${sign}`)
 					return
 				}
-				await steps().stepLens('zoom', sign * pctToUnits(action.options.step))
+				await steps().stepLens('zoom', sign * lensUnits(action.options))
 			},
 		},
 
@@ -337,7 +344,7 @@ export function getStepActionDefinitions(self) {
 						{ id: 'near', label: 'Focus near' },
 					],
 				},
-				lensStepOption(1),
+				sizeOption,
 				{
 					type: 'checkbox',
 					id: 'manual',
@@ -351,7 +358,7 @@ export function getStepActionDefinitions(self) {
 					self.data.oaf = 'Manual'
 				}
 				const sign = action.options.direction === 'near' ? -1 : 1
-				await steps().stepLens('focus', sign * pctToUnits(action.options.step))
+				await steps().stepLens('focus', sign * lensUnits(action.options))
 			},
 		},
 

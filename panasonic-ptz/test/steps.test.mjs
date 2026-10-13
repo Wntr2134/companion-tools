@@ -160,3 +160,37 @@ test('polling stops asking for a query the camera rejects', async () => {
 	assert.equal(self.vars.panPosition, '8000')
 	assert.equal(self.vars.tiltPosition, '7C00')
 })
+
+test('step size 1-10 maps to sensible distances, default 2', async () => {
+	const { getStepActionDefinitions, PAN_TILT_STEP_UNITS } = await import('../src/steps.js')
+	assert.equal(PAN_TILT_STEP_UNITS[1], 640, 'size 2 is half the old 1280 default')
+	cam.log = []
+	const self = makeSelf()
+	const defs = getStepActionDefinitions(self)
+	await defs.knobPanTiltStep.callback({ options: { direction: 'right', size: 1 } })
+	await idle(self)
+	await defs.knobPanTiltStep.callback({ options: { direction: 'up' } }) // no size -> default 2
+	await idle(self)
+	const rpc = cam.log.filter((l) => l.cmd?.startsWith('#RPC')).map((l) => l.cmd)
+	assert.deepEqual(rpc, ['#RPC' + (0x8000 + 256).toString(16).toUpperCase() + '8000', '#RPC8000' + (0x8000 + 640).toString(16).toUpperCase()])
+	cam.zoom = 0x800
+	await defs.knobZoomStep.callback({ options: { direction: 'in', size: 10, method: 'position' } })
+	await idle(self)
+	assert.equal(cam.zoom, 0x800 + Math.round(0.16 * (0xfff - 0x555)))
+})
+
+test('upgrade converts old numeric step to the 1-10 size', async () => {
+	const { UpgradeScripts } = await import('../src/upgrades.js')
+	const up = UpgradeScripts[UpgradeScripts.length - 1]
+	const res = up({}, {
+		actions: [
+			{ id: 'a', actionId: 'knobPanTiltStep', options: { direction: 'left', step: 1280 } },
+			{ id: 'b', actionId: 'knobZoomStep', options: { direction: 'in', step: 2, method: 'position' } },
+			{ id: 'c', actionId: 'knobFocusStep', options: { direction: 'far', size: 5 } },
+		],
+		feedbacks: [],
+	})
+	assert.equal(res.updatedActions.length, 2)
+	assert.deepEqual(res.updatedActions[0].options, { direction: 'left', size: 4 })
+	assert.deepEqual(res.updatedActions[1].options, { direction: 'in', size: 4, method: 'position' })
+})

@@ -177,11 +177,20 @@ These are for rotary controls like the Ulanzi D200X knobs or a Stream Deck +. Ea
 
 | Action | What it does |
 |---|---|
-| Knob - Pan/Tilt step | Relative move (`#RPC`), the same size both ways. Step in camera units (1280 = hex 0500). |
-| Knob - Zoom step | Moves to an exact zoom position (`#AXZ`), step in % of the range. "Camera web step" method = `directctrl?zoom=±1`. |
-| Knob - Focus step | Moves to an exact focus position (`#AXF`), step in %. Can switch the camera to manual focus first. |
+| Knob - Pan/Tilt step | Relative move (`#RPC`), the same size both ways. |
+| Knob - Zoom step | Moves to an exact zoom position (`#AXZ`). "Camera web step" method = `directctrl?zoom=±1`. |
+| Knob - Focus step | Moves to an exact focus position (`#AXF`). Can switch the camera to manual focus first. |
 | Lens - Go to zoom/focus position (%) | 0% = wide / near, 100% = tele / far. |
 | Position - Refresh … variables | Reads the current positions now. |
+
+**Step size: 1 to 10** (default 2) on every knob action. 1 gives tiny steps that feel smooth when you keep turning; 10 gives big jumps.
+
+| Size | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Pan/tilt (camera units) | 256 | 640 | 1024 | 1280 | 1920 | 2560 | 3584 | 5120 | 7168 | 10240 |
+| Zoom/focus (% of range) | 0.4 | 1 | 1.5 | 2 | 3 | 4 | 6 | 8 | 12 | 16 |
+
+Buttons made with the earlier free-number step are converted to the nearest size automatically.
 
 **Variables:** `zoomPosition`, `focusPosition` (%), `zoomPositionRaw`, `focusPositionRaw`, `panPosition`, `tiltPosition`.
 
