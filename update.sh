@@ -7,6 +7,7 @@ git pull --ff-only
 echo "== ulanzi-d200x"; (cd ulanzi-d200x && yarn install && yarn build)
 echo "== panasonic-ptz"; (cd panasonic-ptz && yarn install)
 echo "== uad-console"; (cd uad-console && yarn install)
+echo "== show-health"; (cd show-health && yarn install)
 echo "== digico-sd"; (cd digico-sd && yarn install && yarn build)
 echo
 echo "Done. Companion normally reloads developer modules when their files change."

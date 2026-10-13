@@ -1,0 +1,21 @@
+{
+	"id": "show-health",
+	"name": "show-health",
+	"shortname": "Show Health",
+	"description": "Watch a list of show devices (amps, Dante gear, switches, consoles) by ping or TCP port: one green/red key per device and an ALL OK summary.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "Generic",
+	"products": ["Show health monitor"],
+	"keywords": ["ping", "monitor", "health", "status", "network"]
+}

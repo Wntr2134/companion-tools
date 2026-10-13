@@ -8,6 +8,7 @@ You will set up:
 - **Part C:** UAD Console (Apollo): mutes, faders, monitor
 
 - **Part D:** DiGiCo SD9: snapshots, mutes, faders and monitor sends on the D200X
+- **Part E:** Show health page: green/red keys for every device, and alerts
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -19,10 +20,11 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
 
 1. Install **Companion** (step 0.5 below).
 2. Open <https://github.com/Wntr2134/companion-tools/releases/tag/latest> and download the `.tgz` file for each module you need:
-   - `companion-surface-ulanzi-stream-controller-….tgz`: D200X
+   - `ulanzi-stream-controller-….tgz`: D200X
    - `panasonic-ptz-….tgz`: PTZ cameras
    - `uad-console-….tgz`: Apollo / UAD Console
    - `digico-osc-….tgz`: DiGiCo SD
+   - `show-health-….tgz`: show health page (Part E)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A / B / C / D**, skipping the "dev version" steps.
@@ -272,6 +274,39 @@ The module keeps itself up to date on its own: renamed channels, Apollos plugged
 - **Control Groups:** a mute key, plus a fader knob (push = mute).
 
 Step size works like the other modules: **1** = tiny, **2** = default, **10** = big.
+
+---
+
+## Part E: Show health page
+
+### E.1 Devices with their own Companion connection (console, cameras, UAD, D200X)
+Companion already knows whether these are connected. For each one:
+1. Make a key with the device's name as its text.
+2. Add the feedback **internal → Connection: status**, pick the connection, and set the style to **red** for *Error/Disconnected*.
+   - Add a second copy set to **green** for *OK*.
+
+### E.2 Everything else (amps, Dante gear, switches, stage boxes)
+1. **Connections → + Add connection** → **Show Health**.
+2. In **Device list**, one line per device:
+   ```
+   FOH SD9, 192.168.1.100
+   Stage rack, 192.168.1.101
+   Amp rack, 192.168.1.50, 80
+   ```
+   - `Name, IP` checks with ping.
+   - `Name, IP, port` checks that TCP port. Use this for gear that ignores ping; port 80 works for most devices with a web page.
+3. Save. **Presets → Show Health**:
+   - **Devices**: one key per device. Green = up, red = down, and the key shows how long it's been in that state.
+   - **Summary**: **ALL OK**, or **2 DOWN** in red.
+
+A device only turns red after two missed checks in a row, so one dropped ping doesn't flash it. Pressing any of these keys checks everything straight away.
+
+### E.3 Alerts (optional)
+To get told when something drops mid-show:
+1. **Triggers → + Add trigger**.
+2. Event: **Variable changed**. Variable: `$(show-health:down_count)`.
+3. Condition: value is greater than 0.
+4. Action: for example jump the D200X to the health page, flash a key, or send a message with a webhook module (Pushover, Slack, Discord).
 
 ---
 
