@@ -12,7 +12,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 0 col 0",
+            "text": "KEY 1",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -43,7 +43,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 0 col 1",
+            "text": "KEY 2",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -74,7 +74,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 0 col 2",
+            "text": "KEY 3",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -105,7 +105,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 0 col 3",
+            "text": "KEY 4",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -136,7 +136,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 0 col 4",
+            "text": "KEY 5",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -169,7 +169,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 1 col 0",
+            "text": "KEY 6",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -200,7 +200,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 1 col 1",
+            "text": "KEY 7",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -231,7 +231,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 1 col 2",
+            "text": "KEY 8",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -262,7 +262,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 1 col 3",
+            "text": "KEY 9",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -293,7 +293,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 1 col 4",
+            "text": "KEY 10",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -326,7 +326,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 2 col 0",
+            "text": "KEY 11",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -357,7 +357,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 2 col 1",
+            "text": "KEY 12",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -388,7 +388,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "KEY\nrow 2 col 2",
+            "text": "KEY 13",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -419,7 +419,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "WIDE KEY\nrow 2 col 3",
+            "text": "WIDE KEY\n(clock window)",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -450,7 +450,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "(no key on\nD200X)",
+            "text": "(covered by\nwide key)",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -483,7 +483,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "PAGE ◀\nhardware\n(auto)",
+            "text": "◀ PAGE\nleft button\n(fixed)",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -514,7 +514,7 @@
             "rotaryActions": true
           },
           "style": {
-            "text": "KNOB 1\n◀ TURN ▶",
+            "text": "KNOB 1\nTURN\n◀ ▶",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -547,7 +547,7 @@
             "rotaryActions": true
           },
           "style": {
-            "text": "KNOB 2\n◀ TURN ▶",
+            "text": "KNOB 2\nTURN\n◀ ▶",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -580,7 +580,7 @@
             "rotaryActions": true
           },
           "style": {
-            "text": "KNOB 3\n◀ TURN ▶",
+            "text": "KNOB 3\nTURN\n◀ ▶",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",
@@ -613,7 +613,7 @@
             "rotaryActions": false
           },
           "style": {
-            "text": "PAGE ▶\nhardware\n(auto)",
+            "text": "PAGE ▶\nright button\n(fixed)",
             "textExpression": false,
             "size": "auto",
             "alignment": "center:center",

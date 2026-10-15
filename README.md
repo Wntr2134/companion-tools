@@ -8,7 +8,7 @@ Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ kno
 
 | Folder | What it is | Status |
 |---|---|---|
-| [`ulanzi-d200x/`](ulanzi-d200x/) | Ulanzi Stream Controller D200/D200X surface plugin, patched for Companion 5 and the D200X knobs | Working on macOS + Companion 5.1 |
+| [`ulanzi-d200x/`](ulanzi-d200x/) | Ulanzi Stream Controller D200/D200X surface plugin, patched for Companion 5 and the D200X knobs. [Button map and labelled template page](ulanzi-d200x/extras/README.md) | Working on macOS + Companion 5.1 |
 | [`panasonic-ptz/`](panasonic-ptz/) | Panasonic PTZ module (upstream v2.6.1) plus knob step actions, position variables and bug fixes | Built and unit-tested; needs a test on the HE40 |
 | [`uad-console/`](uad-console/) | New module: UAD Console / Apollo mutes (toggle and momentary), solo, faders, pan, sends, preamp, monitor, with 1-10 knob steps | Built and tested against a fake engine; needs a test on the Apollo |
 | [`digico-sd/`](digico-sd/) | DiGiCo SD/Quantum module (upstream v0.9.1 rewrite) plus fixes and a D200X knob layer: fader/send steps, mute/solo feedback, snapshot names, selected-channel strip | Builds and unit-tested; needs a test on the SD9 |

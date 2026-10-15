@@ -77,12 +77,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          cp ulanzi-d200x/extras/D200X-layout.companionconfig packages/
           ls -l packages
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest packages/*.tgz \
+          gh release create latest packages/*.tgz packages/D200X-layout.companionconfig \
             --title "Latest build ($(date -u +%Y-%m-%d) ${GITHUB_SHA::7})" \
             --notes "Installable Companion module packages, built from main at ${GITHUB_SHA::7}.
 
           **Install:** Companion → **Modules** → **Import module package** → choose the .tgz. Then pick that version on the connection / surface integration.
+
+          **D200X template page:** Import / Export → Import → D200X-layout.companionconfig, into an empty page. It labels every key and knob.
 
           See SETUP-GUIDE.md for the full walkthrough."
