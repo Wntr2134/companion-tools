@@ -11,11 +11,13 @@ The source in this folder already includes these changes. `patches/d200x-plugin-
 
 ## Companion grid layout
 
+![D200X map: which Companion button is which control](D200X-map.svg)
+
 | Row | Col 0 | Col 1 | Col 2 | Col 3 | Col 4 |
 |---|---|---|---|---|---|
-| 0 | key | key | key | key | key |
-| 1 | key | key | key | key | key |
-| 2 | key | key | key | WIDE key | (none) |
+| 0 | KEY 1 | KEY 2 | KEY 3 | KEY 4 | KEY 5 |
+| 1 | KEY 6 | KEY 7 | KEY 8 | KEY 9 | KEY 10 |
+| 2 | KEY 11 | KEY 12 | KEY 13 | WIDE KEY | (covered by the wide key) |
 | 3 | page ◀ (hardware) | knob 1 TURN | knob 2 TURN | knob 3 TURN | page ▶ (hardware) |
 | 4 | | knob 1 PUSH | knob 2 PUSH | knob 3 PUSH | |
 
@@ -23,8 +25,9 @@ On the TURN buttons, switch on **Rotary actions** and use **Rotate left / Rotate
 
 ## Files
 
-- `D200X-layout.companionconfig`: import into Companion (Import/Export → Import, pick a page). It gives you a labelled, colour-coded page matching the grid above.
-- `make-layout.mjs`: regenerates that file (`node make-layout.mjs`).
+- `D200X-layout.companionconfig`: import into Companion (Import/Export → Import, pick an empty page). Every key and knob gets a colour-coded label matching the map above. Also on the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest).
+- `D200X-map.svg`: the map picture above.
+- `make-layout.mjs`: regenerates the .companionconfig (`node make-layout.mjs`).
 
 ## Mac notes (what fixed it on macOS 26)
 

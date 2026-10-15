@@ -139,20 +139,25 @@ Ulanzi Studio fights Companion for the device. If it's installed:
 ✅ The D200X appears in the Surfaces list, and its keys go blank or show Companion buttons.
 
 ### A.4 Load the labelled layout page (recommended)
-1. In Companion, click **Import / Export** (left menu), then **Import**.
-2. Choose `~/companion-tools/ulanzi-d200x/extras/D200X-layout.companionconfig`.
-   - To find your home folder in the file picker: ⌘ + Shift + H.
+This page labels every key and knob, so you can see which Companion button is which control.
+
+1. Get the file:
+   - With the repo on your Mac: `~/companion-tools/ulanzi-d200x/extras/D200X-layout.companionconfig` (in the file picker, ⌘ + Shift + H jumps to your home folder).
+   - Without it: download **D200X-layout.companionconfig** from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest).
+2. In Companion, click **Import / Export** (left menu), then **Import**, and choose the file.
 3. When asked, import it into an **empty page**.
 
-✅ That page shows a label on every key: KEY row 0 col 0 … KNOB 1 TURN, KNOB 1 PUSH, and so on.
+✅ The D200X shows KEY 1 to KEY 13, WIDE KEY, KNOB 1 to 3 TURN, and KNOB 1 to 3 PUSH (in Companion's grid, under the knobs).
+
+![D200X map: which Companion button is which control](ulanzi-d200x/extras/D200X-map.svg)
 
 How the D200X maps onto Companion's grid:
 
 | Row | Col 0 | Col 1 | Col 2 | Col 3 | Col 4 |
 |---|---|---|---|---|---|
-| 0 | key | key | key | key | key |
-| 1 | key | key | key | key | key |
-| 2 | key | key | key | WIDE key | (none) |
+| 0 | KEY 1 | KEY 2 | KEY 3 | KEY 4 | KEY 5 |
+| 1 | KEY 6 | KEY 7 | KEY 8 | KEY 9 | KEY 10 |
+| 2 | KEY 11 | KEY 12 | KEY 13 | WIDE KEY | (covered by the wide key) |
 | 3 | page ◀ (automatic) | **knob 1 TURN** | **knob 2 TURN** | **knob 3 TURN** | page ▶ (automatic) |
 | 4 | | **knob 1 PUSH** | **knob 2 PUSH** | **knob 3 PUSH** | |
 
