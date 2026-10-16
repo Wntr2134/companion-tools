@@ -5,8 +5,11 @@ import { combineRgb } from '@companion-module/base'
 
 export const STEP_SIZES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 export const DEFAULT_STEP_SIZE = 2
-/** dB per knob click for faders, sends and monitor level. */
+/** Old 1-10 sizes for dB controls, kept so buttons saved before 0.3.0 still work until upgraded. */
 export const DB_STEPS = [0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 10]
+/** Faders, sends and monitor level: step per knob click, chosen directly in dB. */
+export const DB_STEP_CHOICES = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+export const DEFAULT_DB_STEP = 0.5
 /** Pan change per click (-1 = hard left, 1 = hard right). */
 export const PAN_STEPS = [0.01, 0.02, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5]
 /** Preamp gain change per click, on the 0-1 "tapered" scale. */
@@ -24,6 +27,29 @@ const round2 = (n) => Math.round(n * 100) / 100
 export function stepLevel(options) {
 	const n = Math.round(Number(options?.size))
 	return STEP_SIZES.includes(n) ? n : DEFAULT_STEP_SIZE
+}
+
+/** dB per click for a fader/send/monitor step action. Falls back to the old 1-10 size. */
+export function dbStep(options) {
+	const db = Number(options?.stepDb)
+	if (DB_STEP_CHOICES.includes(db)) return db
+	if (options?.size !== undefined) return DB_STEPS[stepLevel(options) - 1]
+	return DEFAULT_DB_STEP
+}
+
+/** Old 1-10 size -> nearest dB choice (0.5-5). Used by the upgrade script. */
+export function sizeToDbStep(size) {
+	const db = DB_STEPS[(STEP_SIZES.includes(Math.round(Number(size))) ? Math.round(Number(size)) : DEFAULT_STEP_SIZE) - 1]
+	return clamp(Math.round(db * 2) / 2, DB_STEP_CHOICES[0], DB_STEP_CHOICES[DB_STEP_CHOICES.length - 1])
+}
+
+export const dbStepOption = {
+	type: 'dropdown',
+	id: 'stepDb',
+	label: 'Step per click (dB)',
+	default: DEFAULT_DB_STEP,
+	choices: DB_STEP_CHOICES.map((n) => ({ id: n, label: n === DEFAULT_DB_STEP ? `${n} dB (default)` : `${n} dB` })),
+	tooltip: 'How many dB one knob click moves.',
 }
 
 /** New dB value after one knob click. */
@@ -173,10 +199,10 @@ export function getActions(self) {
 		levelStep: {
 			name: 'Channel - Fader level: step (knob)',
 			description: 'Put Up on Rotate right and Down on Rotate left.',
-			options: [inputsAuxs, directionOption(), sizeOption],
+			options: [inputsAuxs, directionOption(), dbStepOption],
 			callback: async (a) => {
 				const path = `${channelPath(a.options.channel)}/FaderLevel`
-				const d = DB_STEPS[stepLevel(a.options) - 1] * (a.options.direction === 'down' ? -1 : 1)
+				const d = dbStep(a.options) * (a.options.direction === 'down' ? -1 : 1)
 				c.set(path, stepDb(await c.read(path), d))
 			},
 		},
@@ -197,10 +223,10 @@ export function getActions(self) {
 		},
 		sendStep: {
 			name: 'Send - Level: step (knob)',
-			options: [inputs, sendOption, directionOption(), sizeOption],
+			options: [inputs, sendOption, directionOption(), dbStepOption],
 			callback: async (a) => {
 				const path = `${channelPath(a.options.channel)}/sends/${a.options.send}/Gain`
-				const d = DB_STEPS[stepLevel(a.options) - 1] * (a.options.direction === 'down' ? -1 : 1)
+				const d = dbStep(a.options) * (a.options.direction === 'down' ? -1 : 1)
 				c.set(path, stepDb(await c.read(path), d))
 			},
 		},
@@ -246,10 +272,10 @@ export function getActions(self) {
 		},
 		monitorStep: {
 			name: 'Monitor - Level: step (knob)',
-			options: [monitor, directionOption(), sizeOption],
+			options: [monitor, directionOption(), dbStepOption],
 			callback: async (a) => {
 				const path = `${monitorPath(c, a.options)}/CRMonitorLevel`
-				const d = DB_STEPS[stepLevel(a.options) - 1] * (a.options.direction === 'down' ? -1 : 1)
+				const d = dbStep(a.options) * (a.options.direction === 'down' ? -1 : 1)
 				c.set(path, stepDb(await c.read(path), d, MONITOR_MIN, MONITOR_MAX))
 			},
 		},
@@ -434,8 +460,8 @@ export function getPresets(self) {
 					{
 						down: [{ actionId: 'monitorMute', options: { channel: key, mode: 'toggle' } }],
 						up: [],
-						rotate_left: [{ actionId: 'monitorStep', options: { channel: key, direction: 'down', size: DEFAULT_STEP_SIZE } }],
-						rotate_right: [{ actionId: 'monitorStep', options: { channel: key, direction: 'up', size: DEFAULT_STEP_SIZE } }],
+						rotate_left: [{ actionId: 'monitorStep', options: { channel: key, direction: 'down', stepDb: DEFAULT_DB_STEP } }],
+						rotate_right: [{ actionId: 'monitorStep', options: { channel: key, direction: 'up', stepDb: DEFAULT_DB_STEP } }],
 					},
 				],
 				feedbacks: [{ feedbackId: 'monitorMuted', options: { channel: key }, style: { bgcolor: red, color: white } }],
@@ -483,8 +509,8 @@ export function getPresets(self) {
 				{
 					down: [],
 					up: [],
-					rotate_left: [{ actionId: 'levelStep', options: { channel: key, direction: 'down', size: DEFAULT_STEP_SIZE } }],
-					rotate_right: [{ actionId: 'levelStep', options: { channel: key, direction: 'up', size: DEFAULT_STEP_SIZE } }],
+					rotate_left: [{ actionId: 'levelStep', options: { channel: key, direction: 'down', stepDb: DEFAULT_DB_STEP } }],
+					rotate_right: [{ actionId: 'levelStep', options: { channel: key, direction: 'up', stepDb: DEFAULT_DB_STEP } }],
 				},
 			],
 			feedbacks: muteFb,

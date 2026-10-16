@@ -1,7 +1,7 @@
 // Talkback, "selected channel" cue strip, and meters.
 import { combineRgb } from '@companion-module/base'
 import { keyPath } from './ua-client.js'
-import { allChannels, DB_STEPS, PAN_STEPS, DEFAULT_STEP_SIZE, stepLevel, stepDb, formatDb, varPrefix } from './controls.js'
+import { allChannels, PAN_STEPS, DEFAULT_STEP_SIZE, DEFAULT_DB_STEP, dbStepOption, dbStep, stepLevel, stepDb, formatDb, varPrefix } from './controls.js'
 
 const isOn = (v) => v === true || v === 'true'
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n))
@@ -118,12 +118,14 @@ export function getExtraActions(self) {
 	const inputs = allChannels(c).filter((ch) => ch.group === 'inputs')
 	const sendIds = [...new Set(inputs.flatMap((ch) => ch.sends))].sort((a, b) => a - b)
 
+	// table: per-size values for 1-10 controls (pan); without one the step is in dB (stepDb option).
 	const step = (pathFn, table, min, max) => async (a) => {
 		const p = selectedPaths(self)
 		if (!p) return
 		const path = pathFn(p)
 		if (!path) return
-		const d = table[stepLevel(a.options) - 1] * (a.options.direction === 'down' ? -1 : 1)
+		const size = table ? table[stepLevel(a.options) - 1] : dbStep(a.options)
+		const d = size * (a.options.direction === 'down' ? -1 : 1)
 		c.set(path, stepDb(await c.read(path), d, min, max))
 	}
 
@@ -207,13 +209,13 @@ export function getExtraActions(self) {
 		},
 		selectedSendStep: {
 			name: 'Selected channel - Send level: step (knob)',
-			options: [dirOption(), sizeOptionLite],
-			callback: step((p) => p.send && `${p.send}/Gain`, DB_STEPS),
+			options: [dirOption(), dbStepOption],
+			callback: step((p) => p.send && `${p.send}/Gain`),
 		},
 		selectedFaderStep: {
 			name: 'Selected channel - Fader: step (knob)',
-			options: [dirOption(), sizeOptionLite],
-			callback: step((p) => `${p.base}/FaderLevel`, DB_STEPS),
+			options: [dirOption(), dbStepOption],
+			callback: step((p) => `${p.base}/FaderLevel`),
 		},
 		selectedPanStep: {
 			name: 'Selected channel - Pan: step (knob)',
@@ -404,15 +406,15 @@ export function getExtraPresets(self) {
 		'sel_send_knob',
 		'Knob: selected channel → selected cue level',
 		`${v('sel_send_name')}\\n${v('sel_send_level')} dB`,
-		{ actionId: 'selectedSendStep', options: { direction: 'down', size: DEFAULT_STEP_SIZE } },
-		{ actionId: 'selectedSendStep', options: { direction: 'up', size: DEFAULT_STEP_SIZE } }
+		{ actionId: 'selectedSendStep', options: { direction: 'down', stepDb: DEFAULT_DB_STEP } },
+		{ actionId: 'selectedSendStep', options: { direction: 'up', stepDb: DEFAULT_DB_STEP } }
 	)
 	knob(
 		'sel_fader_knob',
 		'Knob: selected channel fader',
 		`${v('sel_name')}\\n${v('sel_level')} dB\\n${v('sel_meterbar')}`,
-		{ actionId: 'selectedFaderStep', options: { direction: 'down', size: DEFAULT_STEP_SIZE } },
-		{ actionId: 'selectedFaderStep', options: { direction: 'up', size: DEFAULT_STEP_SIZE } }
+		{ actionId: 'selectedFaderStep', options: { direction: 'down', stepDb: DEFAULT_DB_STEP } },
+		{ actionId: 'selectedFaderStep', options: { direction: 'up', stepDb: DEFAULT_DB_STEP } }
 	)
 	knob(
 		'sel_pick_knob',

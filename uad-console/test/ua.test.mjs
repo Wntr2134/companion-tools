@@ -335,3 +335,41 @@ test('meters: selected channel subscribed, bar drawn', async () => {
 	assert.equal(meterBar(-100), '░░░░░░░░')
 	client.stop()
 })
+
+test('fader/send/monitor knobs step in dB (0.5-5), pan keeps 1-10', async () => {
+	const { DB_STEP_CHOICES, dbStep, sizeToDbStep } = await import('../src/controls.js')
+	assert.deepEqual(DB_STEP_CHOICES, [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5])
+	assert.equal(dbStep({ stepDb: 2.5 }), 2.5)
+	assert.equal(dbStep({}), 0.5, 'default 0.5 dB')
+	assert.equal(dbStep({ size: 4 }), 1.5, 'old 1-10 buttons keep working until upgraded')
+	assert.equal(sizeToDbStep(1), 0.5) // 0.25 dB rounds up to the smallest choice
+	assert.equal(sizeToDbStep(10), 5) // 10 dB clamps to 5
+	const { client, actions } = await connected()
+	await run(actions, 'levelStep', { channel: '0/inputs/1', direction: 'up', stepDb: 5 })
+	await tick(60)
+	const after = engine.props.get('/devices/0/inputs/1/FaderLevel')
+	await run(actions, 'levelStep', { channel: '0/inputs/1', direction: 'down', stepDb: 2.5 })
+	await tick(60)
+	assert.equal(engine.props.get('/devices/0/inputs/1/FaderLevel'), after - 2.5)
+	client.stop()
+})
+
+test('upgrade turns old 1-10 sizes into dB steps on dB actions only', async () => {
+	const { UpgradeScripts } = await import('../src/upgrades.js')
+	const res = UpgradeScripts[0]({}, {
+		actions: [
+			{ id: 'a', actionId: 'levelStep', options: { channel: '0/inputs/0', direction: 'up', size: 2 } },
+			{ id: 'b', actionId: 'selectedSendStep', options: { direction: 'down', size: 6 } },
+			{ id: 'c', actionId: 'panStep', options: { channel: '0/inputs/0', direction: 'up', size: 5 } },
+			{ id: 'd', actionId: 'monitorStep', options: { channel: '0/outputs/0', direction: 'up', stepDb: 1 } },
+		],
+		feedbacks: [],
+	})
+	assert.deepEqual(
+		res.updatedActions.map((a) => [a.id, a.options]),
+		[
+			['a', { channel: '0/inputs/0', direction: 'up', stepDb: 0.5 }],
+			['b', { direction: 'down', stepDb: 3 }],
+		],
+	)
+})
