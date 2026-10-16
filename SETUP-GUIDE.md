@@ -236,6 +236,7 @@ If you have more than one camera: in Companion, **Connections** → click the Pa
    - **Mute (toggle)**: tap to mute, tap to unmute. The key goes red when muted.
    - **Mute while held (momentary)**: muted only while you hold the key.
    - **Fader knob**: put this on a D200X **TURN** button (row 3). Turning changes the level, and the key shows the dB.
+     - To change how far one click moves: click the button, and on both **Rotate left** and **Rotate right** set **Step per click (dB)**: 0.5 dB (default) up to 5 dB, in 0.5 dB steps. Sends and the monitor level work the same way. Pan keeps the 1–10 step size.
    - **Solo (toggle)**
 3. Under the **Monitor** category:
    - **Monitor level knob**: turn = volume, push = mute.

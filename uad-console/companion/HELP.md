@@ -51,7 +51,7 @@ Connection setting **Level meters**:
 | Action | Notes |
 |---|---|
 | Channel - Mute / Solo | Toggle, On or Off. Momentary = On on press, Off on release. |
-| Channel - Fader level: set / step | Step size 1–10 per knob click (1 = 0.25 dB … 10 = 10 dB, default 2 = 0.5 dB). Turning up from -inf starts at -60 dB. |
+| Channel - Fader level: set / step | Step per knob click in dB: 0.5 to 5 in 0.5 dB steps (default 0.5 dB). Turning up from -inf starts at -60 dB. |
 | Channel - Pan: set / step | -100 = left, 100 = right. |
 | Send - Level: set / step, Send - Mute | Input → aux/cue send. |
 | Preamp - 48V / Pad / Phase / Low cut | Toggle, On or Off. |
@@ -62,7 +62,8 @@ Connection setting **Level meters**:
 ### Variables
 `in_1_name`, `in_1_level`, `in_1_mute`, `in_1_solo`, `in_1_pan`. Auxes are `aux_N_…`, and the monitor is `mon_1_level`, `mon_1_mute` and `mon_1_dim`. A second device gets a `d1_` prefix.
 
-### Step sizes (dB per click)
-| Size | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Fader / send / monitor | 0.25 | 0.5 | 1 | 1.5 | 2 | 3 | 4 | 6 | 8 | 10 |
+### Step per knob click
+- **Fader, send and monitor level:** pick the dB per click, 0.5 to 5 in 0.5 dB steps. Default 0.5 dB.
+- **Pan and preamp gain:** Step size 1 to 10 (1 = tiny, 2 = default, 10 = big).
+
+Buttons made before 0.3.0 are converted automatically: the old 1–10 size becomes the nearest dB choice (sizes above 5 dB become 5 dB).

@@ -1,5 +1,6 @@
 import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/base'
 import { UAClient, DEFAULT_PORT } from './ua-client.js'
+import { UpgradeScripts } from './upgrades.js'
 import { getActions, getFeedbacks, getPresets, getVariableDefinitions, getVariableValues } from './controls.js'
 import {
 	applyMeters,
@@ -109,4 +110,4 @@ class UADConsoleInstance extends InstanceBase {
 	}
 }
 
-runEntrypoint(UADConsoleInstance, [])
+runEntrypoint(UADConsoleInstance, UpgradeScripts)
