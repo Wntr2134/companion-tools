@@ -32,9 +32,9 @@ It also works for Studio Monitor, Video Monitor, OBS, vMix: anything that receiv
 ### Mac: switch NDI Virtual Input itself (no route)
 The **Virtual Input (Mac: switch in the app)** presets pick the camera in the source drop-down at the bottom of NDI Virtual Input's window (*Computer > Source*, e.g. *Theatrette > Channel 1*), as if you clicked it. Virtual Input then shows the camera's real name.
 - **One-off setup:** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**.
-- Virtual Input's **window must be open**. It can sit behind other windows, but not closed.
-- Each press first tries to set the drop-down silently. If Virtual Input doesn't allow that, its list pops open for about half a second while the camera is picked.
-- **Orange** = what Virtual Input is showing. The module reads it every 5 s (setting), so changes made by hand show up too.
+- If Virtual Input isn't open (or its window is closed), the key opens it in the background first (setting: *open Virtual Input if it is closed*).
+- Its source menu pops up briefly while the camera is picked: macOS only allows this with the menu on screen. Afterwards you're put **back in the app you were using**. Or choose *hide Virtual Input and go back* (its camera keeps working while hidden), or *leave it in front*.
+- **Orange** = what Virtual Input is showing. The module checks every 10 s (setting) so changes made by hand show up too, and never holds up a key press to do it.
 - If a key says the source isn't there, run **Mac: list NDI Virtual Input's sources** and check the **Log** tab.
 - For switching with nothing on screen at all, use a route: set Virtual Input to *Companion 1* once and use the route keys.
 - Only need these keys? Clear the route names in the settings: no routes are made.
