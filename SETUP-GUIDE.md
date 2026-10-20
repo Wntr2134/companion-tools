@@ -552,6 +552,20 @@ Companion normally picks up the change by itself. If a module still behaves the 
 
 ---
 
+## Mac permissions (all in one place)
+
+macOS asks for some permissions the first time a module needs them. If a key does nothing, check here first. The connection's **Log** tab usually says which one is missing.
+
+| Permission | Where | Needed for |
+|---|---|---|
+| **Allow accessories to connect** → Always | System Settings → Privacy & Security | The D200X showing up at all (A.2) |
+| **Accessibility** → Companion on | System Settings → Privacy & Security → Accessibility | Universal Capture keys (G), switching NDI Virtual Input in the app (J.4) |
+| **Automation** → Companion → *System Events* ticked | System Settings → Privacy & Security → Automation | The same keys: macOS asks *"Companion wants to control System Events"* the first time |
+| **Automation** → Companion → the app ticked | Same place | App Launcher's **Quit** action (macOS asks per app) |
+| **Module permissions** (run programs, read files, native add-ons) | Asked by Companion when you import or update a module | App Launcher, NDI Router, Show Health (ping), Echo360 (Universal Capture). Say yes |
+
+If you said no to one by mistake: turn it on in the place above, then press the key again. Nothing needs reinstalling.
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -563,6 +577,8 @@ Companion normally picks up the change by itself. If a module still behaves the 
 | D200X keeps flicking on/off, log says *"Invalid key in record"* | The surface plugin is on the store version. Switch it to **dev** (step A.3). |
 | D200X goes black after about a minute | Run `update.sh` (the keep-alive fix is in the dev version), and check the screensaver is off (A.5). |
 | A knob moves the wrong way | Swap the actions under **Rotate left** and **Rotate right**. |
+| A key does nothing and the log mentions *Accessibility*, *Automation*, *-1743* or *-25211* | See **Mac permissions** above. |
+| App Launcher, NDI Router, Show Health or Echo360 seems to do nothing at all | Update to the latest .tgz and accept the module permissions Companion asks for. Older versions didn't ask, and Companion blocked them silently. |
 | Panasonic connection is red | Check the camera IP. Open `http://CAMERA-IP` in a browser: the camera's web page should load. |
 | grandMA2 connection stuck on Connecting | Check the IP, **Telnet = Login Enabled** in Setup → Console → Global Settings, and the Windows firewall (F.1). |
 | UAD connection is red | Open UAD Console once, then check the IP is `127.0.0.1` on the same Mac. Then run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs`. It should list your devices. |

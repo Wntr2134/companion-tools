@@ -149,6 +149,14 @@ class Echo360Instance extends InstanceBase {
 				default: true,
 				isVisibleExpression: UC_VISIBLE,
 			},
+			{
+				type: 'checkbox',
+				id: 'ucReturn',
+				label: 'Then go back to the app that was in front (e.g. the slides)',
+				width: 6,
+				default: true,
+				isVisibleExpression: `${UC_VISIBLE} && $(options:ucActivate)`,
+			},
 			{ type: 'textinput', id: 'host', label: 'Device IP address or hostname', width: 6, default: '', isVisibleExpression: DEVICE_VISIBLE },
 			{
 				type: 'dropdown',

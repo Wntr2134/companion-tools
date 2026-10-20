@@ -50,7 +50,7 @@ export function executorOptions(defaultWhich = 'fixed') {
 			default: 1,
 			min: 1,
 			max: 999,
-			isVisible: (o) => o.which === 'fixed',
+			isVisibleExpression: `$(options:which) == 'fixed'`,
 		},
 		{
 			type: 'number',
@@ -167,14 +167,14 @@ export function getActions(self) {
 			name: 'Rotate console encoder',
 			options: [
 				{ type: 'checkbox', id: 'encoder_from_variable', label: 'Use variable for encoder', default: false },
-				{ type: 'dropdown', id: 'enc', label: 'Encoder', default: 0, choices: ENCODER_CHOICES, isVisible: (o) => !o.encoder_from_variable },
+				{ type: 'dropdown', id: 'enc', label: 'Encoder', default: 0, choices: ENCODER_CHOICES, isVisibleExpression: '!$(options:encoder_from_variable)' },
 				{
 					type: 'textinput',
 					id: 'encoder_variable',
 					label: 'Encoder number (1-8)',
 					default: '1',
 					useVariables: true,
-					isVisible: (o) => !!o.encoder_from_variable,
+					isVisibleExpression: '$(options:encoder_from_variable)',
 				},
 				{ type: 'dropdown', id: 'dir', label: 'Direction', default: '1', choices: CHOICES.DIRECTION },
 				{ type: 'number', id: 'steps', label: 'Steps', tooltip: 'How far per click', default: 1, min: 1, max: 100 },
@@ -191,14 +191,14 @@ export function getActions(self) {
 			name: 'Console encoder press / release',
 			options: [
 				{ type: 'checkbox', id: 'encoder_from_variable', label: 'Use variable for encoder', default: false },
-				{ type: 'dropdown', id: 'enc', label: 'Encoder', default: 0, choices: ENCODER_CHOICES, isVisible: (o) => !o.encoder_from_variable },
+				{ type: 'dropdown', id: 'enc', label: 'Encoder', default: 0, choices: ENCODER_CHOICES, isVisibleExpression: '!$(options:encoder_from_variable)' },
 				{
 					type: 'textinput',
 					id: 'encoder_variable',
 					label: 'Encoder number (1-8)',
 					default: '1',
 					useVariables: true,
-					isVisible: (o) => !!o.encoder_from_variable,
+					isVisibleExpression: '$(options:encoder_from_variable)',
 				},
 				{ type: 'dropdown', id: 'dir', label: 'Direction', default: 'true', choices: CHOICES.DOWN_UP },
 			],

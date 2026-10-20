@@ -608,7 +608,7 @@ test('Universal Capture: exact osascript arguments for each shortcut', async () 
 })
 
 test('Universal Capture: activating the app passes its name as an argument, not inside the script', async () => {
-	const { self, runner } = ucSelf({ config: { ucActivate: true, ucApp: 'Evil" to do shell script "rm -rf ~' } })
+	const { self, runner } = ucSelf({ config: { ucActivate: true, ucReturn: false, ucApp: 'Evil" to do shell script "rm -rf ~' } })
 	await ucKey(self, 'pause_resume')
 	const { args } = runner.calls[0]
 	assert.deepEqual(args, [
@@ -626,6 +626,22 @@ test('Universal Capture: activating the app passes its name as an argument, not 
 	])
 	assert.ok(args.slice(0, -1).every((a) => !a.includes('Evil')))
 	assert.throws(() => osascriptArgs('6; rm'))
+})
+
+test('Universal Capture: by default it goes back to the app that was in front (slides stay up)', async () => {
+	const { self, runner } = ucSelf({ config: { ucActivate: true } })
+	await ucKey(self, 'finish')
+	const script = runner.calls[0].args.filter((a, i, all) => all[i - 1] === '-e')
+	assert.ok(script.indexOf('tell application "System Events" to set prevApp to name of first application process whose frontmost is true') < script.indexOf('tell application (item 1 of argv) to activate'))
+	assert.ok(script.includes('tell application "System Events" to set frontmost of process prevApp to true'))
+	assert.equal(script.at(-1), 'end run')
+	assert.equal(runner.calls[0].args.at(-1), 'Universal Capture')
+})
+
+test('Universal Capture: a refused Automation permission says where to allow it', async () => {
+	const { self } = ucSelf({ fail: 'Not authorized to send Apple events to System Events. (-1743)' })
+	await ucKey(self, 'extend')
+	assert.match(self.uc.lastMessage, /Automation/)
 })
 
 test('Universal Capture: double tap on the toggle sends one keystroke', async () => {

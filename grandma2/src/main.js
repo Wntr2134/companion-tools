@@ -78,8 +78,8 @@ class GrandMA2Instance extends InstanceBase {
 			{ type: 'textinput', id: 'host', label: 'Console / onPC IP', width: 8, default: '192.168.0.1', regex: Regex.IP },
 			{ type: 'number', id: 'telnet_port', label: 'Telnet port', width: 4, default: 30000, min: 1, max: 65535 },
 			{ type: 'checkbox', id: 'login', label: 'Log in on Telnet', width: 4, default: true },
-			{ type: 'textinput', id: 'user', label: 'Telnet user', width: 4, default: 'administrator', isVisible: (c) => c.login !== false },
-			{ type: 'textinput', id: 'pass', label: 'Telnet password', width: 4, default: 'admin', isVisible: (c) => c.login !== false },
+			{ type: 'textinput', id: 'user', label: 'Telnet user', width: 4, default: 'administrator', isVisibleExpression: '$(options:login)' },
+			{ type: 'textinput', id: 'pass', label: 'Telnet password', width: 4, default: 'admin', isVisibleExpression: '$(options:login)' },
 			{
 				type: 'number',
 				id: 'spacing_ms',
@@ -100,10 +100,10 @@ class GrandMA2Instance extends InstanceBase {
 				value: 'Executor names, fader levels, running state and cue names. Without it, the module still sends every command, and shows only what it sent.',
 			},
 			{ type: 'checkbox', id: 'wr_enable', label: 'Use the Web Remote', width: 4, default: false },
-			{ type: 'textinput', id: 'wr_user', label: 'Web Remote user (not Administrator)', width: 4, default: 'companion', isVisible: (c) => !!c.wr_enable },
-			{ type: 'textinput', id: 'wr_pass', label: 'Web Remote password', width: 4, default: '', isVisible: (c) => !!c.wr_enable },
-			{ type: 'number', id: 'wr_port', label: 'Web Remote port', width: 4, default: 80, min: 1, max: 65535, isVisible: (c) => !!c.wr_enable },
-			{ type: 'number', id: 'poll_ms', label: 'Read back every (ms)', width: 4, default: 250, min: 100, max: 5000, isVisible: (c) => !!c.wr_enable },
+			{ type: 'textinput', id: 'wr_user', label: 'Web Remote user (not Administrator)', width: 4, default: 'companion', isVisibleExpression: '$(options:wr_enable)' },
+			{ type: 'textinput', id: 'wr_pass', label: 'Web Remote password', width: 4, default: '', isVisibleExpression: '$(options:wr_enable)' },
+			{ type: 'number', id: 'wr_port', label: 'Web Remote port', width: 4, default: 80, min: 1, max: 65535, isVisibleExpression: '$(options:wr_enable)' },
+			{ type: 'number', id: 'poll_ms', label: 'Read back every (ms)', width: 4, default: 250, min: 100, max: 5000, isVisibleExpression: '$(options:wr_enable)' },
 			{
 				type: 'dropdown',
 				id: 'fader_via',
@@ -114,7 +114,7 @@ class GrandMA2Instance extends InstanceBase {
 					{ id: 'auto', label: 'Web Remote when connected, else Telnet' },
 					{ id: 'telnet', label: 'Telnet only' },
 				],
-				isVisible: (c) => !!c.wr_enable,
+				isVisibleExpression: '$(options:wr_enable)',
 			},
 
 			{

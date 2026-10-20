@@ -1,5 +1,5 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
-import { scanApps, runningApps, launchCommand, quitCommand, run } from './apps.js'
+import { scanApps, runningApps, launchCommand, quitCommand, run, macPermissionHint } from './apps.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const GREY = combineRgb(40, 40, 40)
@@ -115,7 +115,8 @@ class AppLauncherInstance extends InstanceBase {
 			this.setVariableValues({ last_launched: app.name })
 			setTimeout(() => void this.pollRunning(), 1500)
 		} catch (e) {
-			this.log('error', `Couldn't launch ${app.name}: ${(e.stderr || e.message).trim()}`)
+			const why = (e.stderr || e.message).trim()
+			this.log('error', `Couldn't launch ${app.name}: ${macPermissionHint(why) || why}`)
 		}
 	}
 
@@ -126,7 +127,8 @@ class AppLauncherInstance extends InstanceBase {
 			this.log('info', `${force ? 'Force quit' : 'Quit'} ${app.name}`)
 			setTimeout(() => void this.pollRunning(), 1500)
 		} catch (e) {
-			this.log('error', `Couldn't quit ${app.name}: ${(e.stderr || e.message).trim()}`)
+			const why = (e.stderr || e.message).trim()
+			this.log('error', `Couldn't quit ${app.name}: ${macPermissionHint(why) || why}`)
 		}
 	}
 
@@ -142,7 +144,7 @@ class AppLauncherInstance extends InstanceBase {
 			label: 'Name or full path (variables allowed)',
 			default: '',
 			useVariables: true,
-			isVisible: (o) => o.app === 'custom',
+			isVisibleExpression: `$(options:app) == 'custom'`,
 		}
 
 		this.setActionDefinitions({
