@@ -26,7 +26,7 @@ import {
 	ucKey,
 	UC_CATEGORY,
 } from '../src/controls.js'
-import { UCKeys, osascriptArgs } from '../src/uc-keys.js'
+import { UCKeys, osascriptArgs, powershellArgs, WINDOWS_SCRIPT } from '../src/uc-keys.js'
 
 const USER = 'instructor'
 const PASS = 'p@ss:word'
@@ -652,13 +652,44 @@ test('Universal Capture: double tap on the toggle sends one keystroke', async ()
 	assert.equal(runner.calls.length, 1)
 })
 
-test('Universal Capture: nothing runs on Windows or Linux, with a clear warning', async () => {
-	const { self, runner, logs } = ucSelf({ platform: 'win32' })
+test('Universal Capture: nothing runs on Linux, with a clear warning', async () => {
+	const { self, runner, logs } = ucSelf({ platform: 'linux' })
 	const r = await ucKey(self, 'finish')
 	assert.equal(r.reason, 'platform')
 	assert.equal(runner.calls.length, 0)
-	assert.ok(logs.some(([l, m]) => l === 'warn' && /only work when Companion runs on a Mac/.test(m)))
+	assert.ok(logs.some(([l, m]) => l === 'warn' && /only work when Companion runs on a Mac or Windows PC/.test(m)))
 	assert.equal(getFeedbacks(self).error.callback({ options: {} }), true)
+})
+
+test('Universal Capture on Windows: Ctrl+number through PowerShell, app name passed safely', async () => {
+	const calls = []
+	const run = (cmd, args, opts, cb) => {
+		calls.push({ cmd, args, env: opts.env, hide: opts.windowsHide })
+		setImmediate(() => cb(null, 'OK\r\n', ''))
+	}
+	const logs = []
+	const uc = new UCKeys({ run, platform: 'win32', log: (l, m) => logs.push([l, m]) })
+	const r = await uc.send('finish', { activate: true, appName: 'Universal Capture"; Remove-Item C:\\ -Recurse' })
+	assert.equal(r.ok, true)
+	const [c] = calls
+	assert.equal(c.cmd, 'powershell.exe')
+	assert.equal(c.hide, true)
+	assert.equal(c.args.at(-1), WINDOWS_SCRIPT, 'the script never changes')
+	assert.ok(!c.args.some((a) => a.includes('Remove-Item')), 'the app name only travels in the environment')
+	assert.equal(c.env.UC_KEY, '8')
+	assert.equal(c.env.UC_ACTIVATE, '1')
+	assert.equal(c.env.UC_RETURN, '1')
+	assert.match(WINDOWS_SCRIPT, /SendKeys\('\^' \+ \$env:UC_KEY\)/)
+	assert.match(uc.lastMessage, /Ctrl\+8/)
+})
+
+test('Universal Capture on Windows: no window found is reported', async () => {
+	const uc = new UCKeys({ run: (c, a, o, cb) => cb(null, 'ERR:not-running\r\n', ''), platform: 'win32' })
+	const r = await uc.send('pause_resume', { activate: true })
+	assert.equal(r.ok, false)
+	assert.match(uc.lastMessage, /couldn't find a Universal Capture window/)
+	assert.deepEqual(powershellArgs('6', { activate: false }).env, { UC_KEY: '6', UC_APP: 'Universal Capture', UC_ACTIVATE: '0', UC_RETURN: '1' })
+	assert.throws(() => powershellArgs('6; rm'))
 })
 
 test('Universal Capture: permission failure explains Accessibility', async () => {

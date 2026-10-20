@@ -64,12 +64,12 @@ class Echo360Instance extends InstanceBase {
 			this.client.stop()
 			this.client.connected = false
 			this.client.state = ''
-			if (process.platform !== 'darwin') {
-				this.updateStatus(InstanceStatus.BadConfig, 'Universal Capture shortcuts only work when Companion runs on a Mac')
+			if (process.platform !== 'darwin' && process.platform !== 'win32') {
+				this.updateStatus(InstanceStatus.BadConfig, 'Universal Capture shortcuts only work when Companion runs on a Mac or Windows PC')
 			} else {
 				this.updateStatus(InstanceStatus.Ok, 'Universal Capture keyboard shortcuts (no status)')
 			}
-			this.log('info', 'Universal Capture mode: sending keyboard shortcuts on this Mac, no recording status available')
+			this.log('info', 'Universal Capture mode: sending keyboard shortcuts on this computer, no recording status available')
 			return
 		}
 		this.client.configure({
@@ -120,7 +120,7 @@ class Echo360Instance extends InstanceBase {
 				choices: [
 					{ id: 'appliance', label: 'Echo360 Pro / Pod / SafeCapture HD (Capture API)' },
 					{ id: 'ucc', label: 'Universal Capture: Classroom (Capture API, unconfirmed)' },
-					{ id: 'uc', label: 'Universal Capture on this Mac (keyboard shortcuts, no status)' },
+					{ id: 'uc', label: 'Universal Capture on this computer (keyboard shortcuts, no status)' },
 				],
 			},
 			{ type: 'textinput', id: 'room', label: 'Room name (shown on buttons, optional)', width: 6, default: '' },
@@ -130,7 +130,7 @@ class Echo360Instance extends InstanceBase {
 				width: 12,
 				label: 'Universal Capture mode',
 				value:
-					'Sends Universal Capture\'s own shortcuts (Cmd+6 pause/resume, Cmd+8 finish, Cmd+1 extend, Cmd+4 open) on the Mac running Companion. Companion needs Accessibility permission (System Settings → Privacy & Security → Accessibility). There is no start shortcut, and the shortcuts are toggles, so buttons show NO STATUS instead of a timer.',
+					'Sends Universal Capture\'s own shortcuts (Cmd+6 / Ctrl+6 pause/resume, 8 finish, 1 extend, 4 open) on the computer running Companion: Cmd on a Mac, Ctrl on Windows. On a Mac, Companion needs Accessibility permission (System Settings → Privacy & Security → Accessibility). There is no start shortcut, and the shortcuts are toggles, so buttons show NO STATUS instead of a timer.',
 				isVisibleExpression: UC_VISIBLE,
 			},
 			{
