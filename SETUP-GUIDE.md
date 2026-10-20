@@ -552,6 +552,13 @@ Companion normally picks up the change by itself. If a module still behaves the 
 
 ---
 
+## Using a Stream Deck (or any surface) instead of the D200X
+
+Everything here works on any Companion surface, not just the D200X:
+- **Stream Deck+:** the knob presets work on its dials. Turn = step, push the dial = the push action (e.g. mute).
+- **Stream Deck 15-key, XL, Mini or any plain keys:** each knob category has a matching *"− / + buttons and push keys"* category. Use − and + keys instead of turning, and the push key instead of pushing.
+- **D200X:** knob turns go on row 3, and the push keys go on row 4, under the knob.
+
 ## Mac permissions (all in one place)
 
 macOS asks for some permissions the first time a module needs them. If a key does nothing, check here first. The connection's **Log** tab usually says which one is missing.

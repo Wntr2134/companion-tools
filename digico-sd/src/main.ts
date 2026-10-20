@@ -16,6 +16,7 @@ import { createMixer, type digico } from './mixers.js'
 import { IpadRelay } from './ipadRelay.js'
 import { OSC_QUERY_TIMEOUT_MS, type OSCValue } from './osc.js'
 import { getKnobPresets, getKnobVariableValues } from './knobs.js'
+import { withSurfaceExtrasV2 } from './surface-extras.js'
 import {
 	entityRecordDefinitions,
 	entityRoots,
@@ -99,7 +100,8 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	}
 
 	private updateKnobPresets(): void {
-		const { structure, presets } = getKnobPresets(this)
+		const knobs = getKnobPresets(this)
+		const { structure, presets } = withSurfaceExtrasV2(knobs.structure, knobs.presets)
 		this.setPresetDefinitions(structure as any, presets as any)
 	}
 

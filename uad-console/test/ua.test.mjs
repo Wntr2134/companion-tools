@@ -373,3 +373,32 @@ test('upgrade turns old 1-10 sizes into dB steps on dB actions only', async () =
 		],
 	)
 })
+
+test('every knob preset also gets − / + buttons and a push key (Stream Deck without dials, D200X row 4)', async () => {
+	const { withSurfaceExtras, withSurfaceExtrasV2 } = await import('../src/surface-extras.js')
+	const knob = {
+		type: 'button',
+		category: 'Knobs',
+		name: 'Fader knob',
+		options: { rotaryActions: true },
+		style: { text: 'IN 1\\n$(x:level)', size: '14' },
+		steps: [{ down: [{ actionId: 'mute' }], up: [], rotate_left: [{ actionId: 'down' }], rotate_right: [{ actionId: 'up' }] }],
+		feedbacks: [{ feedbackId: 'muted' }],
+	}
+	const plain = { type: 'button', category: 'Keys', name: 'Go', style: { text: 'GO' }, steps: [{ down: [{ actionId: 'go' }], up: [] }], feedbacks: [] }
+	const out = withSurfaceExtras({ k: knob, g: plain })
+	assert.deepEqual(Object.keys(out).sort(), ['g', 'k', 'k__minus', 'k__plus', 'k__push'])
+	assert.deepEqual(out.k, knob, 'the knob itself is unchanged (D200X turn, Stream Deck+ dial)')
+	assert.deepEqual(out.k__minus.steps, [{ down: [{ actionId: 'down' }], up: [] }])
+	assert.deepEqual(out.k__plus.steps, [{ down: [{ actionId: 'up' }], up: [] }])
+	assert.deepEqual(out.k__push.steps, [{ down: [{ actionId: 'mute' }], up: [] }])
+	assert.equal(out.k__plus.options.rotaryActions, undefined, 'plain keys, no rotary')
+	assert.equal(out.k__minus.style.text, '− IN 1')
+	assert.equal(out.k__minus.category, 'Knobs: − / + buttons and push keys')
+	assert.deepEqual(out.k__plus.feedbacks, knob.feedbacks)
+	const v2 = withSurfaceExtrasV2([{ id: 's', name: 'Strip', definitions: ['k', 'g'] }], { k: { ...knob, category: undefined }, g: plain })
+	assert.deepEqual(v2.structure.map((x) => [x.id, x.definitions]), [
+		['s', ['k', 'g']],
+		['s_buttons', ['k__minus', 'k__plus', 'k__push']],
+	])
+})
