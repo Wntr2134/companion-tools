@@ -1,12 +1,15 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { candidateLibraries, openNdi, splitSourceName } from './ndi.js'
 import { Router, parseRouteNames } from './router.js'
+import { runMenuScript } from './virtual-input-mac.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const RED = combineRgb(180, 0, 0)
 const GREY = combineRgb(40, 40, 40)
 const WHITE = combineRgb(255, 255, 255)
 const DEFAULT_ROUTES = 'Companion 1\nCompanion 2'
+const DEFAULT_VI_APP = 'NDI Virtual Input'
+const ORANGE = combineRgb(200, 110, 0)
 
 const short = (full) => {
 	const { machine, name } = splitSourceName(full)
@@ -18,6 +21,8 @@ class NdiRouterInstance extends InstanceBase {
 	router = null
 	pollTimer = null
 	presetTimer = null
+	viSource = '' // what Companion last set NDI Virtual Input to (Mac)
+	viQueue = Promise.resolve()
 
 	async init(config) {
 		this.config = config
@@ -46,10 +51,6 @@ class NdiRouterInstance extends InstanceBase {
 	start() {
 		this.updateDefinitions()
 		const names = this.routeNames()
-		if (!names.length) {
-			this.updateStatus(InstanceStatus.BadConfig, 'Add at least one route name')
-			return
-		}
 		const typed = String(this.config.libPath ?? '').trim()
 		const candidates = typed ? [typed] : candidateLibraries()
 		if (!candidates.length) {
@@ -87,7 +88,7 @@ class NdiRouterInstance extends InstanceBase {
 			this.publish()
 			this.checkFeedbacks('route_is', 'route_watched')
 		})
-		this.updateStatus(InstanceStatus.Ok, `${names.length} route${names.length === 1 ? '' : 's'}`)
+		this.updateStatus(InstanceStatus.Ok, names.length ? `${names.length} route${names.length === 1 ? '' : 's'}` : 'No routes (Virtual Input keys only)')
 		this.publish()
 		this.pollTimer = setInterval(() => {
 			try {
@@ -109,6 +110,27 @@ class NdiRouterInstance extends InstanceBase {
 			this.log('debug', `NDI shutdown: ${e.message}`)
 		}
 		this.router = null
+	}
+
+	/** Mac: pick a source in NDI Virtual Input's own menu. One at a time, so menu clicks never overlap. */
+	switchVirtualInput(source) {
+		this.viQueue = this.viQueue.then(async () => {
+			if (process.platform !== 'darwin') {
+				this.log('warn', 'Switching NDI Virtual Input by its menu only works on a Mac. Use a route instead.')
+				return
+			}
+			const { machine, name } = splitSourceName(source)
+			try {
+				await runMenuScript({ processName: this.config.viApp || DEFAULT_VI_APP, mode: 'select', full: source, machine, short: name })
+				this.viSource = source
+				this.log('info', `NDI Virtual Input → ${source}`)
+				this.setVariableValues({ vi_source: name, vi_source_full: source })
+				this.checkFeedbacks('vi_is')
+			} catch (e) {
+				this.log('error', `NDI Virtual Input: ${e.message}`)
+			}
+		})
+		return this.viQueue
 	}
 
 	remember() {
@@ -174,6 +196,30 @@ class NdiRouterInstance extends InstanceBase {
 					} else this.log('warn', `NDI refused to route ${a.options.route} to ${source}`)
 				},
 			},
+			vi_select: {
+				name: 'Mac: switch NDI Virtual Input (clicks its menu)',
+				description: 'Picks the source in NDI Virtual Input itself, no route needed. Needs Accessibility permission for Companion.',
+				options: [sourceOption, customOption],
+				callback: async (a, context) => {
+					let source = a.options.source
+					if (source === 'custom') source = (await context.parseVariablesInString(String(a.options.custom ?? ''))).trim()
+					if (source) await this.switchVirtualInput(source)
+				},
+			},
+			vi_list: {
+				name: "Mac: list NDI Virtual Input's menu (to the log)",
+				description: "Writes every entry in Virtual Input's menu to the Log tab. Useful if a source isn't found.",
+				options: [],
+				callback: async () => {
+					if (process.platform !== 'darwin') return
+					try {
+						const list = JSON.parse(await runMenuScript({ processName: this.config.viApp || DEFAULT_VI_APP, mode: 'list' }))
+						this.log('info', `NDI Virtual Input menu: ${list.join(' | ')}`)
+					} catch (e) {
+						this.log('error', `NDI Virtual Input: ${e.message}`)
+					}
+				},
+			},
 			clear: {
 				name: 'Clear a route (black)',
 				options: [routeOption],
@@ -191,6 +237,13 @@ class NdiRouterInstance extends InstanceBase {
 				options: [routeOption, sourceOption],
 				callback: (fb) => !!this.router && this.router.targetOf(fb.options.route) === fb.options.source,
 			},
+			vi_is: {
+				type: 'boolean',
+				name: 'NDI Virtual Input is on source (Mac, as last set by Companion)',
+				defaultStyle: { bgcolor: ORANGE, color: WHITE },
+				options: [sourceOption],
+				callback: (fb) => !!this.viSource && this.viSource === fb.options.source,
+			},
 			route_watched: {
 				type: 'boolean',
 				name: 'Route is being watched (e.g. Virtual Input is using it)',
@@ -200,7 +253,11 @@ class NdiRouterInstance extends InstanceBase {
 			},
 		})
 
-		const vars = [{ variableId: 'source_count', name: 'Number of NDI sources found' }]
+		const vars = [
+			{ variableId: 'source_count', name: 'Number of NDI sources found' },
+			{ variableId: 'vi_source', name: 'NDI Virtual Input source (Mac, short name)' },
+			{ variableId: 'vi_source_full', name: 'NDI Virtual Input source (Mac, full NDI name)' },
+		]
 		names.forEach((name, i) => {
 			vars.push({ variableId: `${varKey(i)}_name`, name: `Route ${i + 1} name` })
 			vars.push({ variableId: `${varKey(i)}_source`, name: `Route ${i + 1} (${name}): source showing (short name)` })
@@ -220,6 +277,26 @@ class NdiRouterInstance extends InstanceBase {
 	buildPresets(names, sources) {
 		const label = this.label || 'ndi-router'
 		const presets = {}
+		const viCategory = 'Virtual Input (Mac: switch in the app)'
+		presets.vi_now = {
+			type: 'button',
+			category: viCategory,
+			name: "Virtual Input: what's showing",
+			style: { text: `VIRTUAL IN\\n$(${label}:vi_source)`, size: '14', color: WHITE, bgcolor: GREY },
+			steps: [{ down: [], up: [] }],
+			feedbacks: [],
+		}
+		sources.forEach((source, j) => {
+			const { machine, name } = splitSourceName(source)
+			presets[`vi_${j}`] = {
+				type: 'button',
+				category: viCategory,
+				name: `Virtual Input ← ${short(source)}`,
+				style: { text: machine ? `${name}\\n${machine}` : name, size: 'auto', color: WHITE, bgcolor: GREY },
+				steps: [{ down: [{ actionId: 'vi_select', options: { source, custom: '' } }], up: [] }],
+				feedbacks: [{ feedbackId: 'vi_is', options: { source }, style: { bgcolor: ORANGE, color: WHITE } }],
+			}
+		})
 		names.forEach((route, i) => {
 			const category = `Route: ${route}`
 			presets[`clear_${i}`] = {
@@ -263,7 +340,21 @@ class NdiRouterInstance extends InstanceBase {
 				value:
 					'Each route is a new NDI source made by Companion, e.g. <b>YOUR-COMPUTER (Companion 1)</b>. Point NDI Virtual Input (or a monitor, OBS, vMix…) at it once. Then Companion buttons choose which camera that route shows. Needs NDI Tools installed on this computer. Routes exist while Companion is running.',
 			},
-			{ type: 'textinput', id: 'routes', label: 'Route names (one per line, up to 16)', width: 12, default: DEFAULT_ROUTES, multiline: true },
+			{
+				type: 'textinput',
+				id: 'routes',
+				label: 'Route names (one per line, up to 16). Leave empty if you only use the Virtual Input keys.',
+				width: 12,
+				default: DEFAULT_ROUTES,
+				multiline: true,
+			},
+			{
+				type: 'textinput',
+				id: 'viApp',
+				label: 'Mac: NDI Virtual Input app name (for the "switch in the app" keys)',
+				width: 12,
+				default: DEFAULT_VI_APP,
+			},
 			{ type: 'textinput', id: 'groups', label: 'NDI groups (optional, comma separated)', width: 6, default: '' },
 			{ type: 'textinput', id: 'extraIps', label: 'Extra IPs to look for sources on (optional, comma separated)', width: 6, default: '' },
 			{

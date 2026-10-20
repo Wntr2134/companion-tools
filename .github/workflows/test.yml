@@ -97,7 +97,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
-      - run: node --test test/ndi.test.mjs
+      - run: node --test test/ndi.test.mjs test/virtual-input.test.mjs
 
   app-launcher:
     runs-on: ubuntu-latest

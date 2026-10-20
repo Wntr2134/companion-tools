@@ -1,10 +1,10 @@
 {
 	"name": "ndi-router",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"test": "node --test test/ndi.test.mjs"
+		"test": "node --test test/ndi.test.mjs test/virtual-input.test.mjs"
 	},
 	"license": "MIT",
 	"engines": {

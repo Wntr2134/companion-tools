@@ -29,6 +29,16 @@ It also works for Studio Monitor, Video Monitor, OBS, vMix: anything that receiv
 - **Route is showing source** (green), **Route is being watched** (red).
 - `route_1_source` (short name), `route_1_source_full`, `route_1_watchers`, `route_1_name`, and the same for `route_2`… plus `source_count`.
 
+### Mac: switch NDI Virtual Input itself (no route)
+The **Virtual Input (Mac: switch in the app)** presets pick the camera in NDI Virtual Input's own menu-bar menu, as if you clicked it. Virtual Input then shows the camera's real name.
+- **One-off setup:** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. (macOS asks the first time; if it was refused, add it there.)
+- NDI Virtual Input must be running (its icon in the menu bar).
+- You'll see its menu flash open for a moment on each press.
+- **Orange** = the camera Companion last picked. If someone changes it by hand in the menu, Companion doesn't know.
+- If a key says the source isn't in the menu, run **Mac: list NDI Virtual Input's menu** and check the **Log** tab for the exact names.
+- If NDI renames the app or changes its menu in an update, this can stop working. Routes don't have that problem.
+- Only need these keys? Clear the route names in the settings: no routes are made.
+
 ### Good to know
 - No video goes through Companion: the receiver connects straight to the camera, so there's no extra network load.
 - A route never offers itself or another route as a source (that would loop).

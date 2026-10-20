@@ -509,6 +509,16 @@ NDI Virtual Input has no remote control, so Companion makes its own NDI source f
 
 The same works for Studio Monitor / Video Monitor, OBS or vMix: point them at a route instead of a camera.
 
+### J.4 Mac only: switch Virtual Input in the app itself (no route)
+Use this instead of J.2–J.3 if you want Virtual Input to show the camera's own name.
+1. **System Settings → Privacy & Security → Accessibility** → turn on **Companion**.
+2. Make sure **NDI Virtual Input** is running (icon in the menu bar).
+3. **Presets → NDI Router → Virtual Input (Mac: switch in the app)** → drag a key per camera onto the D200X.
+4. Press one. Virtual Input's menu flashes open, the camera is picked, and the key goes **orange**.
+
+If nothing happens, check the connection's **Log** tab. It says if macOS blocked it or the source wasn't in the menu. The **list NDI Virtual Input's menu** action writes the menu's exact entries to the log.
+Don't need routes at all? Clear **Route names** in the connection settings.
+
 ## Part K: NDI Studio Monitor (Windows)
 
 ### K.1 Turn on web control
