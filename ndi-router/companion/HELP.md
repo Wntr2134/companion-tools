@@ -30,13 +30,13 @@ It also works for Studio Monitor, Video Monitor, OBS, vMix: anything that receiv
 - `route_1_source` (short name), `route_1_source_full`, `route_1_watchers`, `route_1_name`, and the same for `route_2`… plus `source_count`.
 
 ### Mac: switch NDI Virtual Input itself (no route)
-The **Virtual Input (Mac: switch in the app)** presets pick the camera in NDI Virtual Input's own menu-bar menu, as if you clicked it. Virtual Input then shows the camera's real name.
-- **One-off setup:** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. (macOS asks the first time; if it was refused, add it there.)
-- NDI Virtual Input must be running (its icon in the menu bar).
-- You'll see its menu flash open for a moment on each press.
-- **Orange** = the camera Companion last picked. If someone changes it by hand in the menu, Companion doesn't know.
-- If a key says the source isn't in the menu, run **Mac: list NDI Virtual Input's menu** and check the **Log** tab for the exact names.
-- If NDI renames the app or changes its menu in an update, this can stop working. Routes don't have that problem.
+The **Virtual Input (Mac: switch in the app)** presets pick the camera in the source drop-down at the bottom of NDI Virtual Input's window (*Computer > Source*, e.g. *Theatrette > Channel 1*), as if you clicked it. Virtual Input then shows the camera's real name.
+- **One-off setup:** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**.
+- Virtual Input's **window must be open**. It can sit behind other windows, but not closed.
+- Each press first tries to set the drop-down silently. If Virtual Input doesn't allow that, its list pops open for about half a second while the camera is picked.
+- **Orange** = what Virtual Input is showing. The module reads it every 5 s (setting), so changes made by hand show up too.
+- If a key says the source isn't there, run **Mac: list NDI Virtual Input's sources** and check the **Log** tab.
+- For switching with nothing on screen at all, use a route: set Virtual Input to *Companion 1* once and use the route keys.
 - Only need these keys? Clear the route names in the settings: no routes are made.
 
 ### Good to know

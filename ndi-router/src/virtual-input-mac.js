@@ -1,30 +1,59 @@
-// Mac only: switch NDI Virtual Input's source by clicking its menu-bar menu, as a person would.
-// NDI Virtual Input has no API, so this drives the menu through System Events (needs Accessibility
-// permission for Companion). Runs as JavaScript for Automation via osascript.
+// Mac only: switch NDI Virtual Input's source by using the source drop-down at the bottom of its
+// window, as a person would. NDI Virtual Input has no API, so this drives it through System Events
+// (needs Accessibility permission for Companion). Runs as JavaScript for Automation via osascript.
+//
+// The drop-down lists "None", then one entry per computer; each computer has a submenu of its
+// sources (e.g. Theatrette > Channel 1). The drop-down's value is the full NDI name of what's
+// showing, e.g. "WILLS-MACBOOK-PRO-4.LOCAL (Companion 1)".
 import { execFile } from 'node:child_process'
 
 /**
- * The JXA script. argv: [processName, mode ('select' | 'list'), fullName, machine, shortName]
- * Returns 'OK', a JSON list of menu titles (list mode), or 'ERR:<reason>'.
- * Handles both menu layouts: a flat list of "MACHINE (Source)" items, or a submenu per machine.
+ * argv: [processName, mode ('select' | 'read' | 'list'), fullName, machine, shortName]
+ * Returns 'OK:<value>' after select, '<value>' for read, a JSON list for list, or 'ERR:<code>[:detail]'.
  */
 export const MENU_SCRIPT = `
 function run(argv) {
 	var procName = argv[0], mode = argv[1], full = argv[2], machine = argv[3], short = argv[4]
 	var se = Application('System Events')
+	var safe = function (f, d) { try { var v = f(); return v === null || v === undefined ? d : v } catch (e) { return d } }
+	var same = function (a, b) { return String(a).toLowerCase() === String(b).toLowerCase() }
 	if (se.processes.whose({ name: procName }).length === 0) return 'ERR:not-running'
 	var proc = se.processes.byName(procName)
-	var bars = proc.menuBars()
-	if (!bars.length) return 'ERR:no-menu'
-	var barItems = bars[bars.length - 1].menuBarItems()
-	if (!barItems.length) return 'ERR:no-menu'
-	var top = barItems[0]
-	top.click()
-	delay(0.25)
+	var wins = safe(function () { return proc.windows() }, [])
+	if (!wins.length) return 'ERR:no-window'
+
+	// The source drop-down: directly in the window, or inside a group.
+	var popup = null
+	for (var w = 0; w < wins.length && !popup; w++) {
+		var direct = safe(function () { return wins[w].popUpButtons() }, [])
+		if (direct.length) { popup = direct[direct.length - 1]; break }
+		var groups = safe(function () { return wins[w].groups() }, [])
+		for (var g = 0; g < groups.length && !popup; g++) {
+			var inGroup = safe(function () { return groups[g].popUpButtons() }, [])
+			if (inGroup.length) popup = inGroup[inGroup.length - 1]
+		}
+	}
+	if (!popup) return 'ERR:no-dropdown'
+	var current = function () { return safe(function () { return popup.value() }, '') }
+	if (mode === 'read') return current()
+
+	// First try to set the drop-down's value directly: nothing appears on screen if the app allows it.
+	if (mode === 'select' && full) {
+		try {
+			popup.value = full
+			delay(0.15)
+			if (same(current(), full)) return 'OK:' + current()
+		} catch (e) {}
+	}
+
 	var close = function () { se.keyCode(53) }
-	var title = function (i) { try { return i.name() || '' } catch (e) { return '' } }
-	var subOf = function (i) { try { var m = i.menus(); return m.length ? m[0] : null } catch (e) { return null } }
-	var items = top.menus[0].menuItems()
+	var title = function (i) { return safe(function () { return i.name() }, '') }
+	var subOf = function (i) { return safe(function () { var m = i.menus(); return m.length ? m[0] : null }, null) }
+
+	popup.click()
+	delay(0.3)
+	var items = safe(function () { return popup.menus[0].menuItems() }, [])
+	if (!items.length) { close(); return 'ERR:no-dropdown' }
 
 	if (mode === 'list') {
 		var out = []
@@ -33,34 +62,44 @@ function run(argv) {
 			var sub = subOf(items[a])
 			if (sub) {
 				items[a].click()
-				delay(0.15)
-				var kids = sub.menuItems()
+				delay(0.2)
+				var kids = safe(function () { return sub.menuItems() }, [])
 				for (var b = 0; b < kids.length; b++) out.push(t + ' > ' + title(kids[b]))
-			} else out.push(t)
+				close()
+				popup.click()
+				delay(0.3)
+				items = safe(function () { return popup.menus[0].menuItems() }, items)
+			} else if (t) out.push(t)
 		}
 		close()
 		return JSON.stringify(out)
 	}
 
+	// "None" or a flat "MACHINE (Source)" entry
 	for (var i = 0; i < items.length; i++) {
 		var name = title(items[i])
-		if (name === full || (!machine && name === short)) { items[i].click(); return 'OK' }
-	}
-	for (var j = 0; j < items.length; j++) {
-		var nm = title(items[j])
-		var submenu = subOf(items[j])
-		if (submenu && (nm === machine || nm === full)) {
-			items[j].click()
-			delay(0.15)
-			var children = submenu.menuItems()
-			for (var k = 0; k < children.length; k++) {
-				var ct = title(children[k])
-				if (ct === short || ct === full) { children[k].click(); return 'OK' }
-			}
+		if (same(name, full) || (!full && same(name, 'None'))) {
+			items[i].click()
+			delay(0.2)
+			return 'OK:' + current()
 		}
 	}
-	for (var x = 0; x < items.length; x++) {
-		if (title(items[x]) === short) { items[x].click(); return 'OK' }
+	// Computer > source
+	for (var j = 0; j < items.length; j++) {
+		var submenu = subOf(items[j])
+		if (submenu && same(title(items[j]), machine)) {
+			items[j].click()
+			delay(0.25)
+			var children = safe(function () { return submenu.menuItems() }, [])
+			for (var k = 0; k < children.length; k++) {
+				var ct = title(children[k])
+				if (same(ct, short) || same(ct, full)) {
+					children[k].click()
+					delay(0.2)
+					return 'OK:' + current()
+				}
+			}
+		}
 	}
 	close()
 	return 'ERR:not-found'
@@ -69,11 +108,12 @@ function run(argv) {
 
 const FRIENDLY = {
 	'not-running': 'NDI Virtual Input is not running. Open it first.',
-	'no-menu': "Couldn't find NDI Virtual Input's menu-bar icon.",
-	'not-found': "That source isn't in NDI Virtual Input's menu (use the \"list\" action to see what is).",
+	'no-window': "NDI Virtual Input's window is closed. Open it (it can sit behind other windows or be minimised to the side, but not closed).",
+	'no-dropdown': "Couldn't find the source drop-down in NDI Virtual Input's window.",
+	'not-found': "That source isn't in NDI Virtual Input's drop-down (use the \"list\" action to see what is).",
 }
 
-/** Run the script. Resolves 'OK' or the list; rejects with a readable message. */
+/** Run the script. Resolves the script's answer; rejects with a readable message. */
 export function runMenuScript({ processName, mode, full = '', machine = '', short = '' }, exec = execFile) {
 	return new Promise((resolve, reject) => {
 		exec(
@@ -88,8 +128,11 @@ export function runMenuScript({ processName, mode, full = '', machine = '', shor
 						return reject(new Error('macOS blocked it: allow Companion in System Settings → Privacy & Security → Accessibility, then try again.'))
 					return reject(new Error(text.trim() || 'osascript failed'))
 				}
-				if (out.startsWith('ERR:')) return reject(new Error(FRIENDLY[out.slice(4)] ?? out))
-				resolve(out)
+				if (out.startsWith('ERR:')) {
+					const [code, ...detail] = out.slice(4).split(':')
+					return reject(new Error((FRIENDLY[code] ?? out) + (detail.length ? ` (${detail.join(':')})` : '')))
+				}
+				resolve(out.startsWith('OK:') ? out.slice(3) : out)
 			},
 		)
 	})
