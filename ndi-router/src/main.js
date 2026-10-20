@@ -145,7 +145,8 @@ class NdiRouterInstance extends InstanceBase {
 	readVirtualInput() {
 		this.viQueue = this.viQueue.then(async () => {
 			try {
-				this.setViSource(await runMenuScript({ processName: this.viApp(), mode: 'read' }))
+				const now = await runMenuScript({ processName: this.viApp(), mode: 'read' })
+				if (now !== '?') this.setViSource(now) // '?' = Virtual Input doesn't say: keep the last known
 			} catch {
 				// not running / window closed: leave the last known value
 			}
