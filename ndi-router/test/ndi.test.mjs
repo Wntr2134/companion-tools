@@ -20,6 +20,7 @@ before(() => {
 	fake = {
 		setSources: l.func('void fake_set_sources(const char *)'),
 		target: l.func('const char *fake_route_target(int)'),
+		url: l.func('const char *fake_route_url(int)'),
 		name: l.func('const char *fake_route_name(int)'),
 		setConnections: l.func('void fake_set_connections(int, int)'),
 		count: l.func('int fake_route_count()'),
@@ -39,6 +40,12 @@ test('binding: finds sources, creates a route, changes and clears it', () => {
 	assert.equal(fake.name(0), 'Companion 1')
 	assert.equal(r.change('STUDIO-PC (Cam 2)'), true)
 	assert.equal(fake.target(0), 'STUDIO-PC (Cam 2)')
+	assert.equal(fake.url(0), '', 'no address known yet: name only')
+	fake.setSources('STUDIO-PC (Cam 1)|192.168.1.20:5961\nSTUDIO-PC (Cam 2)|192.168.1.20:5962')
+	ndi.sources()
+	assert.equal(ndi.urlOf('STUDIO-PC (Cam 2)'), '192.168.1.20:5962')
+	r.change('STUDIO-PC (Cam 2)')
+	assert.equal(fake.url(0), '192.168.1.20:5962', 'address passed along like NDI Router does')
 	fake.setConnections(0, 2)
 	assert.equal(r.connections(), 2)
 	r.clear()
