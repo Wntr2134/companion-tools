@@ -27,6 +27,9 @@ import {
 	encoderPushControlId,
 } from './surface-schema.js'
 
+/** The double-width key (the small window) at col 3, row 2. */
+const WIDE_SLOT = { col: 3, row: 2 }
+
 export class D200Surface implements SurfaceInstance {
 	readonly #logger: ModuleLogger
 	readonly #surfaceId: string
@@ -37,6 +40,8 @@ export class D200Surface implements SurfaceInstance {
 	readonly #pending = new Map<string, ButtonRenderInput>()
 	readonly #renderCache = new Map<string, ButtonRenderInput>()
 	#flushTimer?: NodeJS.Timeout
+	/** Flushes run one after another, so an older batch can never land after a newer one. */
+	#flushChain: Promise<void> = Promise.resolve()
 	#screensaverTimer?: NodeJS.Timeout
 	#initialPushDone = false
 	#statusActive = false
@@ -245,7 +250,13 @@ export class D200Surface implements SurfaceInstance {
 		}, 75)
 	}
 
-	async #flush(partial: boolean): Promise<void> {
+	#flush(partial: boolean): Promise<void> {
+		const run = this.#flushChain.then(() => this.#doFlush(partial))
+		this.#flushChain = run.catch(() => undefined)
+		return run
+	}
+
+	async #doFlush(partial: boolean): Promise<void> {
 		if (this.#screensaverActive) return
 		if (this.#pending.size === 0) return
 		let isPartial = partial && this.#initialPushDone
@@ -260,6 +271,14 @@ export class D200Surface implements SurfaceInstance {
 		}
 		const batch = Array.from(this.#pending.values())
 		this.#pending.clear()
+		// Every update carries an entry for the wide key (the firmware needs it to keep the slot 2 cells
+		// wide). In a partial update that doesn't include the wide key, that entry would have no image and
+		// blank it. So when it shows a Companion button, send its last image along with every partial update.
+		const wideKey = `${WIDE_SLOT.col}_${WIDE_SLOT.row}`
+		if (isPartial && this.#smallWindowMode === SMALL_WINDOW_DISABLED && !batch.some((b) => `${b.col}_${b.row}` === wideKey)) {
+			const cached = this.#renderCache.get(wideKey)
+			if (cached?.iconPng) batch.push(cached)
+		}
 		try {
 			await this.#device.setButtons(batch, {
 				partial: isPartial,
