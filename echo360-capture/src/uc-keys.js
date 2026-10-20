@@ -39,6 +39,41 @@ export function osascriptArgs(key, { activate = false, appName = UC_DEFAULT_APP,
 	return [...lines.flatMap((l) => ['-e', l]), String(appName || UC_DEFAULT_APP)]
 }
 
+/**
+ * Windows: Universal Capture uses Ctrl instead of Cmd. PowerShell sends the keys with WScript.Shell.
+ * Inputs come in through environment variables (UC_KEY, UC_APP, UC_ACTIVATE, UC_RETURN), never pasted
+ * into the script, so an odd app name can't change what runs.
+ */
+export const WINDOWS_SCRIPT = `
+$ErrorActionPreference = 'Stop'
+Add-Type -Name Win -Namespace UcKeys -MemberDefinition '[DllImport("user32.dll")] public static extern System.IntPtr GetForegroundWindow(); [DllImport("user32.dll")] public static extern bool SetForegroundWindow(System.IntPtr h);'
+$prev = [UcKeys.Win]::GetForegroundWindow()
+$sh = New-Object -ComObject WScript.Shell
+if ($env:UC_ACTIVATE -eq '1') {
+  $name = $env:UC_APP
+  $compact = $name -replace ' ', ''
+  $p = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 -and ($_.MainWindowTitle -like "*$name*" -or $_.ProcessName -like "*$compact*") } | Select-Object -First 1
+  if (-not $p) { Write-Output 'ERR:not-running'; exit 0 }
+  $null = $sh.AppActivate($p.Id)
+  Start-Sleep -Milliseconds 300
+}
+$sh.SendKeys('^' + $env:UC_KEY)
+if ($env:UC_ACTIVATE -eq '1' -and $env:UC_RETURN -eq '1') {
+  Start-Sleep -Milliseconds 150
+  $null = [UcKeys.Win]::SetForegroundWindow($prev)
+}
+Write-Output 'OK'
+`.trim()
+
+/** powershell.exe arguments and environment for one shortcut on Windows. */
+export function powershellArgs(key, { activate = false, appName = UC_DEFAULT_APP, returnFocus = true } = {}) {
+	if (!/^[0-9]$/.test(String(key))) throw new Error(`Unexpected key ${key}`)
+	return {
+		args: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', WINDOWS_SCRIPT],
+		env: { UC_KEY: String(key), UC_APP: String(appName || UC_DEFAULT_APP), UC_ACTIVATE: activate ? '1' : '0', UC_RETURN: returnFocus ? '1' : '0' },
+	}
+}
+
 export class UCKeys {
 	/** run: execFile-compatible function (injected in tests). log(level, msg). */
 	constructor({ run = execFile, platform = process.platform, log = () => {} } = {}) {
@@ -54,8 +89,8 @@ export class UCKeys {
 	send(name, { activate = false, appName = UC_DEFAULT_APP, returnFocus = true } = {}) {
 		const def = UC_KEYS[name]
 		if (!def) return Promise.resolve({ sent: false, reason: 'unknown' })
-		if (this.platform !== 'darwin') {
-			this.#fail(`Universal Capture shortcuts only work when Companion runs on a Mac: ${def.label} not sent`, 'warn')
+		if (this.platform !== 'darwin' && this.platform !== 'win32') {
+			this.#fail(`Universal Capture shortcuts only work when Companion runs on a Mac or Windows PC: ${def.label} not sent`, 'warn')
 			return Promise.resolve({ sent: false, reason: 'platform' })
 		}
 		// Pause/resume is a toggle: a double tap would undo itself, so ignore repeats within 1.5 s.
@@ -64,9 +99,25 @@ export class UCKeys {
 		if (last !== undefined && now - last < UC_DEBOUNCE_MS) return Promise.resolve({ sent: false, reason: 'debounced' })
 		this.lastPress.set(name, now)
 
-		const args = osascriptArgs(def.key, { activate, appName, returnFocus })
+		const win = this.platform === 'win32'
+		const label = win ? def.label.replace('Cmd+', 'Ctrl+') : def.label
+		let cmd, args, opts
+		if (win) {
+			const ps = powershellArgs(def.key, { activate, appName, returnFocus })
+			cmd = 'powershell.exe'
+			args = ps.args
+			opts = { timeout: 8000, windowsHide: true, env: { ...process.env, ...ps.env } }
+		} else {
+			cmd = 'osascript'
+			args = osascriptArgs(def.key, { activate, appName, returnFocus })
+			opts = { timeout: 5000 }
+		}
 		return new Promise((resolve) => {
-			this.run('osascript', args, { timeout: 5000 }, (err, _stdout, stderr) => {
+			this.run(cmd, args, opts, (err, stdout, stderr) => {
+				if (!err && String(stdout ?? '').trim() === 'ERR:not-running') {
+					this.#fail(`${label} not sent: couldn't find a Universal Capture window (is it open?)`)
+					return resolve({ sent: true, ok: false })
+				}
 				if (err) {
 					const why = String(stderr || err.message || '')
 					const hint = /-1743|not authori[sz]ed to send apple events/i.test(why)
@@ -74,10 +125,10 @@ export class UCKeys {
 						: /not allowed|1002|1719|assistive/i.test(why)
 							? ' (give Companion Accessibility permission: System Settings → Privacy & Security → Accessibility)'
 							: ''
-					this.#fail(`${def.label} failed${hint}: ${why.trim().split('\n')[0]}`)
+					this.#fail(`${label} failed${hint}: ${why.trim().split('\n')[0]}`)
 					resolve({ sent: true, ok: false })
 				} else {
-					this.lastMessage = `Sent ${def.label} (no status from Universal Capture)`
+					this.lastMessage = `Sent ${label} (no status from Universal Capture)`
 					this.log('info', this.lastMessage)
 					resolve({ sent: true, ok: true })
 				}

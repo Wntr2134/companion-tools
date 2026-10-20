@@ -15,7 +15,7 @@ export const isUC = (self) => self.config?.device === 'uc'
 /** Send a Universal Capture shortcut. Refused (with a message) when the module is in device mode. */
 export async function ucKey(self, name) {
 	if (!isUC(self)) {
-		self.client.refuse('Universal Capture shortcuts: set Device type to "Universal Capture on this Mac" first. Nothing sent')
+		self.client.refuse('Universal Capture shortcuts: set Device type to "Universal Capture on this computer" first. Nothing sent')
 		return { sent: false, reason: 'mode' }
 	}
 	return self.uc.send(name, { activate: self.config.ucActivate !== false, appName: self.config.ucApp || UC_DEFAULT_APP, returnFocus: self.config.ucReturn !== false })
@@ -248,25 +248,25 @@ export function getActions(self) {
 			callback: async () => self.client.pollNow(),
 		},
 		uc_pause_resume: {
-			name: 'Universal Capture: pause/resume (Cmd+6, no status)',
+			name: 'Universal Capture: pause/resume (Cmd/Ctrl+6, no status)',
 			description: 'A toggle: the module can\'t tell whether Universal Capture is recording or paused.',
 			options: [],
 			callback: async () => void (await ucKey(self, 'pause_resume')),
 		},
 		uc_finish: {
-			name: 'Universal Capture: finish and upload (Cmd+8, no status)',
+			name: 'Universal Capture: finish and upload (Cmd/Ctrl+8, no status)',
 			description: 'Ends the recording and uploads it. The presets only send this after a 2-second hold.',
 			options: [],
 			callback: async () => void (await ucKey(self, 'finish')),
 		},
 		uc_extend: {
-			name: 'Universal Capture: extend (Cmd+1, no status)',
+			name: 'Universal Capture: extend (Cmd/Ctrl+1, no status)',
 			description: 'Echo360 says this works for live and Universal Capture: Classroom recordings only.',
 			options: [],
 			callback: async () => void (await ucKey(self, 'extend')),
 		},
 		uc_open: {
-			name: 'Universal Capture: open (Cmd+4)',
+			name: 'Universal Capture: open (Cmd/Ctrl+4)',
 			options: [],
 			callback: async () => void (await ucKey(self, 'open')),
 		},
@@ -522,11 +522,11 @@ export function getPresets(self) {
 			feedbacks: [err, offline],
 		},
 
-		// Universal Capture on this Mac: keystrokes only, deliberately no state colours or timers.
+		// Universal Capture on this computer: keystrokes only, deliberately no state colours or timers.
 		uc_pause_resume: {
 			type: 'button',
 			category: UC_CATEGORY,
-			name: 'Pause / resume (Cmd+6, no status)',
+			name: 'Pause / resume (Cmd/Ctrl+6, no status)',
 			style: base('PAUSE/\\nRESUME\\nno status', { bgcolor: DARK }),
 			steps: [{ down: [{ actionId: 'uc_pause_resume', options: {} }], up: [] }],
 			feedbacks: [err],
@@ -534,7 +534,7 @@ export function getPresets(self) {
 		uc_finish_hold: {
 			type: 'button',
 			category: UC_CATEGORY,
-			name: 'Finish and upload (hold 2 seconds, Cmd+8, no status)',
+			name: 'Finish and upload (hold 2 seconds, Cmd/Ctrl+8, no status)',
 			style: base('HOLD\\nFINISH', { color: DIM_TEXT }),
 			previewStyle: { text: 'HOLD\\nFINISH', color: WHITE, bgcolor: RED },
 			steps: [
@@ -549,7 +549,7 @@ export function getPresets(self) {
 		uc_extend: {
 			type: 'button',
 			category: UC_CATEGORY,
-			name: 'Extend (Cmd+1, no status)',
+			name: 'Extend (Cmd/Ctrl+1, no status)',
 			style: base('EXTEND\\nno status'),
 			steps: [{ down: [{ actionId: 'uc_extend', options: {} }], up: [] }],
 			feedbacks: [err],
@@ -557,7 +557,7 @@ export function getPresets(self) {
 		uc_open: {
 			type: 'button',
 			category: UC_CATEGORY,
-			name: 'Open Universal Capture (Cmd+4)',
+			name: 'Open Universal Capture (Cmd/Ctrl+4)',
 			style: base('OPEN\\nUC'),
 			steps: [{ down: [{ actionId: 'uc_open', options: {} }], up: [] }],
 			feedbacks: [err],

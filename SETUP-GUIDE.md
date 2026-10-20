@@ -420,9 +420,9 @@ Anything that doesn't work is probably one of the guesses listed in `grandma2/NO
    - **Next capture**: when the next scheduled recording starts.
 5. **Test first** with the module's **test mode**. It makes a practice recording that is never uploaded. Do this in a free room before using it with a class.
 
-### G.2 Every other room (Universal Capture on the lectern Mac)
+### G.2 Every other room (Universal Capture on the lectern Mac or PC)
 Universal Capture has no control connection, so Companion sends its keyboard shortcuts instead. That means **the keys can't show whether it's recording**; they say *NO STATUS*.
-1. **Add the connection:** **Connections → + Add connection** → **Echo360 Capture**. Set **Device type** to *Universal Capture on this Mac (keyboard shortcuts)*.
+1. **Add the connection:** **Connections → + Add connection** → **Echo360 Capture**. Set **Device type** to *Universal Capture on this computer (keyboard shortcuts)*. Works with Companion on the lectern Mac (Cmd shortcuts) or Windows PC (Ctrl shortcuts).
 2. **Give Companion permission:** System Settings → **Privacy & Security → Accessibility** → turn on **Companion**. Without this, macOS blocks the keystrokes; the connection's log will say so.
 3. **Presets → Universal Capture (no status):** PAUSE/RESUME, **HOLD FINISH** (2-second hold), EXTEND, OPEN UC.
 4. The lecturer still clicks **Record** in Universal Capture to start. There's no start shortcut.

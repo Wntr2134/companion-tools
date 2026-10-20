@@ -8,7 +8,7 @@ The module has two separate modes. Pick one under **Device type**:
 |---|---|---|
 | **Echo360 Pro / Pod / SafeCapture HD** | A capture appliance in the rack (e.g. the auditorium Pro) | Real state and timers, read from the device every 2 s |
 | **Universal Capture: Classroom** | UC installed on a room computer, if it answers the Capture API (unconfirmed) | As above, if it works |
-| **Universal Capture on this Mac** | The Universal Capture app on the Mac that runs Companion | **NO STATUS**: keyboard shortcuts only |
+| **Universal Capture on this computer** | The Universal Capture app on the Mac or Windows PC that runs Companion | **NO STATUS**: keyboard shortcuts only |
 
 > **Untested on real hardware.** This was built from Echo360's Capture API guide and four open-source drivers that were used on real devices, and tested against a simulated device. Try it in a free room first, using **Test mode** on the start action (a confidence-monitor capture that is never kept).
 
@@ -61,23 +61,23 @@ Elapsed and remaining use the device's own clock, so they don't drift if the Mac
 
 ---
 
-### Universal Capture on this Mac (keyboard shortcuts, no status)
+### Universal Capture on this computer (keyboard shortcuts, no status)
 
-Universal Capture (the app) has **no control API**. In this mode the module presses Universal Capture's own shortcuts on the Mac running Companion:
+Universal Capture (the app) has **no control API**. In this mode the module presses Universal Capture's own shortcuts on the computer running Companion (Cmd on a Mac, Ctrl on Windows):
 
 | Button | Shortcut |
 |---|---|
-| Pause / resume | Cmd+6 |
-| Finish and upload (**hold 2 s**) | Cmd+8 |
-| Extend (live and UC: Classroom recordings only) | Cmd+1 |
-| Open Universal Capture | Cmd+4 |
+| Pause / resume | Cmd+6 / Ctrl+6 |
+| Finish and upload (**hold 2 s**) | Cmd+8 / Ctrl+8 |
+| Extend (live and UC: Classroom recordings only) | Cmd+1 / Ctrl+1 |
+| Open Universal Capture | Cmd+4 / Ctrl+4 |
 
 Know these limits:
 - **There is no start shortcut.** The lecturer clicks **Record** in Universal Capture. The app minimises after its countdown.
 - **The shortcuts are toggles with no feedback**, so the module can't know whether Universal Capture is recording or paused. Buttons in this mode say **NO STATUS** and never show a timer.
 - **Companion needs Accessibility permission** to send keystrokes: **System Settings → Privacy & Security → Accessibility → Companion** (turn it on, then restart Companion). Without it, the keys turn magenta and the message mentions Accessibility.
-- **Bring Universal Capture to the front** (on by default) activates the app before each shortcut. Change **Universal Capture app name** if the app is named differently on your Mac.
-- This mode only works when Companion runs on a Mac. On Windows or Linux it logs a warning and does nothing.
+- **Bring Universal Capture to the front** (on by default) activates the app before each shortcut, then (also on by default) puts back the app that was in front, e.g. the slides. Change **Universal Capture app name** if the app is named differently on your computer.
+- Works when Companion runs on a Mac or a Windows PC. On Windows, Windows sometimes refuses to hand the front back to the previous app: then Universal Capture stays in front. On Linux it logs a warning and does nothing.
 - Universal Capture auto-finishes a recording that has been paused for more than about 20 minutes (according to university guides).
 
 Presets are in the category **Universal Capture (no status)**: PAUSE/RESUME, HOLD FINISH, EXTEND and OPEN UC.
