@@ -14,6 +14,7 @@ You will set up:
 - **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 - **Part I:** App launcher: a key for any app on the Companion computer
 - **Part J:** NDI router: switch which camera NDI Virtual Input (or a monitor) shows
+- **Part K:** NDI Studio Monitor (Windows): source, PiP, mute and record keys
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -35,9 +36,10 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
    - `app-launcher-….tgz`: app launcher (Part I)
    - `ndi-router-….tgz`: NDI router (Part J)
+   - `ndi-studio-monitor-….tgz`: NDI Studio Monitor (Part K)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A to J**, skipping the "dev version" steps.
+5. Carry on from **Part A to K**, skipping the "dev version" steps.
 
 To update later: download the new files from the same page and import them again.
 
@@ -506,6 +508,27 @@ NDI Virtual Input has no remote control, so Companion makes its own NDI source f
 3. Press a camera key. Virtual Input switches to that camera, and the key goes **green**.
 
 The same works for Studio Monitor / Video Monitor, OBS or vMix: point them at a route instead of a camera.
+
+## Part K: NDI Studio Monitor (Windows)
+
+### K.1 Turn on web control
+1. On the Windows PC, open **NDI Studio Monitor**.
+2. ☰ menu (top left) → **Settings** → **Application** → turn on **Web control**. Note the address it shows (e.g. `192.168.1.50`, port `80`).
+
+### K.2 Add the connection
+1. **Connections → + Add connection** → search **NDI Studio Monitor** (the one from these tools, version 1.x) → add it.
+2. Enter the PC's IP and the port. Web user and password are **admin / admin** unless they were changed. Save.
+
+✅ The connection goes green. If it says *Wrong web user or password*, check the login in Studio Monitor (person icon in its web page).
+
+### K.3 Keys
+1. **Presets → NDI Studio Monitor**:
+   - **Sources**: one key per camera. Green = showing.
+   - **Overlay (PiP)**: picture-in-picture keys and *Hide overlay*.
+   - **Status**: *Showing now*, *Record* (red while recording, with the time), *Audio mute*.
+2. Got more than one Studio Monitor window? Each has its own port: add a connection for each.
+
+On a Mac, NDI Video Monitor has no web control. Point it at an NDI Router route (Part J) and switch the route instead.
 
 ## Getting updates
 
