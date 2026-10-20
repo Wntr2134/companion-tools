@@ -11,7 +11,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - MagicQ module: `node --test test/knobs.test.mjs` in `magicq/` (npm install rewrites yarn.lock: restore it before committing).
 - Show Health module: `node --test test/health.test.mjs` in `show-health/`.
 - App Launcher module: `node --test test/apps.test.mjs` in `app-launcher/`.
-- NDI Router module: `node --test test/ndi.test.mjs` in `ndi-router/` (builds a fake NDI library with `cc`).
+- NDI Router module: `node --test test/ndi.test.mjs test/virtual-input.test.mjs` in `ndi-router/` (builds a fake NDI library with `cc`).
 - NDI Studio Monitor module: `node --test test/monitor.test.mjs` in `ndi-studio-monitor/`.
 - grandMA2 module: `node --test test/ma2.test.mjs` in `grandma2/`.
 - Ulanzi plugin: `yarn build` (or `tsc --noEmit`) in `ulanzi-d200x/` must pass.
