@@ -512,9 +512,10 @@ The same works for Studio Monitor / Video Monitor, OBS or vMix: point them at a 
 ### J.4 Mac only: switch Virtual Input in the app itself (no route)
 Use this instead of J.2–J.3 if you want Virtual Input to show the camera's own name.
 1. **System Settings → Privacy & Security → Accessibility** → turn on **Companion**.
-2. Open **NDI Virtual Input** and leave its window open (behind other windows is fine).
+2. Nothing to open: if **NDI Virtual Input** isn't running, the first key press opens it in the background.
 3. **Presets → NDI Router → Virtual Input (Mac: switch in the app)** → drag a key per camera onto the D200X.
-4. Press one. The camera is picked in Virtual Input's drop-down (it may pop open for a moment) and the key goes **orange**.
+4. Press one. Virtual Input's source menu pops up briefly, the camera is picked, you're put back in the app you were using, and the key goes **orange**.
+   - In the connection settings, *after switching Virtual Input* can also hide Virtual Input (its camera keeps working) or leave it in front.
 
 If nothing happens, check the connection's **Log** tab: it says if macOS blocked it, the window is closed, or the source wasn't in the drop-down. The **list NDI Virtual Input's sources** action writes the drop-down's exact entries to the log.
 Want no pop-up at all? Use the route (J.2–J.3) instead: Virtual Input stays on *Companion 1* and the keys switch behind the scenes.

@@ -1,7 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { candidateLibraries, openNdi, splitSourceName } from './ndi.js'
 import { Router, parseRouteNames } from './router.js'
-import { runMenuScript } from './virtual-input-mac.js'
+import { runMenuScript, selectWithAutoOpen } from './virtual-input-mac.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const RED = combineRgb(180, 0, 0)
@@ -102,7 +102,7 @@ class NdiRouterInstance extends InstanceBase {
 	}
 
 	startViPoll() {
-		const seconds = Number(this.config.viPoll ?? 5)
+		const seconds = Number(this.config.viPoll ?? 10)
 		if (process.platform !== 'darwin' || !(seconds > 0)) return
 		this.viTimer = setInterval(() => void this.readVirtualInput(), seconds * 1000)
 		void this.readVirtualInput()
@@ -124,6 +124,7 @@ class NdiRouterInstance extends InstanceBase {
 
 	/** Mac: pick a source in NDI Virtual Input's drop-down. One at a time, so clicks never overlap. */
 	switchVirtualInput(source) {
+		this.viPending = (this.viPending ?? 0) + 1
 		this.viQueue = this.viQueue.then(async () => {
 			if (process.platform !== 'darwin') {
 				this.log('warn', 'Switching NDI Virtual Input in the app only works on a Mac. Use a route instead.')
@@ -131,27 +132,33 @@ class NdiRouterInstance extends InstanceBase {
 			}
 			const { machine, name } = splitSourceName(source)
 			try {
-				const now = await runMenuScript({ processName: this.viApp(), mode: 'select', full: source, machine, short: name })
+				const now = await selectWithAutoOpen(
+					{ processName: this.viApp(), full: source, machine, short: name, after: this.config.viAfter || 'return' },
+					{ autoOpen: this.config.viAutoOpen !== false },
+				)
 				this.log('info', `NDI Virtual Input → ${now || source}`)
 				this.setViSource(now || source)
 			} catch (e) {
 				this.log('error', `NDI Virtual Input: ${e.message}`)
+			} finally {
+				this.viPending--
 			}
 		})
 		return this.viQueue
 	}
 
-	/** Mac: read what Virtual Input shows (also catches changes made by hand). Quiet if it isn't open. */
-	readVirtualInput() {
-		this.viQueue = this.viQueue.then(async () => {
-			try {
-				const now = await runMenuScript({ processName: this.viApp(), mode: 'read' })
-				if (now !== '?') this.setViSource(now) // '?' = Virtual Input doesn't say: keep the last known
-			} catch {
-				// not running / window closed: leave the last known value
-			}
-		})
-		return this.viQueue
+	/** Mac: read what Virtual Input shows (also catches changes made by hand). Never holds up a key press. */
+	async readVirtualInput() {
+		if (this.viPending > 0 || this.viReading) return
+		this.viReading = true
+		try {
+			const now = await runMenuScript({ processName: this.viApp(), mode: 'read' })
+			if (now !== '?' && !this.viPending) this.setViSource(now) // '?' = Virtual Input doesn't say: keep the last known
+		} catch {
+			// not running / window closed: leave the last known value
+		} finally {
+			this.viReading = false
+		}
 	}
 
 	viApp() {
@@ -389,11 +396,30 @@ class NdiRouterInstance extends InstanceBase {
 				default: DEFAULT_VI_APP,
 			},
 			{
+				type: 'dropdown',
+				id: 'viAfter',
+				label: 'Mac: after switching Virtual Input',
+				width: 8,
+				default: 'return',
+				choices: [
+					{ id: 'return', label: 'Go back to the app I was using (default)' },
+					{ id: 'hide', label: 'Hide Virtual Input and go back (its camera keeps working)' },
+					{ id: 'stay', label: 'Leave Virtual Input in front' },
+				],
+			},
+			{
+				type: 'checkbox',
+				id: 'viAutoOpen',
+				label: 'Mac: open Virtual Input if it is closed',
+				width: 4,
+				default: true,
+			},
+			{
 				type: 'number',
 				id: 'viPoll',
 				label: 'Mac: check what Virtual Input shows every (s, 0 = off)',
 				width: 4,
-				default: 5,
+				default: 10,
 				min: 0,
 				max: 60,
 			},

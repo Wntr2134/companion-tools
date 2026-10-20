@@ -8,37 +8,70 @@
 import { execFile } from 'node:child_process'
 
 /**
- * argv: [processName, mode ('select' | 'read' | 'list'), fullName, machine, shortName]
+ * argv: [processName, mode ('select' | 'read' | 'list'), fullName, machine, shortName, after ('return' | 'hide' | 'stay')]
  * Returns 'OK:<value>' after select, '<value>' for read, a JSON list for list, or 'ERR:<code>[:detail]'.
  */
 export const MENU_SCRIPT = `
 function run(argv) {
-	var procName = argv[0], mode = argv[1], full = argv[2], machine = argv[3], short = argv[4]
+	var procName = argv[0], mode = argv[1], full = argv[2], machine = argv[3], short = argv[4], after = argv[5] || 'return'
 	var se = Application('System Events')
 	var safe = function (f, d) { try { var v = f(); return v === null || v === undefined ? d : v } catch (e) { return d } }
 	var same = function (a, b) { return String(a).toLowerCase() === String(b).toLowerCase() }
 	if (se.processes.whose({ name: procName }).length === 0) return 'ERR:not-running'
 	var proc = se.processes.byName(procName)
+	// The app you're working in, so it can be put back in front afterwards.
+	var front = mode === 'read' ? null : safe(function () { return se.processes.whose({ frontmost: true })()[0] }, null)
+	var wasHidden = !safe(function () { return proc.visible() }, true)
+	if (wasHidden) {
+		if (mode === 'read') return '?'
+		proc.visible = true
+		delay(0.3)
+	}
+	var finish = function (result) {
+		if (after === 'hide' || (wasHidden && after !== 'stay')) safe(function () { proc.visible = false; return 1 }, 0)
+		if (after !== 'stay' && front && safe(function () { return front.name() }, '') !== procName) safe(function () { front.frontmost = true; return 1 }, 0)
+		return result
+	}
 	var wins = safe(function () { return proc.windows() }, [])
 	if (!wins.length) return 'ERR:no-window'
 
-	// The source drop-down can sit anywhere in the window (groups, split views…): search every element.
+	// Find the source control. Fast path: walk only into containers (groups, split views…), not
+	// every element of the video view. Slow path (whole window) only if that finds nothing.
 	var KINDS = ['AXPopUpButton', 'AXMenuButton', 'AXComboBox']
+	var CONTAINERS = ['AXGroup', 'AXSplitGroup', 'AXScrollArea', 'AXLayoutArea', 'AXTabGroup', 'AXToolbar', 'AXUnknown']
 	var popup = null, seen = {}
-	for (var w = 0; w < wins.length && !popup; w++) {
-		var all = safe(function () { return wins[w].entireContents() }, [])
-		var hits = []
-		for (var e = 0; e < all.length; e++) {
-			var role = safe(function () { return all[e].role() }, '')
-			if (role) seen[role] = (seen[role] || 0) + 1
-			if (KINDS.indexOf(role) >= 0) hits.push(all[e])
-		}
+	var textOf = function (el) { return String(safe(function () { return el.value() }, '') || safe(function () { return el.title() }, '') || safe(function () { return el.name() }, '')) }
+	var choose = function (hits) {
 		// Prefer the one showing an NDI name like "MACHINE (Source)"; otherwise the last one (it's at the bottom).
-		for (var h = 0; h < hits.length && !popup; h++) {
-			var hv = String(safe(function () { return hits[h].value() }, '') || safe(function () { return hits[h].title() }, '') || safe(function () { return hits[h].name() }, ''))
-			if (hv.indexOf(' (') > 0 && hv.charAt(hv.length - 1) === ')') popup = hits[h]
+		for (var h = 0; h < hits.length; h++) {
+			var hv = textOf(hits[h])
+			if (hv.indexOf(' (') > 0 && hv.charAt(hv.length - 1) === ')') return hits[h]
 		}
-		if (!popup && hits.length) popup = hits[hits.length - 1]
+		return hits.length ? hits[hits.length - 1] : null
+	}
+	for (var w = 0; w < wins.length && !popup; w++) {
+		var hits = [], queue = [[wins[w], 0]]
+		while (queue.length) {
+			var pair = queue.shift()
+			var kids = safe(function () { return pair[0].uiElements() }, [])
+			for (var c = 0; c < kids.length; c++) {
+				var role = safe(function () { return kids[c].role() }, '')
+				if (role) seen[role] = (seen[role] || 0) + 1
+				if (KINDS.indexOf(role) >= 0) hits.push(kids[c])
+				else if (pair[1] < 6 && CONTAINERS.indexOf(role) >= 0) queue.push([kids[c], pair[1] + 1])
+			}
+		}
+		popup = choose(hits)
+	}
+	for (var w2 = 0; w2 < wins.length && !popup; w2++) {
+		var all = safe(function () { return wins[w2].entireContents() }, [])
+		var deep = []
+		for (var e = 0; e < all.length; e++) {
+			var r2 = safe(function () { return all[e].role() }, '')
+			if (r2) seen[r2] = (seen[r2] || 0) + 1
+			if (KINDS.indexOf(r2) >= 0) deep.push(all[e])
+		}
+		popup = choose(deep)
 	}
 	if (!popup) {
 		var summary = []
@@ -58,22 +91,23 @@ function run(argv) {
 	if (mode === 'read') return current() || '?'
 
 	// First try to set the drop-down's value directly: nothing appears on screen if the app allows it.
-	if (mode === 'select' && full) {
+	if (mode === 'select' && full && safe(function () { return popup.role() }, '') === 'AXPopUpButton') {
 		try {
 			popup.value = full
-			delay(0.15)
-			if (same(current(), full)) return 'OK:' + current()
+			delay(0.1)
+			if (same(current(), full)) return finish('OK:' + current())
 		} catch (e) {}
 	}
 
 	var close = function () { se.keyCode(53) }
+	var machineName = function (i) { return safe(function () { return i.name() }, machine) }
 	var title = function (i) { return safe(function () { return i.name() }, '') }
 	var subOf = function (i) { return safe(function () { var m = i.menus(); return m.length ? m[0] : null }, null) }
 
 	popup.click()
-	delay(0.3)
+	delay(0.12)
 	var items = safe(function () { return popup.menus[0].menuItems() }, [])
-	if (!items.length) { close(); return 'ERR:no-dropdown' }
+	if (!items.length) { close(); return finish('ERR:no-dropdown') }
 
 	if (mode === 'list') {
 		var out = []
@@ -92,7 +126,7 @@ function run(argv) {
 			} else if (t) out.push(t)
 		}
 		close()
-		return JSON.stringify(out)
+		return finish(JSON.stringify(out))
 	}
 
 	// "None" or a flat "MACHINE (Source)" entry
@@ -100,8 +134,7 @@ function run(argv) {
 		var name = title(items[i])
 		if (same(name, full) || (!full && same(name, 'None'))) {
 			items[i].click()
-			delay(0.2)
-			return 'OK:' + current()
+			return finish('OK:' + (full || ''))
 		}
 	}
 	// Computer > source
@@ -109,20 +142,19 @@ function run(argv) {
 		var submenu = subOf(items[j])
 		if (submenu && same(title(items[j]), machine)) {
 			items[j].click()
-			delay(0.25)
+			delay(0.1)
 			var children = safe(function () { return submenu.menuItems() }, [])
 			for (var k = 0; k < children.length; k++) {
 				var ct = title(children[k])
 				if (same(ct, short) || same(ct, full)) {
 					children[k].click()
-					delay(0.2)
-					return 'OK:' + current()
+					return finish('OK:' + machineName(items[j]) + ' (' + ct + ')')
 				}
 			}
 		}
 	}
 	close()
-	return 'ERR:not-found'
+	return finish('ERR:not-found')
 }
 `
 
@@ -134,11 +166,11 @@ const FRIENDLY = {
 }
 
 /** Run the script. Resolves the script's answer; rejects with a readable message. */
-export function runMenuScript({ processName, mode, full = '', machine = '', short = '' }, exec = execFile) {
+export function runMenuScript({ processName, mode, full = '', machine = '', short = '', after = 'return' }, exec = execFile) {
 	return new Promise((resolve, reject) => {
 		exec(
 			'osascript',
-			['-l', 'JavaScript', '-e', MENU_SCRIPT, processName, mode, full, machine, short],
+			['-l', 'JavaScript', '-e', MENU_SCRIPT, processName, mode, full, machine, short, after],
 			{ timeout: 8000 },
 			(err, stdout, stderr) => {
 				const out = String(stdout ?? '').trim()
@@ -152,10 +184,43 @@ export function runMenuScript({ processName, mode, full = '', machine = '', shor
 				}
 				if (out.startsWith('ERR:')) {
 					const [code, ...detail] = out.slice(4).split(':')
-					return reject(new Error((FRIENDLY[code] ?? out) + (detail.length ? ` ${detail.join(':')}` : '')))
+					const e = new Error((FRIENDLY[code] ?? out) + (detail.length ? ` ${detail.join(':')}` : ''))
+					e.code = code
+					return reject(e)
 				}
 				resolve(out.startsWith('OK:') ? out.slice(3) : out)
 			},
 		)
 	})
+}
+
+/** Open the app without bringing it to the front (open -g). Also reopens its window if it was closed. */
+export function openInBackground(appName, exec = execFile) {
+	return new Promise((resolve, reject) => {
+		exec('open', ['-g', '-a', appName], { timeout: 10000 }, (err) => (err ? reject(new Error(`Couldn't open ${appName}: ${err.message}`)) : resolve()))
+	})
+}
+
+/**
+ * Select a source; if the app isn't running or its window is closed, open it in the background and
+ * keep trying for up to `waitMs` while it starts.
+ */
+export async function selectWithAutoOpen(opts, { autoOpen = true, waitMs = 10000, stepMs = 1000, exec = execFile, sleep = (ms) => new Promise((r) => setTimeout(r, ms)) } = {}) {
+	try {
+		return await runMenuScript({ ...opts, mode: 'select' }, exec)
+	} catch (e) {
+		if (!autoOpen || (e.code !== 'not-running' && e.code !== 'no-window')) throw e
+	}
+	await openInBackground(opts.processName, exec)
+	let last
+	for (let waited = 0; waited <= waitMs; waited += stepMs) {
+		await sleep(stepMs)
+		try {
+			return await runMenuScript({ ...opts, mode: 'select' }, exec)
+		} catch (e) {
+			last = e
+			if (e.code !== 'not-running' && e.code !== 'no-window' && e.code !== 'no-dropdown') throw e
+		}
+	}
+	throw last ?? new Error('NDI Virtual Input did not start in time')
 }
