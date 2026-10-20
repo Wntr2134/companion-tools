@@ -1,0 +1,21 @@
+{
+	"id": "app-launcher",
+	"name": "app-launcher",
+	"shortname": "App Launcher",
+	"description": "Lists the apps installed on the Companion computer (Mac or Windows) and launches or quits them from a key, with a green key while the app is running.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "Generic",
+	"products": ["App launcher"],
+	"keywords": ["launch", "app", "open", "quit", "mac", "windows", "shortcut"]
+}

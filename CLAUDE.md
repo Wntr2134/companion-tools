@@ -1,6 +1,6 @@
 # companion-tools
 
-Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiCo SD, ChamSys MagicQ, Echo360, Show Health and grandMA2 modules, Mac tools). See README.md.
+Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiCo SD, ChamSys MagicQ, Echo360, Show Health, App Launcher and grandMA2 modules, Mac tools). See README.md.
 
 ## How work gets in
 - Work on a branch and open a pull request into `main`. Then **merge it yourself**: Will has said merging doesn't need his permission. Tell him afterwards what was merged.
@@ -10,6 +10,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - Echo360 module: `node --test test/echo.test.mjs` in `echo360-capture/`.
 - MagicQ module: `node --test test/knobs.test.mjs` in `magicq/` (npm install rewrites yarn.lock: restore it before committing).
 - Show Health module: `node --test test/health.test.mjs` in `show-health/`.
+- App Launcher module: `node --test test/apps.test.mjs` in `app-launcher/`.
 - grandMA2 module: `node --test test/ma2.test.mjs` in `grandma2/`.
 - Ulanzi plugin: `yarn build` (or `tsc --noEmit`) in `ulanzi-d200x/` must pass.
 - Plain Australian English in docs. No model names in commits or code.
