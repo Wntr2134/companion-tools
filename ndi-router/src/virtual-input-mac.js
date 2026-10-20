@@ -35,7 +35,7 @@ function run(argv) {
 		}
 		// Prefer the one showing an NDI name like "MACHINE (Source)"; otherwise the last one (it's at the bottom).
 		for (var h = 0; h < hits.length && !popup; h++) {
-			var hv = String(safe(function () { return hits[h].value() }, ''))
+			var hv = String(safe(function () { return hits[h].value() }, '') || safe(function () { return hits[h].title() }, '') || safe(function () { return hits[h].name() }, ''))
 			if (hv.indexOf(' (') > 0 && hv.charAt(hv.length - 1) === ')') popup = hits[h]
 		}
 		if (!popup && hits.length) popup = hits[hits.length - 1]
@@ -45,8 +45,17 @@ function run(argv) {
 		for (var r in seen) summary.push(r + ' x' + seen[r])
 		return 'ERR:no-dropdown:' + summary.join(', ')
 	}
-	var current = function () { return safe(function () { return popup.value() }, '') }
-	if (mode === 'read') return current()
+	// What it's showing: a pop-up button reports it as its value; a menu button (what NDI Virtual Input
+	// uses) leaves the value empty and shows it as its title/name/description instead.
+	var current = function () {
+		var props = ['value', 'title', 'name', 'description']
+		for (var c = 0; c < props.length; c++) {
+			var v = safe(function () { return popup[props[c]]() }, '')
+			if (v && typeof v === 'string') return v
+		}
+		return ''
+	}
+	if (mode === 'read') return current() || '?'
 
 	// First try to set the drop-down's value directly: nothing appears on screen if the app allows it.
 	if (mode === 'select' && full) {

@@ -17,7 +17,7 @@ function elements(list) {
  * layout: entries are 'None' / 'MACHINE (Source)' (flat) or [machine, [sources]].
  * settable: whether setting popup.value works (silent path).
  */
-function fakeVirtualInput({ running = true, window = true, layout = [], value = '', settable = false, inGroup = false, noDropdown = false, extraPopup = false }) {
+function fakeVirtualInput({ running = true, window = true, layout = [], value = '', settable = false, inGroup = false, noDropdown = false, extraPopup = false, menuButton = false, silent = false }) {
 	const log = []
 	const state = { value }
 	const item = (name, kids, machine) => {
@@ -33,12 +33,15 @@ function fakeVirtualInput({ running = true, window = true, layout = [], value = 
 	}
 	const items = layout.map((e) => (Array.isArray(e) ? item(e[0], e[1]) : item(e)))
 	const popup = {
-		role: () => 'AXPopUpButton',
+		role: () => (menuButton ? 'AXMenuButton' : 'AXPopUpButton'),
+		title: () => (menuButton && !silent ? state.value : null),
+		name: () => null,
+		description: () => null,
 		click: () => log.push('<open>'),
 		menus: elements([{ menuItems: () => items }]),
 	}
 	Object.defineProperty(popup, 'value', {
-		get: () => () => state.value,
+		get: () => () => (menuButton ? null : state.value),
 		set: (v) => {
 			if (!settable) throw new Error("Can't set value")
 			log.push(`<set ${v}>`)
@@ -82,6 +85,15 @@ test('None, and a drop-down deep inside the window', () => {
 	const fake = fakeVirtualInput({ layout: LAYOUT, value: 'Theatrette (Channel 1)', inGroup: true })
 	assert.equal(run(fake, ['NDI Virtual Input', 'select', '', '', '']), 'OK:')
 	assert.deepEqual(fake.log, ['<open>', 'None'])
+})
+
+test("menu button (what Virtual Input really uses): value is empty, the title says what's showing", () => {
+	const fake = fakeVirtualInput({ layout: LAYOUT, value: 'Theatrette (Channel 1)', menuButton: true })
+	assert.equal(run(fake, ['NDI Virtual Input', 'read', '', '', '']), 'Theatrette (Channel 1)')
+	assert.equal(run(fake, ['NDI Virtual Input', 'select', 'Theatrette (Channel 2)', 'Theatrette', 'Channel 2']), 'OK:Theatrette (Channel 2)')
+	assert.deepEqual(fake.log, ['<open>', 'Theatrette', 'Channel 2'])
+	const blank = fakeVirtualInput({ layout: LAYOUT, menuButton: true, silent: true })
+	assert.equal(run(blank, ['NDI Virtual Input', 'read', '', '', '']), '?', 'nothing readable: "?" so the module keeps its last value')
 })
 
 test('read mode returns what is showing without touching anything', () => {
