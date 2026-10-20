@@ -36,12 +36,15 @@ export function macFolders(includeSystem, home = os.homedir()) {
 export async function scanMac(folders) {
 	const apps = []
 	const seen = new Set()
+	const problems = []
 	const visit = async (dir, depth) => {
 		let entries
 		try {
 			entries = await readdir(dir, { withFileTypes: true })
-		} catch {
-			return // folder doesn't exist
+		} catch (e) {
+			// A missing folder is normal; anything else (e.g. Companion blocking file access) is reported.
+			if (e.code !== 'ENOENT' && e.code !== 'ENOTDIR') problems.push(e)
+			return
 		}
 		for (const e of entries) {
 			const full = path.join(dir, e.name)
@@ -55,6 +58,7 @@ export async function scanMac(folders) {
 		}
 	}
 	for (const f of folders) await visit(f, 1)
+	if (apps.length === 0 && problems.length) throw problems[0]
 	return apps
 }
 

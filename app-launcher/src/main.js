@@ -55,9 +55,10 @@ class AppLauncherInstance extends InstanceBase {
 				.filter(Boolean)
 			this.apps = await scanApps({ includeSystem: this.config.includeSystem === true, extraFolders })
 			this.log('info', `Found ${this.apps.length} apps`)
-			this.updateStatus(InstanceStatus.Ok, `${this.apps.length} apps`)
+			if (this.apps.length) this.updateStatus(InstanceStatus.Ok, `${this.apps.length} apps`)
+			else this.updateStatus(InstanceStatus.UnknownWarning, 'No apps found: see log')
 		} catch (e) {
-			this.log('error', `App scan failed: ${e.message}`)
+			this.log('error', `App scan failed: ${e.code ? e.code + ' ' : ''}${e.message}`)
 			this.updateStatus(InstanceStatus.UnknownError, 'App scan failed: see log')
 		}
 		this.updateDefinitions()

@@ -13,7 +13,8 @@
 		"type": "node22",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../src/main.js"
+		"entrypoint": "../src/main.js",
+		"permissions": {"child-process": true}
 	},
 	"manufacturer": "Echo360",
 	"products": ["Echo360 Pro", "Echo360 Pod", "SafeCapture HD"],
