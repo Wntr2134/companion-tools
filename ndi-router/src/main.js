@@ -31,7 +31,7 @@ class NdiRouterInstance extends InstanceBase {
 
 	async configUpdated(config) {
 		// Saving the remembered routes also lands here: only restart when a real setting changed.
-		const keys = ['routes', 'libPath', 'groups', 'extraIps']
+		const keys = ['routes', 'libPath', 'groups', 'extraIps', 'viApp', 'viPoll']
 		const changed = keys.some((k) => (config[k] ?? '') !== (this.config[k] ?? ''))
 		this.config = config
 		if (changed) {
@@ -50,6 +50,7 @@ class NdiRouterInstance extends InstanceBase {
 
 	start() {
 		this.updateDefinitions()
+		this.startViPoll()
 		const names = this.routeNames()
 		const typed = String(this.config.libPath ?? '').trim()
 		const candidates = typed ? [typed] : candidateLibraries()
@@ -100,7 +101,16 @@ class NdiRouterInstance extends InstanceBase {
 		this.router.poll()
 	}
 
+	startViPoll() {
+		const seconds = Number(this.config.viPoll ?? 5)
+		if (process.platform !== 'darwin' || !(seconds > 0)) return
+		this.viTimer = setInterval(() => void this.readVirtualInput(), seconds * 1000)
+		void this.readVirtualInput()
+	}
+
 	stop() {
+		if (this.viTimer) clearInterval(this.viTimer)
+		this.viTimer = null
 		if (this.pollTimer) clearInterval(this.pollTimer)
 		if (this.presetTimer) clearTimeout(this.presetTimer)
 		this.pollTimer = this.presetTimer = null
@@ -112,25 +122,47 @@ class NdiRouterInstance extends InstanceBase {
 		this.router = null
 	}
 
-	/** Mac: pick a source in NDI Virtual Input's own menu. One at a time, so menu clicks never overlap. */
+	/** Mac: pick a source in NDI Virtual Input's drop-down. One at a time, so clicks never overlap. */
 	switchVirtualInput(source) {
 		this.viQueue = this.viQueue.then(async () => {
 			if (process.platform !== 'darwin') {
-				this.log('warn', 'Switching NDI Virtual Input by its menu only works on a Mac. Use a route instead.')
+				this.log('warn', 'Switching NDI Virtual Input in the app only works on a Mac. Use a route instead.')
 				return
 			}
 			const { machine, name } = splitSourceName(source)
 			try {
-				await runMenuScript({ processName: this.config.viApp || DEFAULT_VI_APP, mode: 'select', full: source, machine, short: name })
-				this.viSource = source
-				this.log('info', `NDI Virtual Input → ${source}`)
-				this.setVariableValues({ vi_source: name, vi_source_full: source })
-				this.checkFeedbacks('vi_is')
+				const now = await runMenuScript({ processName: this.viApp(), mode: 'select', full: source, machine, short: name })
+				this.log('info', `NDI Virtual Input → ${now || source}`)
+				this.setViSource(now || source)
 			} catch (e) {
 				this.log('error', `NDI Virtual Input: ${e.message}`)
 			}
 		})
 		return this.viQueue
+	}
+
+	/** Mac: read what Virtual Input shows (also catches changes made by hand). Quiet if it isn't open. */
+	readVirtualInput() {
+		this.viQueue = this.viQueue.then(async () => {
+			try {
+				this.setViSource(await runMenuScript({ processName: this.viApp(), mode: 'read' }))
+			} catch {
+				// not running / window closed: leave the last known value
+			}
+		})
+		return this.viQueue
+	}
+
+	viApp() {
+		return this.config.viApp || DEFAULT_VI_APP
+	}
+
+	setViSource(value) {
+		const v = String(value ?? '')
+		if (v === this.viSource) return
+		this.viSource = v
+		this.setVariableValues({ vi_source: v ? splitSourceName(v).name : 'None', vi_source_full: v })
+		this.checkFeedbacks('vi_is')
 	}
 
 	remember() {
@@ -197,8 +229,8 @@ class NdiRouterInstance extends InstanceBase {
 				},
 			},
 			vi_select: {
-				name: 'Mac: switch NDI Virtual Input (clicks its menu)',
-				description: 'Picks the source in NDI Virtual Input itself, no route needed. Needs Accessibility permission for Companion.',
+				name: 'Mac: switch NDI Virtual Input (its source drop-down)',
+				description: "Picks the source in NDI Virtual Input's own window, no route needed. Needs Accessibility permission for Companion, and Virtual Input's window open.",
 				options: [sourceOption, customOption],
 				callback: async (a, context) => {
 					let source = a.options.source
@@ -207,14 +239,14 @@ class NdiRouterInstance extends InstanceBase {
 				},
 			},
 			vi_list: {
-				name: "Mac: list NDI Virtual Input's menu (to the log)",
-				description: "Writes every entry in Virtual Input's menu to the Log tab. Useful if a source isn't found.",
+				name: "Mac: list NDI Virtual Input's sources (to the log)",
+				description: "Writes every entry in Virtual Input's drop-down to the Log tab. Useful if a source isn't found.",
 				options: [],
 				callback: async () => {
 					if (process.platform !== 'darwin') return
 					try {
 						const list = JSON.parse(await runMenuScript({ processName: this.config.viApp || DEFAULT_VI_APP, mode: 'list' }))
-						this.log('info', `NDI Virtual Input menu: ${list.join(' | ')}`)
+						this.log('info', `NDI Virtual Input drop-down: ${list.join(' | ')}`)
 					} catch (e) {
 						this.log('error', `NDI Virtual Input: ${e.message}`)
 					}
@@ -239,10 +271,10 @@ class NdiRouterInstance extends InstanceBase {
 			},
 			vi_is: {
 				type: 'boolean',
-				name: 'NDI Virtual Input is on source (Mac, as last set by Companion)',
+				name: 'NDI Virtual Input is on source (Mac)',
 				defaultStyle: { bgcolor: ORANGE, color: WHITE },
 				options: [sourceOption],
-				callback: (fb) => !!this.viSource && this.viSource === fb.options.source,
+				callback: (fb) => !!this.viSource && this.viSource.toLowerCase() === String(fb.options.source).toLowerCase(),
 			},
 			route_watched: {
 				type: 'boolean',
@@ -352,8 +384,17 @@ class NdiRouterInstance extends InstanceBase {
 				type: 'textinput',
 				id: 'viApp',
 				label: 'Mac: NDI Virtual Input app name (for the "switch in the app" keys)',
-				width: 12,
+				width: 8,
 				default: DEFAULT_VI_APP,
+			},
+			{
+				type: 'number',
+				id: 'viPoll',
+				label: 'Mac: check what Virtual Input shows every (s, 0 = off)',
+				width: 4,
+				default: 5,
+				min: 0,
+				max: 60,
 			},
 			{ type: 'textinput', id: 'groups', label: 'NDI groups (optional, comma separated)', width: 6, default: '' },
 			{ type: 'textinput', id: 'extraIps', label: 'Extra IPs to look for sources on (optional, comma separated)', width: 6, default: '' },
