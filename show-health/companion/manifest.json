@@ -13,7 +13,8 @@
 		"type": "node22",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../src/main.js"
+		"entrypoint": "../src/main.js",
+		"permissions": {"child-process": true}
 	},
 	"manufacturer": "Generic",
 	"products": ["Show health monitor"],
