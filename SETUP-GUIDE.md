@@ -12,6 +12,7 @@ You will set up:
 - **Part F:** grandMA2 (lighting): executor faders on the knobs, Go/Pause/Flash keys with cue names
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
 - **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
+- **Part I:** App launcher: a key for any app on the Companion computer
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -31,9 +32,10 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `grandma2-plus-….tgz`: grandMA2 lighting (Part F)
    - `echo360-capture-….tgz`: Echo360 recording (Part G)
    - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
+   - `app-launcher-….tgz`: app launcher (Part I)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A to H**, skipping the "dev version" steps.
+5. Carry on from **Part A to I**, skipping the "dev version" steps.
 
 To update later: download the new files from the same page and import them again.
 
@@ -458,6 +460,28 @@ Universal Capture has no control connection, so Companion sends its keyboard sho
 Step size works like the other modules: **1** = tiny, **2** = default, **10** = big.
 
 ---
+
+## Part I: App launcher (open apps from a key)
+
+Works on Mac and Windows, on the computer Companion runs on.
+
+### I.1 Add the connection
+1. **Connections → + Add connection** → search **App Launcher** → add it (pick the version you imported, or **dev**).
+2. Save. The connection goes green and its status shows how many apps it found (e.g. *62 apps*).
+   - Mac: tick **include built-in apps** if you want Safari, Notes, System Settings and so on.
+   - Windows: the list comes from the Start Menu, so anything with a Start Menu entry is there.
+
+### I.2 Put apps on keys
+1. **Buttons → Presets → App Launcher**. The apps are grouped **Apps A–C**, **Apps D–F** and so on.
+2. Drag an app onto a key. Press = open it, or bring it to the front if it's already open.
+
+✅ The key goes **green while the app is running**.
+
+### I.3 Other things you can do
+- **Quit an app:** add the action **App Launcher: Quit** to a key. Tick **Force quit** only if the app hangs; unsaved work is lost.
+- **One key that opens and closes:** action **Launch if closed, quit if open**.
+- **An app that isn't in the list:** in **Launch**, pick *(Type a name or path below)* and type the app's name (Mac) or full path (Windows).
+- **Installed something new?** Press the **Rescan apps** preset, or change and save the connection.
 
 ## Getting updates
 
