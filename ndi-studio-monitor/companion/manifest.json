@@ -1,0 +1,21 @@
+{
+	"id": "ndi-studio-monitor",
+	"name": "ndi-studio-monitor",
+	"shortname": "NDI Studio Monitor",
+	"description": "Controls NDI Studio Monitor (NDI Tools for Windows) over its web control: pick the source, PiP/alpha overlay, audio mute and recording, with feedback.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js"
+	},
+	"manufacturer": "NDI",
+	"products": ["NDI Studio Monitor"],
+	"keywords": ["ndi", "studio monitor", "video", "monitor", "multiviewer", "record"]
+}

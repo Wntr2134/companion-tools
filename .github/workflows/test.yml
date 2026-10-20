@@ -73,6 +73,19 @@ jobs:
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
       - run: node --test test/ma2.test.mjs
 
+  ndi-studio-monitor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ndi-studio-monitor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund
+      - run: node --test test/monitor.test.mjs
+
   ndi-router:
     runs-on: ubuntu-latest
     defaults:
