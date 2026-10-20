@@ -168,9 +168,10 @@ class NdiRouterInstance extends InstanceBase {
 					if (source === 'custom') source = (await context.parseVariablesInString(String(a.options.custom ?? ''))).trim()
 					if (!source) return
 					if (this.router.route(a.options.route, source)) {
-						this.log('info', `${a.options.route} → ${source}`)
+						const url = this.router.ndi.urlOf?.(source)
+						this.log('info', `${a.options.route} → ${source}${url ? ` (${url})` : ' (address not seen yet: by name)'}`)
 						this.remember()
-					} else this.log('warn', `Couldn't route ${a.options.route} to ${source}`)
+					} else this.log('warn', `NDI refused to route ${a.options.route} to ${source}`)
 				},
 			},
 			clear: {

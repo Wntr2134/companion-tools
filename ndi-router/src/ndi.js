@@ -102,6 +102,8 @@ export function openNdi(libPath, { groups = null, extraIps = null } = {}) {
 	if (!finder) throw new Error('NDI source finder could not start')
 
 	const routes = new Set()
+	// NDI Router passes each source's address along with its name; we do the same once the finder has seen it.
+	const urlByName = new Map()
 	return {
 		version,
 		path: libPath,
@@ -110,10 +112,13 @@ export function openNdi(libPath, { groups = null, extraIps = null } = {}) {
 			const count = [0]
 			const ptr = fn.findSources(finder, count)
 			if (!ptr || !count[0]) return []
-			return koffi
-				.decode(ptr, NDIlib_source_t, count[0])
-				.map((s) => s.p_ndi_name)
-				.filter((n) => typeof n === 'string' && n.length > 0)
+			const list = koffi.decode(ptr, NDIlib_source_t, count[0]).filter((s) => typeof s.p_ndi_name === 'string' && s.p_ndi_name)
+			for (const s of list) if (s.p_url_address) urlByName.set(s.p_ndi_name, s.p_url_address)
+			return list.map((s) => s.p_ndi_name)
+		},
+		/** The address the finder reported for a source, if any. */
+		urlOf(name) {
+			return urlByName.get(name) ?? null
 		},
 		/** A new NDI source called `name` that shows whatever it is pointed at. */
 		createRoute(name) {
@@ -121,7 +126,7 @@ export function openNdi(libPath, { groups = null, extraIps = null } = {}) {
 			if (!handle) throw new Error(`NDI would not create the route "${name}"`)
 			routes.add(handle)
 			return {
-				change: (sourceName) => fn.routeChange(handle, { p_ndi_name: sourceName, p_url_address: null }),
+				change: (sourceName) => fn.routeChange(handle, { p_ndi_name: sourceName, p_url_address: urlByName.get(sourceName) ?? null }),
 				clear: () => fn.routeClear(handle),
 				/** How many receivers (e.g. Virtual Input) are watching it, or null if unknown. */
 				connections: () => (connections ? connections(handle, 0) : null),

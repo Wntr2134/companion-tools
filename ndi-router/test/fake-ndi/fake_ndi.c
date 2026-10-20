@@ -13,7 +13,7 @@ static NDIlib_source_t sources[32];
 static uint32_t n_sources = 0;
 static char *names[32];
 
-typedef struct { char name[256]; char target[256]; int connections; } route_t;
+typedef struct { char name[256]; char target[256]; char url[256]; int connections; } route_t;
 static route_t routes[16];
 static int n_routes = 0;
 static int initialised = 0;
@@ -44,6 +44,7 @@ bool NDIlib_routing_change(void *p, const NDIlib_source_t *src) {
 	route_t *r = p;
 	if (!src || !src->p_ndi_name) return false;
 	strncpy(r->target, src->p_ndi_name, 255);
+	strncpy(r->url, src->p_url_address ? src->p_url_address : "", 255);
 	return true;
 }
 bool NDIlib_routing_clear(void *p) { ((route_t *)p)->target[0] = 0; return true; }
@@ -57,15 +58,19 @@ void fake_set_sources(const char *newline_separated) {
 	while (s && *s && n_sources < 32) {
 		const char *e = strchr(s, '\n');
 		size_t len = e ? (size_t)(e - s) : strlen(s);
+		// "NAME|url" sets an address too
 		names[n_sources] = strndup(s, len);
+		char *bar = strchr(names[n_sources], '|');
+		if (bar) *bar = 0;
 		sources[n_sources].p_ndi_name = names[n_sources];
-		sources[n_sources].p_url_address = NULL;
+		sources[n_sources].p_url_address = bar ? bar + 1 : NULL;
 		n_sources++;
 		s = e ? e + 1 : NULL;
 	}
 }
 const char *fake_route_name(int i) { return i < n_routes ? routes[i].name : ""; }
 const char *fake_route_target(int i) { return i < n_routes ? routes[i].target : ""; }
+const char *fake_route_url(int i) { return i < n_routes ? routes[i].url : ""; }
 void fake_set_connections(int i, int n) { if (i < n_routes) routes[i].connections = n; }
 int fake_route_count(void) { return n_routes; }
 void fake_reset_routes(void) { n_routes = 0; }
