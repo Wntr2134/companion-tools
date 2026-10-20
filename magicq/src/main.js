@@ -2,6 +2,7 @@ import { InstanceBase, InstanceStatus, Regex } from '@companion-module/base'
 import osc from 'osc'
 
 import UpdateActions from './actions.js'
+import { withSurfaceExtrasV2 } from './surface-extras.js'
 import UpdateFeedbacks from './feedbacks.js'
 import UpdateVariableDefinitions from './variables.js'
 import UpgradeScripts from './upgrades.js'
@@ -70,7 +71,8 @@ export default class MagicQInstance extends InstanceBase {
 	}
 
 	updatePresets() {
-		const { structure, presets } = getKnobPresets(this)
+		const knobs = getKnobPresets(this)
+		const { structure, presets } = withSurfaceExtrasV2(knobs.structure, knobs.presets)
 		this.setPresetDefinitions(structure, presets)
 	}
 
