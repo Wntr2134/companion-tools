@@ -17,7 +17,7 @@ function elements(list) {
  * layout: entries are 'None' / 'MACHINE (Source)' (flat) or [machine, [sources]].
  * settable: whether setting popup.value works (silent path).
  */
-function fakeVirtualInput({ running = true, window = true, layout = [], value = '', settable = false, inGroup = false }) {
+function fakeVirtualInput({ running = true, window = true, layout = [], value = '', settable = false, inGroup = false, noDropdown = false, extraPopup = false }) {
 	const log = []
 	const state = { value }
 	const item = (name, kids, machine) => {
@@ -33,6 +33,7 @@ function fakeVirtualInput({ running = true, window = true, layout = [], value = 
 	}
 	const items = layout.map((e) => (Array.isArray(e) ? item(e[0], e[1]) : item(e)))
 	const popup = {
+		role: () => 'AXPopUpButton',
 		click: () => log.push('<open>'),
 		menus: elements([{ menuItems: () => items }]),
 	}
@@ -44,7 +45,10 @@ function fakeVirtualInput({ running = true, window = true, layout = [], value = 
 			state.value = v
 		},
 	})
-	const win = inGroup ? { popUpButtons: () => [], groups: () => [{ popUpButtons: () => [popup] }] } : { popUpButtons: () => [popup], groups: () => [] }
+	const others = [{ role: () => 'AXSplitGroup' }, { role: () => 'AXGroup' }, { role: () => 'AXImage' }]
+	const decoy = { role: () => 'AXPopUpButton', value: () => 'Full screen' }
+	const list = noDropdown ? others : inGroup ? [...others, popup] : [popup, ...others]
+	const win = { entireContents: () => (extraPopup ? [...list, decoy] : list) }
 	const proc = { windows: () => (window ? [win] : []) }
 	const se = { processes: { whose: () => ({ length: running ? 1 : 0 }), byName: () => proc }, keyCode: (k) => log.push(`<key ${k}>`) }
 	return { se, log, state }
@@ -69,7 +73,12 @@ test('silent path: sets the value directly when the app allows it, nothing opens
 	assert.deepEqual(fake.log, ['<set Theatrette (Channel 2)>'])
 })
 
-test('None, and a drop-down inside a group', () => {
+test('with several drop-downs, picks the one showing an NDI name', () => {
+	const fake = fakeVirtualInput({ layout: LAYOUT, value: 'Theatrette (Channel 1)', extraPopup: true })
+	assert.equal(run(fake, ['NDI Virtual Input', 'read', '', '', '']), 'Theatrette (Channel 1)')
+})
+
+test('None, and a drop-down deep inside the window', () => {
 	const fake = fakeVirtualInput({ layout: LAYOUT, value: 'Theatrette (Channel 1)', inGroup: true })
 	assert.equal(run(fake, ['NDI Virtual Input', 'select', '', '', '']), 'OK:')
 	assert.deepEqual(fake.log, ['<open>', 'None'])
@@ -87,6 +96,11 @@ test('problems are reported, and never anything but the drop-down is clicked', (
 	assert.deepEqual(fake.log, ['<open>', '<key 53>'])
 	assert.equal(run(fakeVirtualInput({ running: false }), ['NDI Virtual Input', 'select', 'a', 'b', 'c']), 'ERR:not-running')
 	assert.equal(run(fakeVirtualInput({ window: false }), ['NDI Virtual Input', 'select', 'a', 'b', 'c']), 'ERR:no-window')
+	assert.equal(
+		run(fakeVirtualInput({ noDropdown: true }), ['NDI Virtual Input', 'select', 'a', 'b', 'c']),
+		'ERR:no-dropdown:AXSplitGroup x1, AXGroup x1, AXImage x1',
+		'lists what is in the window so the layout can be checked',
+	)
 })
 
 test('list mode shows every computer > source', () => {
@@ -107,6 +121,11 @@ test('osascript errors become plain-English messages', async () => {
 		/Accessibility/,
 	)
 	await assert.rejects(runMenuScript({ processName: 'x', mode: 'select' }, fakeExec('ERR:no-window\n', null, '')), /window is closed/)
+	await assert.rejects(
+		runMenuScript({ processName: 'x', mode: 'select' }, fakeExec('', new Error('fail'), 'Not authorized to send Apple events to System Events. (-1743)')),
+		/Automation/,
+	)
+	await assert.rejects(runMenuScript({ processName: 'x', mode: 'select' }, fakeExec('ERR:no-dropdown:AXGroup x2\n', null, '')), /Elements found: AXGroup x2/)
 	assert.equal(await runMenuScript({ processName: 'x', mode: 'select' }, fakeExec('OK:Theatrette (Channel 1)\n', null, '')), 'Theatrette (Channel 1)')
 	let seen
 	await runMenuScript({ processName: 'NDI Virtual Input', mode: 'select', full: 'A (B)', machine: 'A', short: 'B' }, (f, args, o, cb) => {

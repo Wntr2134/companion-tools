@@ -22,18 +22,29 @@ function run(argv) {
 	var wins = safe(function () { return proc.windows() }, [])
 	if (!wins.length) return 'ERR:no-window'
 
-	// The source drop-down: directly in the window, or inside a group.
-	var popup = null
+	// The source drop-down can sit anywhere in the window (groups, split views…): search every element.
+	var KINDS = ['AXPopUpButton', 'AXMenuButton', 'AXComboBox']
+	var popup = null, seen = {}
 	for (var w = 0; w < wins.length && !popup; w++) {
-		var direct = safe(function () { return wins[w].popUpButtons() }, [])
-		if (direct.length) { popup = direct[direct.length - 1]; break }
-		var groups = safe(function () { return wins[w].groups() }, [])
-		for (var g = 0; g < groups.length && !popup; g++) {
-			var inGroup = safe(function () { return groups[g].popUpButtons() }, [])
-			if (inGroup.length) popup = inGroup[inGroup.length - 1]
+		var all = safe(function () { return wins[w].entireContents() }, [])
+		var hits = []
+		for (var e = 0; e < all.length; e++) {
+			var role = safe(function () { return all[e].role() }, '')
+			if (role) seen[role] = (seen[role] || 0) + 1
+			if (KINDS.indexOf(role) >= 0) hits.push(all[e])
 		}
+		// Prefer the one showing an NDI name like "MACHINE (Source)"; otherwise the last one (it's at the bottom).
+		for (var h = 0; h < hits.length && !popup; h++) {
+			var hv = String(safe(function () { return hits[h].value() }, ''))
+			if (hv.indexOf(' (') > 0 && hv.charAt(hv.length - 1) === ')') popup = hits[h]
+		}
+		if (!popup && hits.length) popup = hits[hits.length - 1]
 	}
-	if (!popup) return 'ERR:no-dropdown'
+	if (!popup) {
+		var summary = []
+		for (var r in seen) summary.push(r + ' x' + seen[r])
+		return 'ERR:no-dropdown:' + summary.join(', ')
+	}
 	var current = function () { return safe(function () { return popup.value() }, '') }
 	if (mode === 'read') return current()
 
@@ -109,7 +120,7 @@ function run(argv) {
 const FRIENDLY = {
 	'not-running': 'NDI Virtual Input is not running. Open it first.',
 	'no-window': "NDI Virtual Input's window is closed. Open it (it can sit behind other windows or be minimised to the side, but not closed).",
-	'no-dropdown': "Couldn't find the source drop-down in NDI Virtual Input's window.",
+	'no-dropdown': "Couldn't find the source drop-down in NDI Virtual Input's window. Elements found:",
 	'not-found': "That source isn't in NDI Virtual Input's drop-down (use the \"list\" action to see what is).",
 }
 
@@ -124,13 +135,15 @@ export function runMenuScript({ processName, mode, full = '', machine = '', shor
 				const out = String(stdout ?? '').trim()
 				if (err) {
 					const text = String(stderr || err.message)
+					if (/-1743|not authori[sz]ed to send apple events/i.test(text))
+						return reject(new Error('macOS blocked it: allow Companion to control "System Events" in System Settings → Privacy & Security → Automation.'))
 					if (/assistive|accessibility|not allowed|-1719|-25211/i.test(text))
 						return reject(new Error('macOS blocked it: allow Companion in System Settings → Privacy & Security → Accessibility, then try again.'))
 					return reject(new Error(text.trim() || 'osascript failed'))
 				}
 				if (out.startsWith('ERR:')) {
 					const [code, ...detail] = out.slice(4).split(':')
-					return reject(new Error((FRIENDLY[code] ?? out) + (detail.length ? ` (${detail.join(':')})` : '')))
+					return reject(new Error((FRIENDLY[code] ?? out) + (detail.length ? ` ${detail.join(':')}` : '')))
 				}
 				resolve(out.startsWith('OK:') ? out.slice(3) : out)
 			},
