@@ -18,7 +18,7 @@ export async function ucKey(self, name) {
 		self.client.refuse('Universal Capture shortcuts: set Device type to "Universal Capture on this Mac" first. Nothing sent')
 		return { sent: false, reason: 'mode' }
 	}
-	return self.uc.send(name, { activate: self.config.ucActivate !== false, appName: self.config.ucApp || UC_DEFAULT_APP })
+	return self.uc.send(name, { activate: self.config.ucActivate !== false, appName: self.config.ucApp || UC_DEFAULT_APP, returnFocus: self.config.ucReturn !== false })
 }
 
 const WHITE = combineRgb(255, 255, 255)

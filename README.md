@@ -4,20 +4,20 @@
 >
 > **Just want to install?** Download the ready-made `.tgz` packages from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), then in Companion go to **Modules → Import module package**. No Terminal needed.
 
-Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD and grandMA2 control.
+Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD, MagicQ and grandMA2 control, Echo360, NDI (Virtual Input, Studio Monitor), an app launcher and a show health page.
 
 | Folder | What it is | Status |
 |---|---|---|
 | [`ulanzi-d200x/`](ulanzi-d200x/) | Ulanzi Stream Controller D200/D200X surface plugin, patched for Companion 5 and the D200X knobs. [Button map and labelled template page](ulanzi-d200x/extras/README.md) | Working on macOS + Companion 5.1 |
-| [`panasonic-ptz/`](panasonic-ptz/) | Panasonic PTZ module (upstream v2.6.1) plus knob step actions, position variables and bug fixes | Built and unit-tested; needs a test on the HE40 |
-| [`uad-console/`](uad-console/) | New module: UAD Console / Apollo mutes (toggle and momentary), solo, faders, pan, sends, preamp, monitor, with 1-10 knob steps | Built and tested against a fake engine; needs a test on the Apollo |
+| [`panasonic-ptz/`](panasonic-ptz/) | Panasonic PTZ module (upstream v2.6.1) plus knob step actions, position variables and bug fixes | Working on the HE40; selected-camera knobs still to try |
+| [`uad-console/`](uad-console/) | New module: UAD Console / Apollo mutes (toggle and momentary), solo, faders, pan, sends, preamp, monitor, with 1-10 knob steps | Working on Will's Apollo x4 / Twin; talkback and meters still to try |
 | [`digico-sd/`](digico-sd/) | DiGiCo SD/Quantum module (upstream v0.9.1 rewrite) plus fixes and a D200X knob layer: fader/send steps, mute/solo feedback, snapshot names, selected-channel strip | Builds and unit-tested; needs a test on the SD9 |
 | [`echo360-capture/`](echo360-capture/) | Echo360 lecture capture: REC/pause/HOLD STOP/extend with a live timer for Pro/Pod boxes, plus keyboard-shortcut keys for Universal Capture (no status) | Built and tested against a fake device; needs a test on the auditorium Pro |
 | [`magicq/`](magicq/) | ChamSys MagicQ (OSC) module (upstream v3.2.1) plus fixes and a D200X knob layer: playback fader knobs, selected-playback strip, Go/Pause/Release/Flash, feedback | Built and tested against a fake MagicQ; needs a test with Will's Compact Connect |
 | [`grandma2/`](grandma2/) | New module: grandMA2 console / onPC over Telnet, with optional Web Remote readback. Executor fader knobs (1-10 steps), Go/Go-/Pause/Flash/Temp keys, selected-executor strip, names, levels and cue names. Keeps the store module's actions | Built and tested against a fake console; needs a test on onPC 3.9.60.89 |
 | [`ndi-studio-monitor/`](ndi-studio-monitor/) | NDI Studio Monitor (Windows) over its web control: source, PiP/alpha overlay, mute and record keys with feedback | Built and tested against a fake Studio Monitor; needs a test with the real one |
-| [`ndi-router/`](ndi-router/) | NDI routes made by Companion: point NDI Virtual Input (or a monitor, OBS) at a route once, then switch cameras from buttons | Built and tested against a fake NDI library; needs a test with real NDI Tools |
-| [`app-launcher/`](app-launcher/) | Lists the apps installed on the Mac or PC running Companion: one key per app to launch it (green while running), plus quit and toggle actions | Built and tested; needs a test on a real Mac and PC |
+| [`ndi-router/`](ndi-router/) | NDI routes made by Companion: point NDI Virtual Input (or a monitor, OBS) at a route once, then switch cameras from buttons | Working on Will's Mac: routes, and switching NDI Virtual Input in the app |
+| [`app-launcher/`](app-launcher/) | Lists the apps installed on the Mac or PC running Companion: one key per app to launch it (green while running), plus quit and toggle actions | Built and tested; app list fixed in 1.0.1 (needs a re-check), Windows Store apps added in 1.1.0 |
 | [`show-health/`](show-health/) | Watches a list of show devices by ping or TCP port: a green/red key each, plus ALL OK | Built and tested |
 | [`tools/mac-kit/`](tools/mac-kit/) | macOS probes: D200X USB/HID check, D200X HID probe, UA Mixer Engine probe | Working |
 | [`docs/`](docs/) | Notes: UAD protocol, HE40 knob commands, [DiGiCo SD9 research](docs/digico-sd9-research.md), [show cues: desk + cameras + lights](docs/show-cues.md), [Echo360 research](docs/echo360-research.md), [lighting research: grandMA2, grandMA3, MagicQ](docs/lighting-research.md), [how it works (teaching notes)](docs/how-it-works.md), [upstream plan](docs/upstream-plan.md) | Reference |

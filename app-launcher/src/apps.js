@@ -86,19 +86,26 @@ $out = foreach ($d in $dirs) {
     [pscustomobject]@{ name = $_.BaseName; lnk = $_.FullName; target = $t }
   }
 }
-@($out) | ConvertTo-Json -Compress
+# Store apps (Calculator, Teams, Settings…) have no .exe shortcut: Get-StartApps lists them by AppID.
+$store = @(Get-StartApps | Where-Object { $_.AppID -like '*!*' } | ForEach-Object { [pscustomobject]@{ name = $_.Name; appId = $_.AppID } })
+[pscustomobject]@{ shortcuts = @($out); store = $store } | ConvertTo-Json -Compress -Depth 3
 `.trim()
 
 const SKIP_WINDOWS = /uninstall|^readme|^help$|release notes|^license/i
 
 export function parseWindowsScan(json) {
-	let rows
+	let parsed
 	try {
-		rows = JSON.parse(String(json).trim() || '[]')
+		parsed = JSON.parse(String(json).trim() || '[]')
 	} catch {
 		return []
 	}
-	if (!Array.isArray(rows)) rows = [rows]
+	// New shape: { shortcuts: [...], store: [...] }. Older shape: just the shortcuts (array, or one object).
+	const isNew = parsed && !Array.isArray(parsed) && ('shortcuts' in parsed || 'store' in parsed)
+	let rows = isNew ? parsed.shortcuts ?? [] : parsed
+	if (!Array.isArray(rows)) rows = rows ? [rows] : []
+	let store = isNew ? parsed.store ?? [] : []
+	if (!Array.isArray(store)) store = store ? [store] : []
 	const apps = []
 	const seen = new Set()
 	for (const r of rows) {
@@ -109,6 +116,14 @@ export function parseWindowsScan(json) {
 		if (seen.has(key)) continue // same shortcut in both Start Menus
 		seen.add(key)
 		apps.push({ name: r.name, path: r.lnk, exe: path.win32.basename(r.target) })
+	}
+	for (const st of store) {
+		if (!st || typeof st.name !== 'string' || typeof st.appId !== 'string' || !st.appId.includes('!')) continue
+		const key = st.name.toLowerCase()
+		if (seen.has(key)) continue
+		seen.add(key)
+		// Opened through the Apps folder like the Start Menu does. No .exe, so no running check or quit.
+		apps.push({ name: st.name, path: `shell:AppsFolder\\${st.appId}`, store: true })
 	}
 	return apps
 }
@@ -133,13 +148,20 @@ export function launchCommand(app, platform = process.platform) {
 
 const appleScriptString = (s) => '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
 
+/** A plain-English reason for common macOS automation refusals, or ''. */
+export function macPermissionHint(text) {
+	if (/-1743|not authori[sz]ed to send apple events/i.test(text)) return 'macOS blocked it: allow Companion to control that app in System Settings → Privacy & Security → Automation.'
+	if (/-1719|-25211|assistive/i.test(text)) return 'macOS blocked it: allow Companion in System Settings → Privacy & Security → Accessibility.'
+	return ''
+}
+
 export function quitCommand(app, { force = false } = {}, platform = process.platform) {
 	if (platform === 'darwin') {
 		if (force) return ['pkill', ['-f', app.path.replace(/\/$/, '') + '/Contents/MacOS/']]
 		return ['osascript', ['-e', `quit app ${appleScriptString(app.name)}`]]
 	}
 	if (platform === 'win32') {
-		if (!app.exe) throw new Error(`Don't know the program file for ${app.name}`)
+		if (!app.exe) throw new Error(app.store ? `${app.name} is a Store app: Windows doesn't say which program to quit` : `Don't know the program file for ${app.name}`)
 		return ['taskkill', force ? ['/IM', app.exe, '/F'] : ['/IM', app.exe]]
 	}
 	throw new Error(`Quitting apps isn't supported on ${platform}`)

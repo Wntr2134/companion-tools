@@ -18,23 +18,25 @@ export const UC_KEYS = {
  * osascript arguments for one shortcut. The key is one of our fixed digits. The app name is never
  * pasted into the script: it's passed as an argument and read with `item 1 of argv`.
  */
-export function osascriptArgs(key, { activate = false, appName = UC_DEFAULT_APP } = {}) {
+export function osascriptArgs(key, { activate = false, appName = UC_DEFAULT_APP, returnFocus = true } = {}) {
 	if (!/^[0-9]$/.test(String(key))) throw new Error(`Unexpected key ${key}`)
 	const keystroke = `tell application "System Events" to keystroke "${key}" using command down`
 	if (!activate) return ['-e', keystroke]
-	return [
-		'-e',
-		'on run argv',
-		'-e',
-		'tell application (item 1 of argv) to activate',
-		'-e',
-		'delay 0.3',
-		'-e',
-		keystroke,
-		'-e',
-		'end run',
-		String(appName || UC_DEFAULT_APP),
-	]
+	const lines = ['on run argv']
+	// Remember the app in front, so it can be put back after the shortcut (the presenter keeps their slides).
+	if (returnFocus) lines.push('set prevApp to ""', 'try', 'tell application "System Events" to set prevApp to name of first application process whose frontmost is true', 'end try')
+	lines.push('tell application (item 1 of argv) to activate', 'delay 0.3', keystroke)
+	if (returnFocus)
+		lines.push(
+			'delay 0.15',
+			'if prevApp is not "" and prevApp is not (item 1 of argv) then',
+			'try',
+			'tell application "System Events" to set frontmost of process prevApp to true',
+			'end try',
+			'end if',
+		)
+	lines.push('end run')
+	return [...lines.flatMap((l) => ['-e', l]), String(appName || UC_DEFAULT_APP)]
 }
 
 export class UCKeys {
@@ -49,7 +51,7 @@ export class UCKeys {
 	}
 
 	/** Send one shortcut by action name. Resolves { sent, ok?, reason? }. Never retried. */
-	send(name, { activate = false, appName = UC_DEFAULT_APP } = {}) {
+	send(name, { activate = false, appName = UC_DEFAULT_APP, returnFocus = true } = {}) {
 		const def = UC_KEYS[name]
 		if (!def) return Promise.resolve({ sent: false, reason: 'unknown' })
 		if (this.platform !== 'darwin') {
@@ -62,14 +64,16 @@ export class UCKeys {
 		if (last !== undefined && now - last < UC_DEBOUNCE_MS) return Promise.resolve({ sent: false, reason: 'debounced' })
 		this.lastPress.set(name, now)
 
-		const args = osascriptArgs(def.key, { activate, appName })
+		const args = osascriptArgs(def.key, { activate, appName, returnFocus })
 		return new Promise((resolve) => {
 			this.run('osascript', args, { timeout: 5000 }, (err, _stdout, stderr) => {
 				if (err) {
 					const why = String(stderr || err.message || '')
-					const hint = /not allowed|1002|1719|assistive/i.test(why)
-						? ' (give Companion Accessibility permission: System Settings → Privacy & Security → Accessibility)'
-						: ''
+					const hint = /-1743|not authori[sz]ed to send apple events/i.test(why)
+						? ' (allow Companion to control "System Events": System Settings → Privacy & Security → Automation)'
+						: /not allowed|1002|1719|assistive/i.test(why)
+							? ' (give Companion Accessibility permission: System Settings → Privacy & Security → Accessibility)'
+							: ''
 					this.#fail(`${def.label} failed${hint}: ${why.trim().split('\n')[0]}`)
 					resolve({ sent: true, ok: false })
 				} else {

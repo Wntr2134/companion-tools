@@ -82,6 +82,28 @@ test('Windows scan keeps .exe shortcuts, drops uninstallers, links and duplicate
 	assert.deepEqual(parseWindowsScan('not json'), [])
 })
 
+test('Windows Store apps are added (launched via the Apps folder), without doubling up', () => {
+	const json = JSON.stringify({
+		shortcuts: [{ name: 'Dante Controller', lnk: 'C:\\x\\Dante Controller.lnk', target: 'C:\\Program Files\\Audinate\\DanteController.exe' }],
+		store: [
+			{ name: 'Calculator', appId: 'Microsoft.WindowsCalculator_8wekyb3d8bbwe!App' },
+			{ name: 'Dante Controller', appId: 'Fake.Dante_123!App' },
+			{ name: 'Not store', appId: 'C:\\tools\\thing.exe' },
+		],
+	})
+	const apps = parseWindowsScan(json)
+	assert.deepEqual(
+		apps.map((a) => [a.name, a.path, a.exe, a.store]),
+		[
+			['Dante Controller', 'C:\\x\\Dante Controller.lnk', 'DanteController.exe', undefined],
+			['Calculator', 'shell:AppsFolder\\Microsoft.WindowsCalculator_8wekyb3d8bbwe!App', undefined, true],
+		],
+	)
+	const [, calc] = apps
+	assert.deepEqual(launchCommand(calc, 'win32'), ['explorer.exe', ['shell:AppsFolder\\Microsoft.WindowsCalculator_8wekyb3d8bbwe!App']])
+	assert.throws(() => quitCommand(calc, {}, 'win32'), /Store app/)
+})
+
 test('Windows tasklist parsing', () => {
 	const csv = '"System Idle Process","0","Services","0","8 K"\r\n"DanteController.exe","4120","Console","1","80,000 K"\r\n'
 	const names = parseTasklist(csv)

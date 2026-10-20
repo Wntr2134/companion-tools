@@ -216,7 +216,7 @@ class NdiRouterInstance extends InstanceBase {
 			label: 'Full NDI name, e.g. STUDIO-PC (Cam 1). Variables allowed.',
 			default: '',
 			useVariables: true,
-			isVisible: (o) => o.source === 'custom',
+			isVisibleExpression: `$(options:source) == 'custom'`,
 		}
 
 		this.setActionDefinitions({
