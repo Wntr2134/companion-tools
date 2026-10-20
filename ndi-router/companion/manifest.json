@@ -1,0 +1,22 @@
+{
+	"id": "ndi-router",
+	"name": "ndi-router",
+	"shortname": "NDI Router",
+	"description": "Makes NDI routes on the Companion computer and switches which NDI source each one shows. Point NDI Virtual Input, a monitor or OBS at a route once, then pick cameras from buttons.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js",
+		"permissions": { "native-addons": true, "filesystem": true }
+	},
+	"manufacturer": "NDI",
+	"products": ["NDI Tools", "NDI Virtual Input", "NDI Router"],
+	"keywords": ["ndi", "router", "virtual input", "video", "routing", "switcher"]
+}

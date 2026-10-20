@@ -1,0 +1,20 @@
+{
+	"name": "ndi-router",
+	"version": "1.0.0",
+	"main": "src/main.js",
+	"type": "module",
+	"scripts": {
+		"test": "node --test test/ndi.test.mjs"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": "^22.8"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.14.1",
+		"koffi": "2.16.3"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.8.0"
+	}
+}

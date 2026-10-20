@@ -11,6 +11,7 @@ echo "== echo360-capture"; (cd echo360-capture && yarn install)
 echo "== magicq"; (cd magicq && yarn install)
 echo "== show-health"; (cd show-health && yarn install)
 echo "== app-launcher"; (cd app-launcher && yarn install)
+echo "== ndi-router"; (cd ndi-router && yarn install)
 echo "== digico-sd"; (cd digico-sd && yarn install && yarn build)
 echo "== grandma2"; (cd grandma2 && yarn install)
 echo

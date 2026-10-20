@@ -13,6 +13,7 @@ You will set up:
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
 - **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
 - **Part I:** App launcher: a key for any app on the Companion computer
+- **Part J:** NDI router: switch which camera NDI Virtual Input (or a monitor) shows
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -33,9 +34,10 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `echo360-capture-….tgz`: Echo360 recording (Part G)
    - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
    - `app-launcher-….tgz`: app launcher (Part I)
+   - `ndi-router-….tgz`: NDI router (Part J)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A to I**, skipping the "dev version" steps.
+5. Carry on from **Part A to J**, skipping the "dev version" steps.
 
 To update later: download the new files from the same page and import them again.
 
@@ -482,6 +484,28 @@ Works on Mac and Windows, on the computer Companion runs on.
 - **One key that opens and closes:** action **Launch if closed, quit if open**.
 - **An app that isn't in the list:** in **Launch**, pick *(Type a name or path below)* and type the app's name (Mac) or full path (Windows).
 - **Installed something new?** Press the **Rescan apps** preset, or change and save the connection.
+
+## Part J: NDI router (switch cameras into Virtual Input)
+
+NDI Virtual Input has no remote control, so Companion makes its own NDI source for it to watch, and switches what that source shows.
+
+### J.1 Add the connection
+1. Make sure **NDI Tools** is installed on the computer running Companion.
+2. **Connections → + Add connection** → search **NDI Router** → add it.
+3. **Route names:** leave *Companion 1* and *Companion 2*, or name them (e.g. *Zoom cam*, *Monitor*). Save.
+
+✅ The connection goes green and says *2 routes*. If it says *NDI not found*, see the tooltip on **NDI library** for where to point it.
+
+### J.2 Point Virtual Input at a route (once)
+1. Open **NDI Virtual Input** (Windows: in the tray; Mac: NDI Virtual Input in the menu bar).
+2. Pick **YOUR-COMPUTER (Companion 1)**. It shows black until you route a camera to it.
+
+### J.3 Camera keys
+1. **Buttons → Presets → NDI Router → Route: Companion 1**.
+2. Drag a key for each camera onto the D200X. Also drag on **What's showing** if you want a label key.
+3. Press a camera key. Virtual Input switches to that camera, and the key goes **green**.
+
+The same works for Studio Monitor / Video Monitor, OBS or vMix: point them at a route instead of a camera.
 
 ## Getting updates
 

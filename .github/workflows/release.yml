@@ -44,6 +44,9 @@ jobs:
           - dir: app-launcher
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build
+          - dir: ndi-router
+            install: npm install --ignore-scripts --no-audit --no-fund
+            build: npx companion-module-build
           - dir: grandma2
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build
