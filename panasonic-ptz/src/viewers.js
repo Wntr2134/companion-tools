@@ -13,7 +13,7 @@ export function getViewerPresets(self) {
 		type: 'button',
 		category: CATEGORY,
 		name,
-		style: { text, size: 'auto', color: WHITE, bgcolor: BLACK },
+		style: { text, size: 'auto', color: WHITE, bgcolor: BLACK, show_topbar: false },
 		steps: [{ down: [], up: [] }],
 		feedbacks,
 	})

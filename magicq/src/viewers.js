@@ -12,7 +12,7 @@ export function getViewerPresets(self) {
 	const viewer = (name, text) => ({
 		type: 'simple',
 		name,
-		style: { text, size: 'auto', color: WHITE, bgcolor: BLACK },
+		style: { text, size: 'auto', color: WHITE, bgcolor: BLACK, show_topbar: false },
 		steps: [{ down: [], up: [] }],
 		feedbacks: [],
 	})

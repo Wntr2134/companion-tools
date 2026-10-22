@@ -1,6 +1,6 @@
 {
 	"name": "uad-console",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {

@@ -2,9 +2,10 @@ import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@compan
 import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
+import { ArtCache, withProgressBar } from './artwork.js'
 
 const GREEN = combineRgb(30, 185, 84) // Spotify green
-const GREY = combineRgb(40, 40, 40)
+const GREY = combineRgb(18, 18, 18) // Spotify black (#121212)
 const WHITE = combineRgb(255, 255, 255)
 const BLACK = combineRgb(0, 0, 0)
 const VOLUME_STEPS = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20] // % per click, for the 1-10 step size
@@ -21,6 +22,7 @@ class SpotifyInstance extends InstanceBase {
 	async init(config) {
 		this.config = config
 		this.spotify = new Spotify()
+		this.art = new ArtCache({ onReady: () => this.checkFeedbacks('now_playing_art') })
 		this.updateDefinitions()
 		this.start()
 	}
@@ -104,6 +106,24 @@ class SpotifyInstance extends InstanceBase {
 		} catch (e) {
 			const why = String(e.message)
 			this.log('error', `Spotify ${cmd}: ${permissionHint(why) || why}`)
+		}
+	}
+
+	/** The now-playing card for one key. Only the progress bar changes each second; the rest is cached. */
+	drawCard(fb) {
+		const w = fb.image?.width
+		const h = fb.image?.height
+		if (!w || !h) return {}
+		const s = this.state
+		this.art.want(s.running ? s.artwork : '')
+		const progress = s.running && s.duration ? (s.position ?? 0) / s.duration : null
+		const buf = withProgressBar(this.art.background(w, h), w, h, progress, !!s.playing)
+		return {
+			imageBuffer: buf,
+			imageBufferEncoding: { pixelFormat: 'RGB' },
+			imageBufferPosition: { x: 0, y: 0, width: w, height: h },
+			color: combineRgb(255, 255, 255),
+			show_topbar: false,
 		}
 	}
 
@@ -210,6 +230,13 @@ class SpotifyInstance extends InstanceBase {
 			playing: { type: 'boolean', name: 'Playing', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.playing },
 			shuffle: { type: 'boolean', name: 'Shuffle on (Mac)', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.shuffle },
 			repeat: { type: 'boolean', name: 'Repeat on (Mac)', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.repeat },
+			now_playing_art: {
+				type: 'advanced',
+				name: 'Now playing card (album art + progress bar)',
+				description: 'Album art (darkened, blurred) behind the key text, with a progress bar. Mac shows the cover; Windows uses Spotify black.',
+				options: [],
+				callback: (fb) => this.drawCard(fb),
+			},
 			closed: { type: 'boolean', name: 'Spotify is closed', defaultStyle: { bgcolor: GREY, color: combineRgb(150, 150, 150) }, options: [], callback: () => !this.state.running },
 		})
 
@@ -236,7 +263,7 @@ class SpotifyInstance extends InstanceBase {
 			type: 'button',
 			category,
 			name,
-			style: { text, size, color: WHITE, bgcolor: GREY },
+			style: { text, size, color: WHITE, bgcolor: GREY, show_topbar: false },
 			steps: [{ down, up: [] }],
 			feedbacks,
 		})
@@ -245,7 +272,9 @@ class SpotifyInstance extends InstanceBase {
 			playpause: key('Transport', 'Play / pause', v('play_icon'), [{ actionId: 'playpause', options: {} }], playingFb, '24'),
 			previous: key('Transport', 'Previous', '⏮', [{ actionId: 'previous', options: {} }], [], '24'),
 			next: key('Transport', 'Next', '⏭', [{ actionId: 'next', options: {} }], [], '24'),
-			now: key('Now playing', 'Track and artist', `${v('track')}\\n${v('artist')}`, [], playingFb, 'auto'),
+			now: {
+				...key('Now playing', 'Track and artist (album art)', `${v('track')}\\n${v('artist')}`, [], [{ feedbackId: 'now_playing_art', options: {} }], 'auto'),
+			},
 			open: key('Transport', 'Open Spotify', 'OPEN\\nSPOTIFY', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {} }]),
 			link: key('Playlists', 'Play a playlist (edit the link)', 'PLAYLIST', [{ actionId: 'play_link', options: { link: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M' } }]),
 			volume_knob: {
@@ -253,7 +282,7 @@ class SpotifyInstance extends InstanceBase {
 				category: 'Knobs',
 				name: mac ? 'Volume knob (push = play/pause)' : 'System volume knob (push = play/pause)',
 				options: { rotaryActions: true },
-				style: { text: mac ? `VOL\\n${v('volume')}%` : 'VOLUME', size: '14', color: WHITE, bgcolor: GREY },
+				style: { text: mac ? `VOL\\n${v('volume')}%` : 'VOLUME', size: '14', color: WHITE, bgcolor: GREY, show_topbar: false },
 				steps: [
 					{
 						down: [{ actionId: 'playpause', options: {} }],
@@ -269,7 +298,7 @@ class SpotifyInstance extends InstanceBase {
 				category: 'Knobs',
 				name: 'Track knob (turn = previous/next, push = play/pause)',
 				options: { rotaryActions: true },
-				style: { text: `TRACK\\n${v('play_icon')}`, size: '14', color: WHITE, bgcolor: GREY },
+				style: { text: `TRACK\\n${v('play_icon')}`, size: '14', color: WHITE, bgcolor: GREY, show_topbar: false },
 				steps: [
 					{
 						down: [{ actionId: 'playpause', options: {} }],
@@ -290,7 +319,7 @@ class SpotifyInstance extends InstanceBase {
 				category: 'Knobs',
 				name: 'Seek knob (5 s per click, push = restart track)',
 				options: { rotaryActions: true },
-				style: { text: `SEEK\\n${v('position')}`, size: '14', color: WHITE, bgcolor: GREY },
+				style: { text: `SEEK\\n${v('position')}`, size: '14', color: WHITE, bgcolor: GREY, show_topbar: false },
 				steps: [
 					{
 						down: [{ actionId: 'restart', options: {} }],
