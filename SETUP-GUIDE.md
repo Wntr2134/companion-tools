@@ -502,24 +502,29 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 ### I.4 Show machine, sound and desktop
 - **Keep awake**: stops the Mac sleeping or dimming mid-show. Amber while on. It switches off with the key, or when Companion closes.
 - **Sleep screens, lock, screen saver, eject disks, dark mode.**
+- **Open Companion**: opens the admin page on this Mac (127.0.0.1, so a changed IP on the road doesn't matter). The **Companion address** viewer shows the address to type on a phone or iPad.
 - **Sound**: volume knob (push = mute) and microphone level knob, with − / + keys for Stream Decks. Volume shows – for outputs macOS can't set (e.g. some interfaces and HDMI).
 - **Desktop**: Mission Control, show desktop, the front app's windows, desktop left / right, hide others, show all.
 
 ### I.5 Keys, text and Shortcuts
+- **Your Dock**: one key per app in your Dock (Finder first, then in Dock order), named after the app and green while it runs. Rearrange the Dock and the keys follow.
+- **Bluetooth**: one key per paired device (headphones, speakers, keyboards): press to connect or disconnect, blue while connected. Pair it once in System Settings → Bluetooth. If macOS won't let Companion use Bluetooth, install the free *blueutil* (`brew install blueutil`) and the keys use that instead.
 - **Keys and text**: screenshot, Spotlight, copy, paste, undo, any shortcut (edit the action: pick the key and tick ⌘ ⌥ ⌃ ⇧, optionally send it to one app), and **paste saved text** (signatures, IP addresses, stock replies).
 - **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
 
 ### I.6 Ready-made D200X pages
-Five pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools.
+Five pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
 
+- **Dock Apps**: Your Dock as keys: Finder then your Dock apps in order (11 keys), each named after its app and green while it runs. Rearrange the Dock and the keys follow. Knob 1 = Mac volume (push = mute), knob 2 = move the front window to the previous / next screen (push = fill).
+- **Dock Apps 2**: Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).
+- **Apps and Windows**: The first five Dock apps on the top row, then the front window: left / fill / right, previous / next screen, centre. Knob 1 = Mac volume (push = mute), knob 2 = move the front window between screens (push = fill).
 - **Mac Desk**: Everyday Mac: Mission Control, show desktop, screenshot, Spotlight, lock; front window left / fill / right and onto the other screen; keep awake. Knob 1 = Mac volume (push = mute), knob 2 = desktops (push = Mission Control).
 - **Windows**: Window layouts for the window in front: thirds, two-thirds, quarters, centre, minimise. Knob 1 = move it to the previous / next screen (push = fill the screen), knob 2 = left / right half (push = centre).
 - **Show Machine**: Window layouts 1–4 (arrange your windows, press SAVE, then the LAYOUT key puts them back), keep awake, sleep screens, eject disks, dark mode. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
-- **Video Calls**: Zoom (top row) and Microsoft Teams (rows 2–3) with their default Mac shortcuts, sent to that app even when it isn't in front. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
 - **Show Apps**: Open your show apps (green while running), arrange them across screens in one press (edit ARRANGE SHOW to suit), hide everything else, and push the front window to screen 1 or 2. Knob 1 = Mac volume (push = mute), knob 2 = desktops.
 
 **To import one:**
-1. Download it from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), e.g. `D200X-Mac-Desk.companionconfig`.
+1. Download it from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), e.g. `D200X-Dock-Apps.companionconfig`.
 2. In Companion: **Import / Export → Import**, choose the file, and pick an **empty page** to put it on.
 3. Under connections, match **System_Tools** to your System Tools connection (it may still be called App_Launcher) and **Spotify__local_** to your Spotify connection. Don't let it create new ones.
 4. Import. Any key you don't want: right-click → delete, or drag a preset over it.

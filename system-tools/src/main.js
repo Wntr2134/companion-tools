@@ -30,6 +30,8 @@ import {
 import { cpuPercent, parseVmStat, parsePmset, mainIp, fmtUptime, fmtBytes, diskFree } from './sysinfo.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
+import { readDock, DOCK_SLOTS } from './dock.js'
+import { Bluetooth } from './bluetooth.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const BLUE = combineRgb(10, 110, 230) // lit system keys (macOS accent blue)
@@ -67,6 +69,10 @@ const short = (s, n = 16) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
 class SystemToolsInstance extends InstanceBase {
 	apps = []
 	running = new Set()
+	dock = []
+	btDevices = []
+	btPolling = false
+	dockRunning = new Set()
 	screens = []
 	shortcuts = []
 	sound = { output: null, input: null, muted: false }
@@ -137,9 +143,63 @@ class SystemToolsInstance extends InstanceBase {
 			this.log('error', `App scan failed: ${e.code ? e.code + ' ' : ''}${e.message}`)
 			this.updateStatus(InstanceStatus.UnknownError, 'App scan failed: see log')
 		}
+		await this.refreshDock(false)
 		this.updateDefinitions()
 		await this.pollRunning()
 		this.startPolls()
+	}
+
+	/** Paired Bluetooth devices and whether each is connected. Redraws the presets when the list changes. */
+	async refreshBluetooth() {
+		if (!this.mac || this.btPolling) return
+		this.btPolling = true
+		try {
+			this.bt ??= new Bluetooth()
+			const list = await this.bt.list()
+			const namesChanged = list.map((d) => d.address + d.name).join('|') !== this.btDevices.map((d) => d.address + d.name).join('|')
+			const stateChanged = list.some((d, i) => d.connected !== this.btDevices[i]?.connected)
+			this.btDevices = list
+			if (namesChanged) this.updateDefinitions()
+			if (namesChanged || stateChanged) {
+				this.checkFeedbacks('bt_connected')
+				this.setVariableValues({ bt_connected: list.filter((d) => d.connected).map((d) => d.name).join(', ') })
+			}
+		} catch (e) {
+			if (!this.btWarned) this.log('warn', `Bluetooth: ${macPermissionHint(e.message) || e.message.split('\n')[0]}`)
+			this.btWarned = true
+		} finally {
+			this.btPolling = false
+		}
+	}
+
+	async setBluetooth(address, mode) {
+		if (this.macOnly('Bluetooth')) return
+		const d = this.btDevices.find((x) => x.address === address)
+		const connect = mode === 'on' ? true : mode === 'off' ? false : !d?.connected
+		try {
+			this.bt ??= new Bluetooth()
+			await this.bt.set(address, connect)
+			this.log('info', `${connect ? 'Connected' : 'Disconnected'} ${d?.name ?? address}`)
+		} catch (e) {
+			this.fail(`Bluetooth ${connect ? 'connect' : 'disconnect'} ${d?.name ?? address}`, e)
+		}
+		setTimeout(() => void this.refreshBluetooth(), 1500)
+	}
+
+	/** The apps in the Mac's Dock, for the "Your Dock" keys. Redraws the presets only when the Dock changed. */
+	async refreshDock(redefine = true) {
+		if (!this.mac) return
+		try {
+			const dock = await readDock()
+			const changed = dock.map((d) => d.path).join('\n') !== this.dock.map((d) => d.path).join('\n')
+			this.dock = dock
+			const values = { dock_count: dock.length }
+			for (let i = 1; i <= DOCK_SLOTS; i++) values[`dock_${i}`] = dock[i - 1]?.name ?? ''
+			this.setVariableValues(values)
+			if (changed && redefine) this.updateDefinitions()
+		} catch (e) {
+			this.log('debug', `Dock read failed: ${e.message}`)
+		}
 	}
 
 	startPolls() {
@@ -149,6 +209,9 @@ class SystemToolsInstance extends InstanceBase {
 		this.timers.push(setInterval(() => void this.pollInfo(), 5000))
 		this.timers.push(setInterval(() => this.tickClock(), 1000))
 		if (this.mac) this.timers.push(setInterval(() => void this.refreshScreens(), 30000))
+		if (this.mac) this.timers.push(setInterval(() => void this.refreshDock(), 60000))
+		if (this.mac) this.timers.push(setInterval(() => void this.refreshBluetooth(), 10000))
+		if (this.mac) void this.refreshBluetooth()
 		this.tickClock()
 		void this.pollSystem()
 		void this.pollInfo()
@@ -160,7 +223,7 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	async pollRunning() {
-		if (this.polling || this.apps.length === 0) return
+		if (this.polling || (this.apps.length === 0 && this.dock.length === 0)) return
 		this.polling = true
 		try {
 			const now = await runningApps(this.apps)
@@ -169,6 +232,12 @@ class SystemToolsInstance extends InstanceBase {
 			if (changed) {
 				this.checkFeedbacks('app_running')
 				this.setVariableValues({ running_count: now.size })
+			}
+			if (this.dock.length) {
+				const dockNow = await runningApps(this.dock.map((d, i) => ({ id: String(i + 1), path: d.path })))
+				const dockChanged = dockNow.size !== this.dockRunning.size || [...dockNow].some((id) => !this.dockRunning.has(id))
+				this.dockRunning = dockNow
+				if (dockChanged) this.checkFeedbacks('dock_running')
 			}
 		} catch (e) {
 			this.log('debug', `Running check failed: ${e.message}`)
@@ -340,6 +409,8 @@ class SystemToolsInstance extends InstanceBase {
 			}
 		}
 		values.ip = mainIp()
+		this.companionPort = await this.companionAdminPort()
+		values.companion_url = values.ip ? `http://${values.ip}:${this.companionPort}` : ''
 		values.uptime = fmtUptime(os.uptime())
 		values.cpu_memory = `CPU ${values.cpu}  ·  RAM ${values.memory}`
 		values.disk_battery = values.battery ? `Disk ${values.disk_free} free  ·  🔋 ${values.battery}` : `Disk ${values.disk_free} free`
@@ -356,6 +427,17 @@ class SystemToolsInstance extends InstanceBase {
 			date: now.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
 			date_short: now.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }),
 		})
+	}
+
+	/** The port Companion's admin pages are on (Settings → Admin port), 8000 unless changed. */
+	async companionAdminPort() {
+		try {
+			const port = (await this.parseVariablesInString('$(internal:bind_port)')).trim()
+			if (/^\d+$/.test(port)) return Number(port)
+		} catch {
+			// fall back to Companion's default
+		}
+		return 8000
 	}
 
 	async setSound(what, value) {
@@ -444,6 +526,21 @@ class SystemToolsInstance extends InstanceBase {
 			isVisibleExpression: `$(options:app) == 'custom'`,
 		}
 		const screenCount = Math.max(2, this.screens.length)
+		const btOption = {
+			type: 'dropdown',
+			id: 'device',
+			label: 'Device',
+			default: this.btDevices[0]?.address ?? '',
+			allowCustom: true,
+			choices: this.btDevices.map((d) => ({ id: d.address, label: `${d.name} (${d.address})` })),
+		}
+		const dockSlotOption = {
+			type: 'dropdown',
+			id: 'slot',
+			label: 'Dock position',
+			default: '2',
+			choices: Array.from({ length: DOCK_SLOTS }, (_, i) => ({ id: String(i + 1), label: `${i + 1}${this.dock[i] ? `: ${this.dock[i].name}` : ''}` })),
+		}
 		const screenOption = {
 			type: 'dropdown',
 			id: 'screen',
@@ -506,6 +603,25 @@ class SystemToolsInstance extends InstanceBase {
 					else await this.launch(app)
 				},
 			},
+			dock_launch: {
+				name: 'App: open the app in a Dock position (Mac)',
+				description: '1 = Finder (always first in the Dock), 2 = the next app along, and so on. Follows your Dock: rearrange the Dock and the keys follow.',
+				options: [dockSlotOption],
+				callback: async (a) => {
+					if (this.macOnly('Dock apps')) return
+					const app = this.dock[Number(a.options.slot) - 1]
+					if (!app) return this.log('warn', `There is no app in Dock position ${a.options.slot}`)
+					await this.launch(app)
+				},
+			},
+			bluetooth: {
+				name: 'Bluetooth: connect / disconnect a device (Mac)',
+				description: 'Your paired devices: headphones, speakers, keyboards… Pair a device once in System Settings → Bluetooth first.',
+				options: [btOption, mode],
+				callback: (a) => this.setBluetooth(String(a.options.device), a.options.mode),
+			},
+			refresh_bluetooth: { name: 'Bluetooth: re-read the paired devices (Mac)', options: [], callback: () => this.refreshBluetooth() },
+			refresh_dock: { name: 'App: re-read the Dock (Mac)', options: [], callback: () => this.refreshDock() },
 			rescan: { name: 'App: rescan for apps', description: 'Run after installing or removing apps.', options: [], callback: async () => this.rescan() },
 			hide_app: {
 				name: 'App: hide (Mac)',
@@ -648,6 +764,30 @@ class SystemToolsInstance extends InstanceBase {
 				callback: async (a) => {
 					await this.osa(DARK_MODE_SET, [a.options.mode], 'Dark mode')
 					setTimeout(() => void this.pollSystem(), 500)
+				},
+			},
+			open_companion: {
+				name: "Open Companion's admin page on this computer",
+				description: 'Uses 127.0.0.1, so it works whatever the network or IP address. For a phone or iPad, use the companion_url variable (the Companion address viewer).',
+				options: [
+					{
+						type: 'dropdown',
+						id: 'page',
+						label: 'Page',
+						default: '',
+						choices: [
+							{ id: '', label: 'Admin (where you left off)' },
+							{ id: 'buttons', label: 'Buttons' },
+							{ id: 'connections', label: 'Connections' },
+							{ id: 'emulator', label: 'Emulator' },
+							{ id: 'tablet', label: 'Web buttons' },
+						],
+					},
+				],
+				callback: async (a) => {
+					const url = `http://127.0.0.1:${await this.companionAdminPort()}/${a.options.page ?? ''}`
+					if (process.platform === 'win32') await run('explorer.exe', [url]).catch(() => null)
+					else await run('open', [url]).catch((e) => this.fail('Open Companion', e))
 				},
 			},
 			open_target: {
@@ -796,6 +936,20 @@ class SystemToolsInstance extends InstanceBase {
 				options: [appOption],
 				callback: (fb) => this.running.has(fb.options.app),
 			},
+			bt_connected: {
+				type: 'boolean',
+				name: 'Bluetooth device is connected (Mac)',
+				defaultStyle: { bgcolor: BLUE, color: WHITE },
+				options: [btOption],
+				callback: (fb) => !!this.btDevices.find((d) => d.address === fb.options.device)?.connected,
+			},
+			dock_running: {
+				type: 'boolean',
+				name: 'The app in a Dock position is running (Mac)',
+				defaultStyle: { bgcolor: GREEN, color: WHITE },
+				options: [dockSlotOption],
+				callback: (fb) => this.dockRunning.has(String(fb.options.slot)),
+			},
 			keep_awake: { type: 'boolean', name: 'Keep awake is on', defaultStyle: { bgcolor: AMBER, color: BLACK }, options: [], callback: () => this.keepAwake.on },
 			muted: { type: 'boolean', name: 'Sound is muted (Mac)', defaultStyle: { bgcolor: combineRgb(200, 30, 30), color: WHITE }, options: [], callback: () => !!this.sound.muted },
 			dark_mode: { type: 'boolean', name: 'Dark mode is on (Mac)', defaultStyle: { bgcolor: BLUE, color: WHITE }, options: [], callback: () => this.dark },
@@ -806,6 +960,9 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'app_count', name: 'Number of apps found' },
 			{ variableId: 'running_count', name: 'Number of listed apps running' },
 			{ variableId: 'last_launched', name: 'Last app launched' },
+			{ variableId: 'dock_count', name: 'Number of apps in the Dock (Mac)' },
+			{ variableId: 'bt_connected', name: 'Bluetooth devices connected now (Mac)' },
+			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}`, name: `Dock app ${i + 1} (Mac)` })),
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
 			{ variableId: 'date', name: 'Date (Wednesday 22 October)' },
 			{ variableId: 'date_short', name: 'Date (Wed 22 Oct)' },
@@ -817,6 +974,7 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'battery', name: 'Battery (blank on desktops)' },
 			{ variableId: 'disk_battery', name: 'Disk free and battery on one line' },
 			{ variableId: 'ip', name: 'IP address' },
+			{ variableId: 'companion_url', name: "Companion's address for other devices (http://IP:port)" },
 			{ variableId: 'uptime', name: 'Time since the computer started' },
 			{ variableId: 'volume', name: 'Output volume (Mac; – when the device has no volume)' },
 			{ variableId: 'input_volume', name: 'Microphone level (Mac)' },
@@ -873,6 +1031,7 @@ class SystemToolsInstance extends InstanceBase {
 		presets.keep_awake = key('Show machine', 'Keep awake (toggle)', 'KEEP\\nAWAKE', act('keep_awake', { mode: 'toggle', displays: true }), [{ feedbackId: 'keep_awake', options: {}, style: { bgcolor: AMBER, color: BLACK } }])
 		presets.display_sleep = key('Show machine', 'Sleep the displays', 'SLEEP\\nSCREENS', act('display_sleep'))
 		presets.lock = key('Show machine', 'Lock the screen', 'LOCK', act('lock_screen'), [], '18')
+		presets.open_companion = key('Show machine', "Open Companion's admin page", 'OPEN\\nCOMPANION', act('open_companion', { page: '' }))
 		presets.screen_saver = key('Show machine', 'Screen saver', 'SCREEN\\nSAVER', act('screen_saver'))
 		presets.eject = key('Show machine', 'Eject all disks', 'EJECT\\nDISKS ⏏', act('eject_disks'))
 		presets.dark_mode = key('Show machine', 'Dark mode (toggle)', 'DARK\\nMODE', act('dark_mode', { mode: 'toggle' }), [{ feedbackId: 'dark_mode', options: {}, style: { bgcolor: BLUE, color: WHITE } }])
@@ -928,6 +1087,27 @@ class SystemToolsInstance extends InstanceBase {
 			presets[`shortcut_${i}`] = key('Shortcuts app', name, short(name, 18), act('run_shortcut', { name }), [], 'auto')
 		})
 		presets.shortcuts_refresh = key('Shortcuts app', 'Refresh the shortcut list', 'REFRESH\\nSHORTCUTS', act('refresh_shortcuts'))
+
+		// Your Dock: one key per Dock position, showing that app's name, green while it runs
+		for (let i = 1; i <= DOCK_SLOTS; i++) {
+			presets[`dock_${i}`] = {
+				type: 'button',
+				category: 'Your Dock',
+				name: this.dock[i - 1] ? `Dock ${i}: ${this.dock[i - 1].name}` : `Dock app ${i}`,
+				style: { text: v(`dock_${i}`), size: 'auto', color: WHITE, bgcolor: GREY, show_topbar: false },
+				steps: [{ down: act('dock_launch', { slot: String(i) }), up: [] }],
+				feedbacks: [{ feedbackId: 'dock_running', options: { slot: String(i) }, style: { bgcolor: GREEN, color: WHITE } }],
+			}
+		}
+		// Bluetooth: one key per paired device, blue while connected
+		this.btDevices.slice(0, 24).forEach((d) => {
+			presets[`bt_${d.address.replace(/[^a-f0-9]/g, '')}`] = key('Bluetooth', `Connect / disconnect ${d.name}`, short(d.name, 18), act('bluetooth', { device: d.address, mode: 'toggle' }), [
+				{ feedbackId: 'bt_connected', options: { device: d.address }, style: { bgcolor: BLUE, color: WHITE } },
+			], 'auto')
+		})
+		presets.refresh_bluetooth = key('Bluetooth', 'Re-read the paired devices', 'RE-READ\\nBLUETOOTH', act('refresh_bluetooth'))
+
+		presets.refresh_dock = key('Your Dock', 'Re-read the Dock', 'RE-READ\\nDOCK', act('refresh_dock'))
 
 		// Apps
 		presets.rescan = key('Apps: tools', 'Rescan apps', 'RESCAN\\nAPPS', act('rescan'))

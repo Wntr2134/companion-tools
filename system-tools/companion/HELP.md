@@ -9,6 +9,12 @@ Your computer from Companion keys: the computer Companion runs on. (This used to
 - Actions: launch, quit (tick *Force quit* only if it hangs), launch-or-quit toggle, hide, hide all the others, show all, rescan.
 - Mac: the apps in `/Applications` (and sub-folders) and `~/Applications`; tick *include built-in apps* for Safari, Notes and so on. Windows: the Start Menu.
 
+### Your Dock (Mac)
+**Your Dock** presets: one key per app in your Mac's Dock (Finder first, then in Dock order), showing the app's name, green while it runs. The action *Open the app in a Dock position* does the same on any key. Rearrange the Dock and the keys follow (checked every minute, or press *Re-read Dock*).
+
+### Bluetooth (Mac)
+**Bluetooth** presets: one key per paired device. Press to connect or disconnect; blue while connected. Pair devices once in System Settings → Bluetooth. If you have the free *blueutil* installed (`brew install blueutil`) it's used, as it's the most reliable; otherwise macOS's own Bluetooth system is used, which may ask to let Companion use Bluetooth. Turning Bluetooth itself on or off isn't here: use a Shortcuts-app shortcut with *Set Bluetooth*.
+
 ### Windows and screens (Mac)
 - **Window: move / resize**: any app's window (or the one in front) onto a screen, in a position: fill, halves, thirds, two-thirds, quarters, centre large, centre, or *same place, other screen*. It can open the app first.
 - **Screens:** screen 1 has the menu bar; the others are numbered left to right. The list in the action shows their names.
@@ -18,6 +24,7 @@ Your computer from Companion keys: the computer Companion runs on. (This used to
 - **Magnet keys** press Magnet's default shortcuts, for people who use Magnet. They only work with Magnet running and its shortcuts unchanged. The built-in window moving doesn't need Magnet and can move windows that aren't in front.
 
 ### Show machine
+- **Open Companion**: opens Companion's admin page on this computer (at 127.0.0.1, so it works on any network, whatever your IP). For a phone or iPad on the same network, the **Companion address** wide key viewer shows the current `http://IP:8000` address.
 - **Keep awake**: stops the Mac sleeping (and the screens dimming, unless you untick it). Amber while on. Off with the key, or when Companion closes.
 - Sleep the screens, lock, screen saver, eject all disks, dark mode (blue while on).
 
@@ -37,4 +44,4 @@ One key per shortcut in Apple's Shortcuts app, and a **Run a shortcut** action. 
 ### Wide key viewers and variables
 Viewers: clock and date, CPU and memory, disk and battery, IP and uptime, volume and keep awake.
 
-Variables: `clock`, `date`, `date_short`, `cpu`, `memory`, `cpu_memory`, `disk_free`, `disk_used`, `battery`, `disk_battery`, `ip`, `uptime`, `volume`, `input_volume`, `muted`, `keep_awake`, `dark_mode`, `screen_count`, `screens`, `app_count`, `running_count`, `last_launched`. Spotify and Apple Music can show these when nothing is playing (their *When nothing is playing* settings).
+Variables: `clock`, `date`, `date_short`, `cpu`, `memory`, `cpu_memory`, `disk_free`, `disk_used`, `battery`, `disk_battery`, `ip`, `uptime`, `volume`, `input_volume`, `muted`, `keep_awake`, `dark_mode`, `screen_count`, `screens`, `dock_1`…`dock_16`, `dock_count`, `bt_connected`, `companion_url`, `app_count`, `running_count`, `last_launched`. Spotify and Apple Music can show these when nothing is playing (their *When nothing is playing* settings).

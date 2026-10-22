@@ -2,7 +2,7 @@
  "version": 12,
  "type": "page",
  "page": {
-  "name": "Video Calls",
+  "name": "Dock Apps",
   "controls": {
    "0": {
     "0": {
@@ -12,51 +12,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "ZOOM\\nMUTE",
+      "text": "$(System_Tools:dock_1)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "PaG5xhoE_NpLMHrG-DcVc",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "1"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "-9AK0KKV2f_qHzbqJi5FW",
+          "id": "E1uOlKMaXmbZ1RzCZ2tUl",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "a"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "zoom.us"
+            "value": "1"
            }
           },
           "upgradeIndex": -1
@@ -77,51 +79,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "ZOOM\\nVIDEO",
+      "text": "$(System_Tools:dock_2)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "r6i9PH_1U9tZZcD6EHSec",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "2"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "uoxLC35PC_ebpqcHC9z2U",
+          "id": "CB-KpQLZ_Kzf-tr3NodN-",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "v"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "zoom.us"
+            "value": "2"
            }
           },
           "upgradeIndex": -1
@@ -142,51 +146,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "ZOOM\\nSHARE",
+      "text": "$(System_Tools:dock_3)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "8pJgtnDZOQlRihqqEdSry",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "3"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "OVORR-TOJQJlxhmPNlL9q",
+          "id": "HH3YbAQmQJhBgsLJNqh5U",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "s"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "zoom.us"
+            "value": "3"
            }
           },
           "upgradeIndex": -1
@@ -207,51 +213,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "ZOOM\\nHAND ✋",
+      "text": "$(System_Tools:dock_4)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "e-4whja_mL2-ITW9ZbXeT",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "4"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "capAbRyYoVg-k-fSjeO5N",
+          "id": "hs-JtMEmDrQ80-ljFhAoR",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "y"
-           },
-           "command": {
-            "isExpression": false,
-            "value": false
-           },
-           "option": {
-            "isExpression": false,
-            "value": true
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": false
-           },
-           "target": {
-            "isExpression": false,
-            "value": "zoom.us"
+            "value": "4"
            }
           },
           "upgradeIndex": -1
@@ -272,26 +280,26 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "OPEN\\nZOOM",
+      "text": "$(System_Tools:dock_5)",
       "textExpression": false,
       "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
      "feedbacks": [
       {
-       "id": "1OInllFoGie1jKtZlSR2G",
+       "id": "sxjAq0rhXy0jVU8kNpLEh",
        "type": "feedback",
-       "definitionId": "app_running",
+       "definitionId": "dock_running",
        "connectionId": "system-tools",
        "options": {
-        "app": {
+        "slot": {
          "isExpression": false,
-         "value": "zoom_us"
+         "value": "5"
         }
        },
        "upgradeIndex": -1,
@@ -311,18 +319,14 @@
        "action_sets": {
         "down": [
          {
-          "id": "9BhSqNj27P1TM8xLHK7sz",
+          "id": "6fXug3_A036wj8X9ZWXVO",
           "type": "action",
-          "definitionId": "launch",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "app": {
+           "slot": {
             "isExpression": false,
-            "value": "custom"
-           },
-           "custom": {
-            "isExpression": false,
-            "value": "zoom.us"
+            "value": "5"
            }
           },
           "upgradeIndex": -1
@@ -345,51 +349,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "TEAMS\\nMUTE",
+      "text": "$(System_Tools:dock_6)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "nI9J7Y_XR3LOig3fuyjh3",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "6"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "q6DSyBDIdFbtxR0JtLJvr",
+          "id": "eABN9BOyQ_B0BmQpeBYEw",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "m"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "6"
            }
           },
           "upgradeIndex": -1
@@ -410,51 +416,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "TEAMS\\nCAMERA",
+      "text": "$(System_Tools:dock_7)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "wjxqd9lWyAbvIb9q2P7UK",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "7"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "n3jNRNv12PgGFrOXmteC7",
+          "id": "4A-yLvdsKlLo1DlQ83zM3",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "o"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "7"
            }
           },
           "upgradeIndex": -1
@@ -475,51 +483,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "TEAMS\\nHAND ✋",
+      "text": "$(System_Tools:dock_8)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "Ac8w66R78xzSL6H0chMe7",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "8"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "wlwrD4nHkY605Y7WqPT0v",
+          "id": "QNZVSh8-geo_lZduGSP10",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "k"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "8"
            }
           },
           "upgradeIndex": -1
@@ -557,7 +567,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "-sro18aS2P3Y85-Fd2RzI",
+          "id": "F5x1jt8GgtRVNRW-zFizX",
           "type": "action",
           "definitionId": "previous",
           "connectionId": "spotify-local",
@@ -597,7 +607,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "cuhqYPoEE-fT1Oby7v9Qq",
+          "id": "ODJiQ9szWILgmX0RJ5c_G",
           "type": "action",
           "definitionId": "next",
           "connectionId": "spotify-local",
@@ -622,51 +632,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "TEAMS\\nSHARE",
+      "text": "$(System_Tools:dock_9)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "Lkahtu_GOdJYJZwjli-8v",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "9"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "6BriGWa5rtcebcambvQR4",
+          "id": "xdDMxSF2QqDMLNihhXoNv",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "e"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "9"
            }
           },
           "upgradeIndex": -1
@@ -687,51 +699,53 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "TEAMS\\nLEAVE",
+      "text": "$(System_Tools:dock_10)",
       "textExpression": false,
-      "size": "14",
+      "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [],
+     "feedbacks": [
+      {
+       "id": "ZkmWcRZediquthW8RBIvY",
+       "type": "feedback",
+       "definitionId": "dock_running",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "10"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
      "localVariables": [],
      "steps": {
       "0": {
        "action_sets": {
         "down": [
          {
-          "id": "bmgKeNsDSlBXxVSmqY3Ut",
+          "id": "00n7wBF0f1xB0RfwlFkXH",
           "type": "action",
-          "definitionId": "send_keys",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "key": {
+           "slot": {
             "isExpression": false,
-            "value": "h"
-           },
-           "command": {
-            "isExpression": false,
-            "value": true
-           },
-           "option": {
-            "isExpression": false,
-            "value": false
-           },
-           "control": {
-            "isExpression": false,
-            "value": false
-           },
-           "shift": {
-            "isExpression": false,
-            "value": true
-           },
-           "target": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "10"
            }
           },
           "upgradeIndex": -1
@@ -752,26 +766,26 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "OPEN\\nTEAMS",
+      "text": "$(System_Tools:dock_11)",
       "textExpression": false,
       "size": "auto",
       "alignment": "center:center",
       "pngalignment": "center:center",
       "color": 16777215,
-      "bgcolor": 1579550,
+      "bgcolor": 2631720,
       "show_topbar": false,
       "png64": null
      },
      "feedbacks": [
       {
-       "id": "Oq4Q1nYYDvzPSngaSo_JT",
+       "id": "KXDKRA5mfJ7y4IuZlHXsJ",
        "type": "feedback",
-       "definitionId": "app_running",
+       "definitionId": "dock_running",
        "connectionId": "system-tools",
        "options": {
-        "app": {
+        "slot": {
          "isExpression": false,
-         "value": "microsoft_teams"
+         "value": "11"
         }
        },
        "upgradeIndex": -1,
@@ -791,18 +805,14 @@
        "action_sets": {
         "down": [
          {
-          "id": "Yh1q4y1bAKitGKX_b1PIB",
+          "id": "XpTK29Zg3CAPraDwgm6zE",
           "type": "action",
-          "definitionId": "launch",
+          "definitionId": "dock_launch",
           "connectionId": "system-tools",
           "options": {
-           "app": {
+           "slot": {
             "isExpression": false,
-            "value": "custom"
-           },
-           "custom": {
-            "isExpression": false,
-            "value": "Microsoft Teams"
+            "value": "11"
            }
           },
           "upgradeIndex": -1
@@ -835,7 +845,7 @@
      },
      "feedbacks": [
       {
-       "id": "Psfdy9xVPTWzos9HTolPp",
+       "id": "0-hWPIxKxKH2BeNC5-Ogi",
        "type": "feedback",
        "definitionId": "now_playing_art",
        "connectionId": "spotify-local",
@@ -886,7 +896,7 @@
      },
      "feedbacks": [
       {
-       "id": "6lSC5bI0Ho8_0L-5DESgX",
+       "id": "-SAzC70WnAzF3wdciat5o",
        "type": "feedback",
        "definitionId": "muted",
        "connectionId": "system-tools",
@@ -908,7 +918,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "pr_ntcPJHMoMVXxUHthMT",
+          "id": "zDVnQTKhtR-flOKLLMgA5",
           "type": "action",
           "definitionId": "mute",
           "connectionId": "system-tools",
@@ -924,7 +934,7 @@
         "up": [],
         "rotate_left": [
          {
-          "id": "U3K5J1t_5NLFZSanr1Kfq",
+          "id": "ZNSlEvG_Dwq3sSTORYTWL",
           "type": "action",
           "definitionId": "volume_step",
           "connectionId": "system-tools",
@@ -943,7 +953,7 @@
         ],
         "rotate_right": [
          {
-          "id": "hbv6pdc8rPGNhh-6qvGb9",
+          "id": "n7PDyubYsBv07-kFCI5xt",
           "type": "action",
           "definitionId": "volume_step",
           "connectionId": "system-tools",
@@ -974,7 +984,7 @@
       "rotaryActions": true
      },
      "style": {
-      "text": "MIC\\n$(System_Tools:input_volume)",
+      "text": "SCREEN\\n◀ ▶",
       "textExpression": false,
       "size": "14",
       "alignment": "center:center",
@@ -993,18 +1003,30 @@
         "up": [],
         "rotate_left": [
          {
-          "id": "eNAHfGmNzfcCBCKeyTrt5",
+          "id": "5tQE4FgqLFLbBU0gvZ2kv",
           "type": "action",
-          "definitionId": "input_step",
+          "definitionId": "window_place",
           "connectionId": "system-tools",
           "options": {
-           "direction": {
+           "app": {
             "isExpression": false,
-            "value": "down"
+            "value": "front"
            },
-           "size": {
+           "custom": {
             "isExpression": false,
-            "value": 2
+            "value": ""
+           },
+           "screen": {
+            "isExpression": false,
+            "value": "previous"
+           },
+           "position": {
+            "isExpression": false,
+            "value": "keep"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
            }
           },
           "upgradeIndex": -1
@@ -1012,18 +1034,30 @@
         ],
         "rotate_right": [
          {
-          "id": "Fo62IONUvM2z-8Im_Jwn1",
+          "id": "iMRbB_bw6O6-Nq9UwyFTw",
           "type": "action",
-          "definitionId": "input_step",
+          "definitionId": "window_place",
           "connectionId": "system-tools",
           "options": {
-           "direction": {
+           "app": {
             "isExpression": false,
-            "value": "up"
+            "value": "front"
            },
-           "size": {
+           "custom": {
             "isExpression": false,
-            "value": 2
+            "value": ""
+           },
+           "screen": {
+            "isExpression": false,
+            "value": "next"
+           },
+           "position": {
+            "isExpression": false,
+            "value": "keep"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
            }
           },
           "upgradeIndex": -1
@@ -1055,7 +1089,7 @@
      },
      "feedbacks": [
       {
-       "id": "WZpo6Aujq07h5liE_H62f",
+       "id": "CYH895fm6xHQwtx7Q9Okj",
        "type": "feedback",
        "definitionId": "playing",
        "connectionId": "spotify-local",
@@ -1078,7 +1112,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "ubi0Kga5-xTJ-k8V8VrGl",
+          "id": "oe2lTwJoaBKEe7j8Yt97y",
           "type": "action",
           "definitionId": "playpause",
           "connectionId": "spotify-local",
@@ -1089,7 +1123,7 @@
         "up": [],
         "rotate_left": [
          {
-          "id": "IRCadJ23gfTe5l10Jp7GU",
+          "id": "9dNOk8hl68UNGg1kCeFQR",
           "type": "action",
           "definitionId": "volume_step",
           "connectionId": "spotify-local",
@@ -1108,7 +1142,7 @@
         ],
         "rotate_right": [
          {
-          "id": "Cx-_2YBWqFZz6FobUrqvY",
+          "id": "oOPCjh7M2pHxU9ddJWsN1",
           "type": "action",
           "definitionId": "volume_step",
           "connectionId": "spotify-local",
@@ -1153,7 +1187,7 @@
      },
      "feedbacks": [
       {
-       "id": "_xTBMLo4-ADxFDyxUZlUp",
+       "id": "MpDfeTf0JR7gSDYmnZALF",
        "type": "feedback",
        "definitionId": "muted",
        "connectionId": "system-tools",
@@ -1175,7 +1209,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "tSzKlWdbPWDQGBUcIJfWr",
+          "id": "gcvATVGot1b155BRP6CTK",
           "type": "action",
           "definitionId": "mute",
           "connectionId": "system-tools",
@@ -1183,6 +1217,67 @@
            "mode": {
             "isExpression": false,
             "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "FILL",
+      "textExpression": false,
+      "size": "18",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "zNiUi5BQgichQZlsZJgiq",
+          "type": "action",
+          "definitionId": "window_place",
+          "connectionId": "system-tools",
+          "options": {
+           "app": {
+            "isExpression": false,
+            "value": "front"
+           },
+           "custom": {
+            "isExpression": false,
+            "value": ""
+           },
+           "screen": {
+            "isExpression": false,
+            "value": "same"
+           },
+           "position": {
+            "isExpression": false,
+            "value": "full"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
            }
           },
           "upgradeIndex": -1
@@ -1215,7 +1310,7 @@
      },
      "feedbacks": [
       {
-       "id": "8yEwLpatXiJKodKNT4X1V",
+       "id": "d3faFrtyTjqtilEBrQntj",
        "type": "feedback",
        "definitionId": "playing",
        "connectionId": "spotify-local",
@@ -1238,7 +1333,7 @@
        "action_sets": {
         "down": [
          {
-          "id": "FhoEZDGCryAAgsFimt_TG",
+          "id": "3CSv9Oq_HA152XHL5as91",
           "type": "action",
           "definitionId": "playpause",
           "connectionId": "spotify-local",

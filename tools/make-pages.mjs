@@ -74,7 +74,48 @@ const desktopKnob = () => ({
 	push: key('sys', 'MISSION\\nCONTROL', [act('mission_control', { view: 'mission' })]),
 })
 
+const screenKnob = () => ({ turn: key('sys', 'SCREEN\\n◀ ▶', [], { left: [front('keep', 'previous')], right: [front('keep', 'next')] }), push: key('sys', 'FILL', [front('full')], { size: '18' }) })
+const halfKnob = () => ({ turn: key('sys', 'HALF\\n◀ ▶', [], { left: [front('left')], right: [front('right')] }), push: key('sys', 'CENTRE', [front('centre')], { size: '18' }) })
+/** Dock keys for these spots, starting at Dock position `first`. */
+const dockKeys = (spots, first) => Object.fromEntries(spots.map((pos, i) => [pos, preset('sys', `dock_${first + i}`)]))
+
 const PAGES = {
+	'Dock Apps': {
+		about: 'Your Dock as keys: Finder then your Dock apps in order (11 keys), each named after its app and green while it runs. Rearrange the Dock and the keys follow. Knob 1 = Mac volume (push = mute), knob 2 = move the front window to the previous / next screen (push = fill).',
+		keys: {
+			...spotify(),
+			...dockKeys(['0/0', '0/1', '0/2', '0/3', '0/4', '1/0', '1/1', '1/2', '2/0', '2/1', '2/2'], 1),
+			...knobs(systemVolume(), screenKnob()),
+		},
+	},
+	'Dock Apps 2': {
+		about: 'Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).',
+		keys: {
+			...spotify(),
+			...dockKeys(['0/0', '0/1', '0/2', '0/3', '0/4'], 12),
+			'1/0': preset('sys', 'win_left'),
+			'1/1': preset('sys', 'win_full'),
+			'1/2': preset('sys', 'win_right'),
+			'2/0': preset('sys', 'win_prev'),
+			'2/1': preset('sys', 'win_next'),
+			'2/2': preset('sys', 'open_companion'),
+			...knobs(systemVolume(), halfKnob()),
+		},
+	},
+	'Apps and Windows': {
+		about: 'The first five Dock apps on the top row, then the front window: left / fill / right, previous / next screen, centre. Knob 1 = Mac volume (push = mute), knob 2 = move the front window between screens (push = fill).',
+		keys: {
+			...spotify(),
+			...dockKeys(['0/0', '0/1', '0/2', '0/3', '0/4'], 1),
+			'1/0': preset('sys', 'win_left'),
+			'1/1': preset('sys', 'win_full'),
+			'1/2': preset('sys', 'win_right'),
+			'2/0': preset('sys', 'win_prev'),
+			'2/1': preset('sys', 'win_next'),
+			'2/2': preset('sys', 'win_centre'),
+			...knobs(systemVolume(), screenKnob()),
+		},
+	},
 	'Mac Desk': {
 		about: 'Everyday Mac: Mission Control, show desktop, screenshot, Spotlight, lock; front window left / fill / right and onto the other screen; keep awake. Knob 1 = Mac volume (push = mute), knob 2 = desktops (push = Mission Control).',
 		keys: {
@@ -108,10 +149,7 @@ const PAGES = {
 			'2/0': preset('sys', 'win_bottom_left'),
 			'2/1': preset('sys', 'win_bottom_right'),
 			'2/2': preset('sys', 'win_min'),
-			...knobs(
-				{ turn: key('sys', 'SCREEN\\n◀ ▶', [], { left: [front('keep', 'previous')], right: [front('keep', 'next')] }), push: key('sys', 'FILL', [front('full')], { size: '18' }) },
-				{ turn: key('sys', 'HALF\\n◀ ▶', [], { left: [front('left')], right: [front('right')] }), push: key('sys', 'CENTRE', [front('centre')], { size: '18' }) },
-			),
+			...knobs(screenKnob(), halfKnob()),
 		},
 	},
 	'Show Machine': {
@@ -129,24 +167,6 @@ const PAGES = {
 			'2/0': preset('sys', 'display_sleep'),
 			'2/1': preset('sys', 'eject'),
 			'2/2': preset('sys', 'dark_mode'),
-			...knobs(systemVolume(), { turn: preset('sys', 'mic_knob') }),
-		},
-	},
-	'Video Calls': {
-		about: "Zoom (top row) and Microsoft Teams (rows 2–3) with their default Mac shortcuts, sent to that app even when it isn't in front. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.",
-		keys: {
-			...spotify(),
-			'0/0': key('sys', 'ZOOM\\nMUTE', [keys('a', ['command', 'shift'], 'zoom.us')]),
-			'0/1': key('sys', 'ZOOM\\nVIDEO', [keys('v', ['command', 'shift'], 'zoom.us')]),
-			'0/2': key('sys', 'ZOOM\\nSHARE', [keys('s', ['command', 'shift'], 'zoom.us')]),
-			'0/3': key('sys', 'ZOOM\\nHAND ✋', [keys('y', ['option'], 'zoom.us')]),
-			'0/4': app('zoom.us', 'OPEN\\nZOOM', 'zoom_us'),
-			'1/0': key('sys', 'TEAMS\\nMUTE', [keys('m', ['command', 'shift'], 'Microsoft Teams')]),
-			'1/1': key('sys', 'TEAMS\\nCAMERA', [keys('o', ['command', 'shift'], 'Microsoft Teams')]),
-			'1/2': key('sys', 'TEAMS\\nHAND ✋', [keys('k', ['command', 'shift'], 'Microsoft Teams')]),
-			'2/0': key('sys', 'TEAMS\\nSHARE', [keys('e', ['command', 'shift'], 'Microsoft Teams')]),
-			'2/1': key('sys', 'TEAMS\\nLEAVE', [keys('h', ['command', 'shift'], 'Microsoft Teams')]),
-			'2/2': app('Microsoft Teams', 'OPEN\\nTEAMS', 'microsoft_teams'),
 			...knobs(systemVolume(), { turn: preset('sys', 'mic_knob') }),
 		},
 	},
