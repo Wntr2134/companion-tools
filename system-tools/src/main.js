@@ -409,6 +409,8 @@ class SystemToolsInstance extends InstanceBase {
 			}
 		}
 		values.ip = mainIp()
+		this.companionPort = await this.companionAdminPort()
+		values.companion_url = values.ip ? `http://${values.ip}:${this.companionPort}` : ''
 		values.uptime = fmtUptime(os.uptime())
 		values.cpu_memory = `CPU ${values.cpu}  ·  RAM ${values.memory}`
 		values.disk_battery = values.battery ? `Disk ${values.disk_free} free  ·  🔋 ${values.battery}` : `Disk ${values.disk_free} free`
@@ -425,6 +427,17 @@ class SystemToolsInstance extends InstanceBase {
 			date: now.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
 			date_short: now.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }),
 		})
+	}
+
+	/** The port Companion's admin pages are on (Settings → Admin port), 8000 unless changed. */
+	async companionAdminPort() {
+		try {
+			const port = (await this.parseVariablesInString('$(internal:bind_port)')).trim()
+			if (/^\d+$/.test(port)) return Number(port)
+		} catch {
+			// fall back to Companion's default
+		}
+		return 8000
 	}
 
 	async setSound(what, value) {
@@ -753,6 +766,30 @@ class SystemToolsInstance extends InstanceBase {
 					setTimeout(() => void this.pollSystem(), 500)
 				},
 			},
+			open_companion: {
+				name: "Open Companion's admin page on this computer",
+				description: 'Uses 127.0.0.1, so it works whatever the network or IP address. For a phone or iPad, use the companion_url variable (the Companion address viewer).',
+				options: [
+					{
+						type: 'dropdown',
+						id: 'page',
+						label: 'Page',
+						default: '',
+						choices: [
+							{ id: '', label: 'Admin (where you left off)' },
+							{ id: 'buttons', label: 'Buttons' },
+							{ id: 'connections', label: 'Connections' },
+							{ id: 'emulator', label: 'Emulator' },
+							{ id: 'tablet', label: 'Web buttons' },
+						],
+					},
+				],
+				callback: async (a) => {
+					const url = `http://127.0.0.1:${await this.companionAdminPort()}/${a.options.page ?? ''}`
+					if (process.platform === 'win32') await run('explorer.exe', [url]).catch(() => null)
+					else await run('open', [url]).catch((e) => this.fail('Open Companion', e))
+				},
+			},
 			open_target: {
 				name: 'Open a file, folder or web link',
 				options: [{ type: 'textinput', id: 'target', label: 'Path or link (variables allowed)', default: 'https://', useVariables: true }],
@@ -937,6 +974,7 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'battery', name: 'Battery (blank on desktops)' },
 			{ variableId: 'disk_battery', name: 'Disk free and battery on one line' },
 			{ variableId: 'ip', name: 'IP address' },
+			{ variableId: 'companion_url', name: "Companion's address for other devices (http://IP:port)" },
 			{ variableId: 'uptime', name: 'Time since the computer started' },
 			{ variableId: 'volume', name: 'Output volume (Mac; – when the device has no volume)' },
 			{ variableId: 'input_volume', name: 'Microphone level (Mac)' },
@@ -993,6 +1031,7 @@ class SystemToolsInstance extends InstanceBase {
 		presets.keep_awake = key('Show machine', 'Keep awake (toggle)', 'KEEP\\nAWAKE', act('keep_awake', { mode: 'toggle', displays: true }), [{ feedbackId: 'keep_awake', options: {}, style: { bgcolor: AMBER, color: BLACK } }])
 		presets.display_sleep = key('Show machine', 'Sleep the displays', 'SLEEP\\nSCREENS', act('display_sleep'))
 		presets.lock = key('Show machine', 'Lock the screen', 'LOCK', act('lock_screen'), [], '18')
+		presets.open_companion = key('Show machine', "Open Companion's admin page", 'OPEN\\nCOMPANION', act('open_companion', { page: '' }))
 		presets.screen_saver = key('Show machine', 'Screen saver', 'SCREEN\\nSAVER', act('screen_saver'))
 		presets.eject = key('Show machine', 'Eject all disks', 'EJECT\\nDISKS ⏏', act('eject_disks'))
 		presets.dark_mode = key('Show machine', 'Dark mode (toggle)', 'DARK\\nMODE', act('dark_mode', { mode: 'toggle' }), [{ feedbackId: 'dark_mode', options: {}, style: { bgcolor: BLUE, color: WHITE } }])

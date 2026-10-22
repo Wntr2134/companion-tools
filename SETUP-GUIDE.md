@@ -502,6 +502,7 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 ### I.4 Show machine, sound and desktop
 - **Keep awake**: stops the Mac sleeping or dimming mid-show. Amber while on. It switches off with the key, or when Companion closes.
 - **Sleep screens, lock, screen saver, eject disks, dark mode.**
+- **Open Companion**: opens the admin page on this Mac (127.0.0.1, so a changed IP on the road doesn't matter). The **Companion address** viewer shows the address to type on a phone or iPad.
 - **Sound**: volume knob (push = mute) and microphone level knob, with − / + keys for Stream Decks. Volume shows – for outputs macOS can't set (e.g. some interfaces and HDMI).
 - **Desktop**: Mission Control, show desktop, the front app's windows, desktop left / right, hide others, show all.
 

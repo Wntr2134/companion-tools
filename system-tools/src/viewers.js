@@ -23,6 +23,7 @@ export function getViewerPresets(self) {
 		view_clock_system: viewer('Clock + CPU and memory', `${v('clock')}  ${v('date_short')}\\n${v('cpu_memory')}`),
 		view_system: viewer('CPU, memory, disk and battery', `${v('cpu_memory')}\\n${v('disk_battery')}`),
 		view_network: viewer('IP address and uptime', `${v('ip')}\\nUp ${v('uptime')}`),
+		view_companion: viewer('Companion address (for a phone or iPad)', `Companion:\\n${v('companion_url')}`),
 		view_sound: viewer('Volume and keep awake', `VOL ${v('volume')}  ${v('muted')}\\nAwake: ${v('keep_awake')}`, [
 			{ feedbackId: 'keep_awake', options: {}, style: { bgcolor: combineRgb(120, 80, 0) } },
 		]),
