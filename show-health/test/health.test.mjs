@@ -78,3 +78,25 @@ test('wide key viewers: display only, short enough for a normal key too', async 
 	}
 	if (out.section) assert.deepEqual(out.section.definitions, Object.keys(presets))
 })
+
+test('everything OK?: devices plus Companion connection states', async () => {
+	const { parseWatchList, connectionTemplates, connectionState, everything } = await import('../src/connections.js')
+	const watch = parseWatchList('digico\n# comment\nptz-1, magicq\ndigico')
+	assert.deepEqual(watch, ['digico', 'ptz-1', 'magicq'])
+	assert.deepEqual(connectionTemplates(['digico']).at(-1), ['c:digico', '$(internal:connection_digico_status)'])
+
+	const conns = connectionState({ errors: '2', warnings: '1', total: '9', disabled: '1', 'c:digico': 'error', 'c:ptz-1': 'good', 'c:magicq': '$NA' }, watch)
+	assert.deepEqual(conns.named, { error: ['digico'], warning: [], unknown: ['magicq'] })
+	assert.equal(conns.problems, 2, 'warnings are not problems unless asked')
+
+	const devicesOk = { total: 2, down: 0, downNames: [], allOk: true }
+	const devicesDown = { total: 2, down: 1, downNames: ['FOH SD9'], allOk: false }
+	assert.deepEqual(everything(devicesDown, conns), { ok: false, problems: 3, summary: '3 PROBLEMS', list: 'FOH SD9 down · digico error · 1 connection with errors' })
+
+	const clean = connectionState({ errors: '0', warnings: '3', total: '5', disabled: '0' }, [])
+	assert.deepEqual(everything(devicesOk, clean), { ok: true, problems: 0, summary: 'ALL OK', list: '' })
+	const strict = connectionState({ errors: '0', warnings: '1', total: '5', disabled: '0' }, [], { warningsCount: true })
+	assert.equal(everything(devicesOk, strict, { warningsCount: true }).list, '1 warning')
+	assert.equal(everything({ total: 2, down: 0, downNames: [], allOk: false }, clean).summary, 'CHECKING')
+	assert.equal(everything({ total: 0, down: 0, downNames: [], allOk: false }, clean).summary, 'ALL OK', 'connections only')
+})

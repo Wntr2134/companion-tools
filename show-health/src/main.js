@@ -1,10 +1,12 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Monitor, parseDevices } from './monitor.js'
 import { getViewerPresets } from './viewers.js'
+import { parseWatchList, connectionTemplates, connectionState, everything } from './connections.js'
 
 const GREEN = combineRgb(0, 150, 0)
 const RED = combineRgb(200, 0, 0)
 const GREY = combineRgb(60, 60, 60)
+const AMBER = combineRgb(200, 130, 0)
 const WHITE = combineRgb(255, 255, 255)
 
 const EXAMPLE = `# One device per line: Name, IP[, TCP port]
@@ -33,7 +35,28 @@ class ShowHealthInstance extends InstanceBase {
 			this.checkFeedbacks()
 		})
 		this.monitor.on('update', () => this.#publish())
+		this.conns = connectionState({}, [])
 		this.#apply()
+	}
+
+	/** Reads Companion's own connection states (errors, warnings, and the named ones). */
+	async #readConnections() {
+		if (this.config.watchConnections === false) return
+		const watch = parseWatchList(this.config.connections)
+		const values = {}
+		try {
+			for (const [key, template] of connectionTemplates(watch)) values[key] = await this.parseVariablesInString(template)
+		} catch (e) {
+			this.log('debug', `Connection states: ${e.message}`)
+			return
+		}
+		const before = JSON.stringify(this.conns)
+		this.conns = connectionState(values, watch, { warningsCount: this.config.warningsCount === true })
+		if (this.conns.named.unknown.length && !this.warnedUnknown) {
+			this.warnedUnknown = true
+			this.log('warn', `No connection called: ${this.conns.named.unknown.join(', ')} (check the names in the settings: they must match the connection's label exactly)`)
+		}
+		if (JSON.stringify(this.conns) !== before) this.#publish()
 	}
 
 	async configUpdated(config) {
@@ -43,6 +66,7 @@ class ShowHealthInstance extends InstanceBase {
 
 	async destroy() {
 		this.monitor?.stop()
+		clearInterval(this.connTimer)
 	}
 
 	#apply() {
@@ -52,12 +76,20 @@ class ShowHealthInstance extends InstanceBase {
 		this.monitor.failuresToDown = Math.max(1, Number(this.config.failures) || 2)
 		this.monitor.setDevices(devices)
 		this.#definitions(devices)
+		const watching = this.config.watchConnections !== false
+		clearInterval(this.connTimer)
+		this.warnedUnknown = false
+		if (watching) {
+			this.connTimer = setInterval(() => void this.#readConnections(), this.monitor.intervalMs)
+			void this.#readConnections()
+		}
 		if (devices.length) {
 			this.updateStatus(InstanceStatus.Ok)
 			this.monitor.start()
 		} else {
 			this.monitor.stop()
-			this.updateStatus(InstanceStatus.BadConfig, 'Add some devices in the settings')
+			if (watching) this.updateStatus(InstanceStatus.Ok, 'Watching connections only')
+			else this.updateStatus(InstanceStatus.BadConfig, 'Add some devices in the settings')
 		}
 	}
 
@@ -94,6 +126,27 @@ class ShowHealthInstance extends InstanceBase {
 				options: [],
 				callback: () => this.monitor.summary().down > 0,
 			},
+			everything_ok: {
+				type: 'boolean',
+				name: 'Everything OK (devices up, no connection errors)',
+				defaultStyle: { bgcolor: GREEN, color: WHITE },
+				options: [],
+				callback: () => this.#everything().ok,
+			},
+			anything_wrong: {
+				type: 'boolean',
+				name: 'Anything wrong (a device down or a connection error)',
+				defaultStyle: { bgcolor: RED, color: WHITE },
+				options: [],
+				callback: () => this.#everything().problems > 0,
+			},
+			connection_warning: {
+				type: 'boolean',
+				name: 'A Companion connection has a warning',
+				defaultStyle: { bgcolor: AMBER, color: WHITE },
+				options: [],
+				callback: () => this.conns.warnings > 0,
+			},
 		})
 
 		this.setActionDefinitions({
@@ -101,7 +154,7 @@ class ShowHealthInstance extends InstanceBase {
 				name: 'Check every device now',
 				options: [],
 				callback: async () => {
-					await this.monitor.checkAll()
+					await Promise.all([this.monitor.checkAll(), this.#readConnections()])
 				},
 			},
 		})
@@ -110,6 +163,11 @@ class ShowHealthInstance extends InstanceBase {
 			{ variableId: 'summary', name: 'Summary, e.g. "ALL OK" or "2 DOWN"' },
 			{ variableId: 'down_count', name: 'Number of devices down' },
 			{ variableId: 'down_list', name: 'Names of devices down' },
+			{ variableId: 'everything', name: 'Devices and connections: "ALL OK" or "2 PROBLEMS"' },
+			{ variableId: 'everything_list', name: "What's wrong, e.g. \"FOH SD9 down · digico error\"" },
+			{ variableId: 'conn_errors', name: 'Companion connections with errors' },
+			{ variableId: 'conn_warnings', name: 'Companion connections with warnings' },
+			{ variableId: 'conn_total', name: 'Companion connections' },
 		]
 		for (const d of devices) {
 			vars.push({ variableId: `${d.id}_status`, name: `${d.name} status (UP/DOWN/…)` })
@@ -120,6 +178,17 @@ class ShowHealthInstance extends InstanceBase {
 
 		const label = this.label || 'show-health'
 		const presets = {
+			everything: {
+				type: 'button',
+				category: 'Summary',
+				name: 'Everything OK? (devices and connections)',
+				style: { text: `$(${label}:everything)`, size: 'auto', color: WHITE, bgcolor: GREY },
+				steps: [{ down: [{ actionId: 'check_now', options: {} }], up: [] }],
+				feedbacks: [
+					{ feedbackId: 'everything_ok', options: {}, style: { bgcolor: GREEN, color: WHITE } },
+					{ feedbackId: 'anything_wrong', options: {}, style: { bgcolor: RED, color: WHITE } },
+				],
+			},
 			all_ok: {
 				type: 'button',
 				category: 'Summary',
@@ -149,6 +218,10 @@ class ShowHealthInstance extends InstanceBase {
 		this.#publish()
 	}
 
+	#everything() {
+		return everything(this.monitor.summary(), this.conns, { warningsCount: this.config.warningsCount === true })
+	}
+
 	#publish() {
 		const s = this.monitor.summary()
 		const values = {
@@ -156,6 +229,14 @@ class ShowHealthInstance extends InstanceBase {
 			down_count: s.down,
 			down_list: s.downNames.join(', '),
 		}
+		const e = this.#everything()
+		Object.assign(values, {
+			everything: e.summary,
+			everything_list: e.list,
+			conn_errors: this.conns.errors,
+			conn_warnings: this.conns.warnings,
+			conn_total: this.conns.total ?? '',
+		})
 		const now = Date.now()
 		for (const d of this.monitor.devices) {
 			const st = this.monitor.state.get(d.id)
@@ -190,6 +271,17 @@ class ShowHealthInstance extends InstanceBase {
 				max: 10,
 				tooltip: 'Stops one dropped ping flashing a device red.',
 			},
+			{
+				type: 'static-text',
+				id: 'conn_info',
+				width: 12,
+				label: 'Companion connections',
+				value:
+					'The <b>Everything OK?</b> key also goes red when any Companion connection (console, cameras, lighting…) shows an error. List connection names below to see <i>which</i> one in the "what\'s wrong" text: use each connection\'s label exactly as it is on the Connections page.',
+			},
+			{ type: 'checkbox', id: 'watchConnections', label: 'Include Companion connections', width: 4, default: true },
+			{ type: 'checkbox', id: 'warningsCount', label: 'Count connection warnings as problems', width: 4, default: false, tooltip: 'Off: warnings (e.g. "Spotify is not open") only turn the warning feedback amber.' },
+			{ type: 'textinput', id: 'connections', label: 'Connections to name (one label per line)', width: 12, default: '', multiline: true },
 		]
 	}
 }

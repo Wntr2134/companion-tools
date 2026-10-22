@@ -21,10 +21,16 @@ export function getViewerPresets(self) {
 		{ feedbackId: 'all_ok', options: {}, style: { bgcolor: combineRgb(0, 70, 30), color: WHITE } },
 		{ feedbackId: 'any_down', options: {}, style: { bgcolor: combineRgb(150, 0, 0), color: WHITE } },
 	]
+	const everythingFb = [
+		{ feedbackId: 'everything_ok', options: {}, style: { bgcolor: combineRgb(0, 70, 30), color: WHITE } },
+		{ feedbackId: 'anything_wrong', options: {}, style: { bgcolor: combineRgb(150, 0, 0), color: WHITE } },
+	]
 	return {
 		view_clock: viewer('Clock (time and date)', '$(internal:time_hms)\\n$(internal:date_weekday) $(internal:date_d) $(internal:date_monthname)'),
 		view_clock_big: viewer('Clock (HH:MM, big)', '$(internal:time_hm)'),
 		view_clock_status: viewer('Clock + show status', `$(internal:time_hm)\\n${v('summary')}`, status),
 		view_down: viewer("Show status: what's down", `${v('summary')}\\n${v('down_list')}`, status),
+		view_everything: viewer("Everything OK? (devices and connections): what's wrong", `${v('everything')}\\n${v('everything_list')}`, everythingFb),
+		view_clock_everything: viewer('Clock + everything OK?', `$(internal:time_hm)\\n${v('everything')}`, everythingFb),
 	}
 }
