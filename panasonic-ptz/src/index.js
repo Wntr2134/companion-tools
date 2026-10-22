@@ -224,10 +224,10 @@ class PanasonicPTZInstance extends InstanceBase {
 				// if a new model is detected or selected, re-initialise all actions, variable and feedbacks
 				if (this.data.modelTCP !== this.data.model) {
 					this.init_actions() // export actions
+					this.init_feedbacks() // before the presets, which use them
 					this.init_presets()
 					this.init_variables()
 					this.checkVariables()
-					this.init_feedbacks()
 					this.checkFeedbacks()
 				}
 				break
@@ -408,10 +408,10 @@ class PanasonicPTZInstance extends InstanceBase {
 		this.getCameraInformation()
 		this.init_tcp()
 		this.init_actions() // export actions
+		this.init_feedbacks() // before the presets, which use them
 		this.init_presets()
 		this.init_variables()
 		this.checkVariables()
-		this.init_feedbacks()
 		this.checkFeedbacks()
 		this.startPositionPoll()
 	}
@@ -422,10 +422,10 @@ class PanasonicPTZInstance extends InstanceBase {
 		this.getCameraInformation()
 		this.init_tcp()
 		this.init_actions() // export actions
+		this.init_feedbacks() // before the presets, which use them
 		this.init_presets()
 		this.init_variables()
 		this.checkVariables()
-		this.init_feedbacks()
 		this.checkFeedbacks()
 		this.startPositionPoll()
 	}

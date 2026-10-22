@@ -1,6 +1,6 @@
 {
 	"name": "panasonic-ptz",
-	"version": "2.9.2",
+	"version": "2.9.3",
 	"main": "src/index.js",
 	"type": "module",
 	"scripts": {

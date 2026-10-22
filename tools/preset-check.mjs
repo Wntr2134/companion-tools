@@ -27,6 +27,11 @@ for (const name of wanted) {
 	const problems = []
 	if (!presets || !Object.keys(presets).length) problems.push('no presets')
 	for (const [id, p] of Object.entries(presets ?? {})) problems.push(...checkButton(`preset "${p?.name ?? id}"`, p, actions, feedbacks))
+	// Companion checks presets when they arrive: feedbacks must be defined first, or it warns and drops them.
+	const early = new Set(loaded.defs.feedbacksAtPresets ?? [])
+	const late = new Set()
+	for (const p of Object.values(presets ?? {})) for (const f of p?.feedbacks ?? []) if (feedbacks[f.feedbackId] && !early.has(f.feedbackId)) late.add(f.feedbackId)
+	if (late.size) problems.push(`presets are set before the feedbacks they use (${[...late].join(', ')}): set the feedback definitions first`)
 	try {
 		await Promise.race([loaded.inst.destroy?.(), new Promise((r) => setTimeout(r, 2000))])
 	} catch {

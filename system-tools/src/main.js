@@ -487,8 +487,11 @@ class SystemToolsInstance extends InstanceBase {
 			}
 			this.setVariableValues({ last_update: plan.length ? `${plan.length} updated ${this.clock ?? ''}`.trim() : 'all up to date' })
 			if (manual && !plan.length) this.log('info', 'Every connection is already on its newest installed version')
+			this.lastUpdateError = ''
 		} catch (e) {
-			this.log('warn', `Auto-update: ${e.message}`)
+			// The same problem is logged once (and again whenever it changes), not every minute.
+			if (manual || e.message !== this.lastUpdateError) this.log('warn', `Auto-update: ${e.message}`)
+			this.lastUpdateError = e.message
 			this.setVariableValues({ last_update: 'failed: see log' })
 		}
 	}
