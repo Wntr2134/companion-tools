@@ -77,6 +77,15 @@ export function planUpdates(connections, installed, { onlyOurs = true } = {}) {
 	return plan
 }
 
+/** Companion's REST API errors in plain English (it uses 403 both for "switched off" and "wrong scopes"). */
+export function explainApiError(status, code, message) {
+	if (code === 'API_DISABLED') return "Companion's REST API is switched off: Settings → REST API → switch it on"
+	if (status === 401) return "the API key was refused: make a new one in Settings → REST API and paste it into this connection's settings"
+	if (status === 403 && /scope/i.test(message)) return 'the API key needs both the "connections" and "write" scopes: edit it in Settings → REST API'
+	if (status === 404) return "Companion's REST API wasn't found: this needs Companion 5.1 or later"
+	return `${status}: ${message || 'no reason given'}`
+}
+
 /** Talks to Companion's REST API on this computer. */
 export class CompanionApi {
 	constructor({ port, key, fetchFn = fetch }) {
@@ -94,16 +103,16 @@ export class CompanionApi {
 		})
 		const text = await res.text()
 		if (!res.ok) {
-			let why = text
+			let code = ''
+			let message = text
 			try {
-				why = JSON.parse(text)?.error?.message ?? text
+				const err = JSON.parse(text)?.error ?? {}
+				code = err.code ?? ''
+				message = err.message ?? ''
 			} catch {
 				// not JSON
 			}
-			if (res.status === 401) why = 'the API key was refused: check it in this connection\'s settings'
-			if (res.status === 403) why = 'the API key needs the "connections" and "write" scopes'
-			if (res.status === 404 || res.status === 503) why = "Companion's REST API is switched off: Settings → REST API"
-			throw new Error(`${res.status}: ${why}`)
+			throw new Error(explainApiError(res.status, code, message))
 		}
 		return text ? JSON.parse(text) : {}
 	}
