@@ -21,6 +21,7 @@ const win = await mod('system-tools/src/mac-windows.js')
 const info = await mod('system-tools/src/sysinfo.js')
 const dock = await mod('system-tools/src/dock.js')
 const bt = await mod('system-tools/src/bluetooth.js')
+const icons = await mod('system-tools/src/icons.js')
 const uc = await mod('echo360-capture/src/uc-keys.js')
 const ndi = await mod('ndi-router/src/virtual-input-mac.js')
 
@@ -55,6 +56,7 @@ const scripts = [
 	['System Tools: lock screen', JS, [sys.LOCK_SCREEN]],
 	['System Tools: windows', JS, [win.WINDOW_SCRIPT]],
 	['System Tools: Bluetooth', JS, [bt.BT_SCRIPT]],
+	['System Tools: app icons', JS, [icons.ICON_SCRIPT]],
 	['Echo360: shortcut', AS, uc.osascriptArgs('1').filter((a) => a !== '-e')],
 	['Echo360: shortcut, bring app forward', AS, uc.osascriptArgs('2', { activate: true }).filter((a) => a !== '-e').slice(0, -1)],
 	['NDI Router: Virtual Input menu', JS, [ndi.MENU_SCRIPT]],
@@ -109,6 +111,18 @@ await step('System Tools: Dock apps', async () => {
 await step('System Tools: Bluetooth paired devices (built-in, no blueutil)', async () => {
 	const list = await new bt.Bluetooth({ blueutil: undefined }).list()
 	return list.length ? list.map((d) => d.name).join(', ') : 'none paired here'
+})
+await step('System Tools: app icons drawn (Finder, Safari, Music)', async () => {
+	const cache = new icons.IconCache({ dir: path.join(tmp, 'icons') })
+	const apps = ['/System/Library/CoreServices/Finder.app', '/Applications/Safari.app', '/System/Applications/Music.app']
+	await cache.ensure(apps)
+	const sizes = []
+	for (const a of apps) {
+		const png = Buffer.from(cache.get(a) ?? '', 'base64')
+		if (png.readUInt32BE(0) !== 0x89504e47) throw new Error(`no PNG for ${a}`)
+		sizes.push(`${path.basename(a, '.app')} ${png.readUInt32BE(16)}px ${png.length} bytes`)
+	}
+	return sizes.join(', ')
 })
 await step('System Tools: dark mode read', async () => `dark mode ${await sys.isDarkMode()}`)
 await step('System Tools: memory from vm_stat', async () => {

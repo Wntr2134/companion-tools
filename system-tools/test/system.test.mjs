@@ -280,7 +280,10 @@ test('wide key viewers: display only, short enough for a normal key too', async 
 test('every on/off feedback in a preset carries a style (without one, Companion 5.1 blanks the key)', async () => {
 	const { readFile } = await import('node:fs/promises')
 	const src = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
-	for (const m of src.matchAll(/\{ feedbackId: '(\w+)', options: \{[^}]*\}( \})?/g)) assert.ok(!m[2], `preset feedback "${m[1]}" has no style`)
+	for (const m of src.matchAll(/\{ feedbackId: '(\w+)', options: \{[^}]*\}( \})?/g)) {
+		if (['app_icon', 'dock_icon'].includes(m[1])) continue // advanced: draw their own picture
+		assert.ok(!m[2], `preset feedback "${m[1]}" has no style`)
+	}
 })
 
 test('restoreItems turns a saved layout into absolute placements', () => {
@@ -360,4 +363,37 @@ test('Bluetooth: paired devices from blueutil or the built-in script; addresses 
 	assert.deepEqual(calls.at(-1).slice(0, 3), ['osascript', '-l', 'JavaScript'])
 	assert.equal(calls.at(-1)[4], BT_SCRIPT)
 	assert.deepEqual(calls.at(-1).slice(5), ['connect', 'aa-bb-cc-dd-ee-01'])
+})
+
+test('app icons: cached per app version, made in one batch, short names for under the icon', async () => {
+	const { IconCache, iconFile, shortName, ICON_SCRIPT } = await import('../src/icons.js')
+	const { mkdtemp, mkdir, writeFile, utimes } = await import('node:fs/promises')
+	const os = await import('node:os')
+	const path = await import('node:path')
+	assert.equal(shortName('Microsoft Excel'), 'Excel')
+	assert.equal(shortName('Dante Virtual Soundcard'), 'Dante Virtu…')
+	assert.equal(shortName('Docker Desktop'), 'Docker')
+	assert.notEqual(iconFile('/A.app', 1000, '/c'), iconFile('/A.app', 2000, '/c'), 'a new app version gets a new icon')
+
+	const root = await mkdtemp(path.join(os.tmpdir(), 'icons-'))
+	const app = path.join(root, 'Dante Controller.app')
+	await mkdir(app)
+	const runs = []
+	const exec = (file, args, opts, cb) => {
+		runs.push(args)
+		const req = JSON.parse(args.at(-1))
+		Promise.all(req.items.map((i) => writeFile(i.out, Buffer.from('png!')))).then(() => cb(null, '[]', ''))
+	}
+	const cache = new IconCache({ exec, dir: path.join(root, 'cache') })
+	assert.equal(await cache.ensure([app, app, path.join(root, 'Gone.app')]), 1)
+	assert.equal(cache.get(app), Buffer.from('png!').toString('base64'))
+	assert.equal(runs.length, 1)
+	assert.equal(runs[0][3], ICON_SCRIPT, 'paths go in as JSON, never into the script')
+
+	const again = new IconCache({ exec, dir: path.join(root, 'cache') })
+	await again.ensure([app])
+	assert.equal(runs.length, 1, 'cached on disk: nothing redrawn')
+	await utimes(app, new Date(), new Date(Date.now() + 60000))
+	await again.ensure([app])
+	assert.equal(runs.length, 2, 'app updated: icon redrawn')
 })

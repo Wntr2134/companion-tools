@@ -488,7 +488,7 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 - **Mac permissions (once):** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. This is needed for moving windows, keyboard shortcuts, typing text and locking the screen. If it was already on and things still don't work after a Companion update, remove Companion from the list with **−** and add it again. Ejecting disks and dark mode ask *"Companion wants to control Finder / System Events"* the first time: click **OK**.
 
 ### I.2 Apps
-**Presets → System Tools → Apps A–C**, **Apps D–F** and so on. Press = open it, or bring it to the front. ✅ The key goes **green while the app is running**. Installed something new? Press **Rescan apps**.
+**Presets → System Tools → Apps A–C**, **Apps D–F** and so on. On a Mac each key shows the app's icon with its name underneath. Press = open it, or bring it to the front. ✅ The key goes **green while the app is running**. Installed something new? Press **Rescan apps**.
 
 ### I.3 Windows and screens (Mac)
 - **Windows: front window**: put whatever window is in front into the left half, right half, thirds, quarters, fill, centre, or onto the **next screen**.
