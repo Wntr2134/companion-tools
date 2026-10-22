@@ -189,7 +189,7 @@ jobs:
       - name: Install every module
         run: |
           for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health spotify-local system-tools uad-console; do
-            (cd "$d" && npm install --no-save --ignore-scripts --no-audit --no-fund)
+            (cd "$d" && npm install --no-save --ignore-scripts --no-audit --no-fund --legacy-peer-deps)
           done
           (cd digico-sd && npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps && npx tsc6 -p tsconfig.build.json)
       - run: node tools/preset-check.mjs
@@ -206,5 +206,12 @@ jobs:
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
         working-directory: spotify-local
       - name: Install Spotify (for its scripting dictionary)
-        run: brew install --cask spotify || echo "Spotify didn't install; its scripts will be skipped"
+        run: |
+          brew install --cask spotify || echo "Spotify didn't install; its scripts will be skipped"
+          # A freshly copied app isn't known to Launch Services yet, so AppleScript can't find its dictionary.
+          if [ -d /Applications/Spotify.app ]; then
+            xattr -dr com.apple.quarantine /Applications/Spotify.app || true
+            /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f /Applications/Spotify.app
+            sdef /Applications/Spotify.app | grep -c '<command\|<property' || echo "Spotify's dictionary couldn't be read"
+          fi
       - run: node tools/mac-check.mjs
