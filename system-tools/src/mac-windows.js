@@ -104,6 +104,7 @@ const se = Application('System Events')
 
 function screens() {
 	const list = $.NSScreen.screens
+	if (!list.count) return [] // no display (a headless Mac)
 	const H = list.objectAtIndex(0).frame.size.height
 	const out = []
 	for (let i = 0; i < list.count; i++) {
@@ -291,6 +292,7 @@ function capture() {
 function run(argv) {
 	const req = JSON.parse(argv[0])
 	const list = screens()
+	if (req.cmd === 'place' && !list.length) throw new Error('no screens connected')
 	let result
 	if (req.cmd === 'screens') result = list
 	else if (req.cmd === 'place') {

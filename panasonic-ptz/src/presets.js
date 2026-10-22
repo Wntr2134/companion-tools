@@ -889,9 +889,7 @@ export function getPresetDefinitions(self) {
 					down: [
 						{
 							actionId: 'focusOTAF',
-							options: {
-								bol: 0,
-							},
+							options: {},
 						},
 					],
 					up: [],
