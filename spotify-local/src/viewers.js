@@ -17,10 +17,10 @@ export function getViewerPresets(self) {
 		feedbacks,
 	})
 	// Album art behind the text, with a green progress bar (see artwork.js).
-	const card = [{ feedbackId: 'now_playing_art', options: {} }]
+	const card = [{ feedbackId: 'now_playing_art', options: { shape: 'wide' } }]
 	return {
 		view_now: viewer('Now playing: album art, track, artist', `${v('track')}\\n${v('artist')}`, card),
 		view_time: viewer('Now playing + time', `${v('track')}\\n${v('artist')}  ·  ${v('time')}`, card),
-		view_clock: viewer('Clock + now playing', `$(internal:time_hm)\\n${v('track')}\\n${v('artist')}`, card),
+		view_clock: viewer('Clock + now playing', `${v('clock')}\\n${v('track')}\\n${v('artist')}`, card),
 	}
 }

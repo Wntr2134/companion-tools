@@ -150,3 +150,29 @@ test('now-playing card: cover decoded, cropped to the key, darkened, progress ba
 	assert.equal(fetched, 1, 'same cover is not fetched again')
 	assert.equal(smallerArtUrl('https://i.scdn.co/image/ab67616d0000b273abc'), 'https://i.scdn.co/image/ab67616d00001e02abc')
 })
+
+test('now-playing card goes under the text as a PNG, at the shape picked (Companion reports 72×58 for every key)', async () => {
+	const { inflateSync } = await import('node:zlib')
+	const { encodePng, CARD_SHAPES } = await import('../src/artwork.js')
+	const { getViewerPresets } = await import('../src/viewers.js')
+	const w = 3
+	const h = 2
+	const rgb = Uint8Array.from({ length: w * h * 3 }, (_, i) => i * 10)
+	const png = Buffer.from(encodePng(rgb, w, h), 'base64')
+	assert.deepEqual([...png.subarray(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+	assert.equal(png.readUInt32BE(16), w)
+	assert.equal(png.readUInt32BE(20), h)
+	const idatLen = png.readUInt32BE(33)
+	assert.equal(png.toString('ascii', 37, 41), 'IDAT')
+	const rows = inflateSync(png.subarray(41, 41 + idatLen))
+	assert.deepEqual([...rows.subarray(1, 1 + w * 3)], [...rgb.subarray(0, w * 3)], 'first row round-trips')
+
+	// the wide shape matches the D200X wide key (458×196), so Companion's "fit" fills it
+	assert.ok(Math.abs(CARD_SHAPES.wide.width / CARD_SHAPES.wide.height - 458 / 196) < 0.01)
+	assert.equal(CARD_SHAPES.square.width, CARD_SHAPES.square.height)
+	const viewers = getViewerPresets({ label: 'x' })
+	for (const p of Object.values(viewers)) {
+		for (const fb of p.feedbacks) if (fb.feedbackId === 'now_playing_art') assert.equal(fb.options.shape, 'wide')
+		assert.ok(!p.style.text.includes('$(internal:'), 'internal variables show $NA in the presets list')
+	}
+})
