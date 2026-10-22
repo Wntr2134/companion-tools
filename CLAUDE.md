@@ -17,6 +17,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - Spotify module: `node --test test/spotify.test.mjs` in `spotify-local/`.
 - Apple Music module: `node --test test/music.test.mjs` in `apple-music-local/`.
 - Ulanzi plugin: `yarn build` (or `tsc --noEmit`) in `ulanzi-d200x/` must pass.
+- Repo-wide checks (run in CI on every pull request): `node tools/preset-check.mjs` (after installing each module; loads every module and checks its presets against its actions and feedbacks) and, on a Mac, `node tools/mac-check.mjs` (compiles every AppleScript / JXA script and runs the safe ones). Add new Mac scripts to `tools/mac-check.mjs` and new modules to both lists.
 - Plain Australian English in docs. No model names in commits or code.
 - **Bump the module's version in `package.json` with every change.** Will updates with the all-in-one bundle (`tools/make-bundle.sh`, published as `companion-tools-all-modules.tgz`), and Companion skips any module whose version is already installed.
 
