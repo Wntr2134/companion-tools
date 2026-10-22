@@ -370,9 +370,9 @@ test('app icons: cached per app version, made in one batch, short names for unde
 	const { mkdtemp, mkdir, writeFile, utimes } = await import('node:fs/promises')
 	const os = await import('node:os')
 	const path = await import('node:path')
-	assert.equal(shortName('Microsoft Excel'), 'Excel')
-	assert.equal(shortName('Dante Virtual Soundcard'), 'Dante Virtu…')
-	assert.equal(shortName('Docker Desktop'), 'Docker')
+	const names = { 'Microsoft Excel': 'Excel', 'Google Chrome': 'Chrome', 'Brave Browser': 'Brave', 'Spark Mail': 'Spark', 'Audio Hijack': 'Hijack', 'Docker Desktop': 'Docker', 'Pro Tools': 'Pro Tools', 'Calendar': 'Calendar', 'Dante Virtual Soundcard': 'Dante DVS', 'Resolume Arena': 'Resolume', 'Photoshop': 'Photoshop', 'Bitfocus Companion': 'Companion' }
+	for (const [full, short] of Object.entries(names)) assert.equal(shortName(full), short, full)
+	for (const full of Object.keys(names)) assert.ok(shortName(full).length <= 9, `${full} fits one line`)
 	assert.notEqual(iconFile('/A.app', 1000, '/c'), iconFile('/A.app', 2000, '/c'), 'a new app version gets a new icon')
 
 	const root = await mkdtemp(path.join(os.tmpdir(), 'icons-'))

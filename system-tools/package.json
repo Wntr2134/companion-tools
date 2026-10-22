@@ -1,6 +1,6 @@
 {
 	"name": "system-tools",
-	"version": "2.3.0",
+	"version": "2.3.1",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
