@@ -3,6 +3,7 @@ import osc from 'osc'
 
 import UpdateActions from './actions.js'
 import { withSurfaceExtrasV2 } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 import UpdateFeedbacks from './feedbacks.js'
 import UpdateVariableDefinitions from './variables.js'
 import UpgradeScripts from './upgrades.js'
@@ -72,7 +73,8 @@ export default class MagicQInstance extends InstanceBase {
 
 	updatePresets() {
 		const knobs = getKnobPresets(this)
-		const { structure, presets } = withSurfaceExtrasV2(knobs.structure, knobs.presets)
+		const viewers = getViewerPresets(this)
+		const { structure, presets } = withSurfaceExtrasV2([...knobs.structure, viewers.section], { ...knobs.presets, ...viewers.presets })
 		this.setPresetDefinitions(structure, presets)
 	}
 

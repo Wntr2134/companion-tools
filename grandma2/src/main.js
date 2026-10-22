@@ -6,6 +6,7 @@ import { getFeedbacks } from './feedbacks.js'
 import { getVariableDefinitions, getVariableValues } from './variables.js'
 import { getPresets } from './presets.js'
 import { withSurfaceExtras } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 import { UpgradeScripts } from './upgrades.js'
 
 class GrandMA2Instance extends InstanceBase {
@@ -52,7 +53,7 @@ class GrandMA2Instance extends InstanceBase {
 		this.setActionDefinitions(getActions(this))
 		this.setFeedbackDefinitions(getFeedbacks(this))
 		this.setVariableDefinitions(getVariableDefinitions(this))
-		this.setPresetDefinitions(withSurfaceExtras(getPresets(this)))
+		this.setPresetDefinitions(withSurfaceExtras({ ...getPresets(this), ...getViewerPresets(this) }))
 		this.#refresh()
 	}
 

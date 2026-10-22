@@ -573,6 +573,23 @@ Controls the Spotify app on the computer running Companion. No Spotify login.
 
 On Windows: play/pause/next/previous and the track name work, and the volume keys change the system volume. Shuffle, repeat and seek are Mac only.
 
+## Wide key viewers (the D200X's big key)
+
+Every module has a **Wide key viewers** preset category: display-only keys made for the D200X's double-width key (row 2, col 3). They also work on any normal key. Drag one onto the wide key:
+
+| Module | Viewers |
+|---|---|
+| Show Health | **Clock** (time and date), **big clock**, **clock + show status**, **what's down** |
+| Spotify | **Now playing** (track, artist, time), **clock + now playing**, **track + volume** |
+| PTZ | Camera zoom and focus |
+| UAD | Monitor level, selected channel + meter |
+| DiGiCo | Current and next snapshot, selected channel, console |
+| MagicQ / grandMA2 | Selected playback or executor (grandMA2 also shows the cue and the next cue) |
+| Echo360 | Recording state and time (red while recording), next class |
+| NDI Router / Studio Monitor | What each route shows, Virtual Input's source / Studio Monitor's source and recording |
+
+The clock viewers come with **Show Health**, so add a Show Health connection even with no devices in it if you want just the clock. (The D200X plugin also has its own built-in clock for that key: Surfaces → D200X → small window mode. But then the key isn't a Companion button.)
+
 ## Using a Stream Deck (or any surface) instead of the D200X
 
 Everything here works on any Companion surface, not just the D200X:

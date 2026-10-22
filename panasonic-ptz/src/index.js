@@ -4,6 +4,7 @@ import { getActionDefinitions } from './actions.js'
 import { getFeedbackDefinitions } from './feedbacks.js'
 import { getPresetDefinitions } from './presets.js'
 import { withSurfaceExtras } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 import { setVariables, checkVariables } from './variables.js'
 import { ConfigFields, applyConfigDefaults } from './config.js'
 import * as net from 'net'
@@ -438,7 +439,7 @@ class PanasonicPTZInstance extends InstanceBase {
 	// #### Instance Presets ####
 	// ##########################
 	init_presets() {
-		this.setPresetDefinitions(withSurfaceExtras(getPresetDefinitions(this)))
+		this.setPresetDefinitions(withSurfaceExtras({ ...getPresetDefinitions(this), ...getViewerPresets(this) }))
 	}
 	// ############################
 	// #### Instance Variables ####

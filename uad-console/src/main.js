@@ -2,6 +2,7 @@ import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/b
 import { UAClient, DEFAULT_PORT } from './ua-client.js'
 import { UpgradeScripts } from './upgrades.js'
 import { withSurfaceExtras } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 import { getActions, getFeedbacks, getPresets, getVariableDefinitions, getVariableValues } from './controls.js'
 import {
 	applyMeters,
@@ -67,7 +68,7 @@ class UADConsoleInstance extends InstanceBase {
 		this.setActionDefinitions({ ...getActions(this), ...getExtraActions(this) })
 		this.setFeedbackDefinitions({ ...getFeedbacks(this), ...getExtraFeedbacks(this) })
 		this.setVariableDefinitions([...getVariableDefinitions(this), ...getExtraVariableDefinitions(this)])
-		this.setPresetDefinitions(withSurfaceExtras({ ...getExtraPresets(this), ...getPresets(this) }))
+		this.setPresetDefinitions(withSurfaceExtras({ ...getExtraPresets(this), ...getPresets(this), ...getViewerPresets(this) }))
 		this.#refreshValues()
 	}
 
