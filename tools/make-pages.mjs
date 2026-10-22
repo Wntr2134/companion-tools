@@ -1,5 +1,5 @@
-// Builds ready-to-import D200X pages (system-tools/extras/pages/*.companionconfig) from the modules' own
-// presets, so every key looks and behaves exactly like the preset it came from.
+// Builds ready-to-import D200X pages (system-tools/extras/pages/D200X-pages.companionconfig, every page in
+// one file) from the modules' own presets, so every key looks and behaves exactly like the preset it came from.
 //
 // On every page, Spotify keeps the same spots: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume
 // (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays).
@@ -234,7 +234,9 @@ const outDir = path.join(root, 'system-tools', 'extras', 'pages')
 const check = process.argv.includes('--check')
 const problems = []
 const written = []
-for (const [name, page] of Object.entries(PAGES)) {
+const instances = Object.fromEntries(Object.values(CONN).map((c, i) => [c.id, { label: c.label, moduleId: c.moduleId, lastUpgradeIndex: -1, sortOrder: i }]))
+const pages = {}
+Object.entries(PAGES).forEach(([name, page], i) => {
 	const controls = {}
 	for (const [pos, b] of Object.entries(page.keys)) {
 		const defs = mods[b.mod]
@@ -242,30 +244,27 @@ for (const [name, page] of Object.entries(PAGES)) {
 		const [r, c] = pos.split('/').map(Number)
 		;(controls[r] ??= {})[c] = toControl(name, pos, b)
 	}
-	const out = {
-		version: 12,
-		type: 'page',
-		companionBuild: undefined,
-		page: { name, controls, gridSize: { minColumn: 0, maxColumn: 4, minRow: 0, maxRow: 4 } },
-		instances: Object.fromEntries(Object.values(CONN).map((c, i) => [c.id, { label: c.label, moduleId: c.moduleId, lastUpgradeIndex: -1, sortOrder: i }])),
-		connectionCollections: [],
-		oldPageNumber: 1,
-	}
-	const file = path.join(outDir, `D200X-${name.replace(/ /g, '-')}.companionconfig`)
-	const text = JSON.stringify(out, null, 1) + '\n'
+	pages[i + 1] = { name, controls, gridSize: { minColumn: 0, maxColumn: 4, minRow: 0, maxRow: 4 } }
+})
+
+// Every page in one file: Companion's Import → Buttons tab picks a page from it and where it goes.
+const bundle = { version: 12, type: 'full', companionBuild: undefined, pages, instances, connectionCollections: [] }
+const files = {
+	'D200X-pages.companionconfig': JSON.stringify(bundle, null, 1) + '\n',
+	'pages.md':
+		Object.entries(PAGES)
+			.map(([name, p], i) => `${i + 1}. **${name}**: ${p.about}`)
+			.join('\n') + '\n',
+}
+for (const [name, text] of Object.entries(files)) {
+	const file = path.join(outDir, name)
 	if (check) {
 		if (!existsSync(file) || readFileSync(file, 'utf8') !== text) problems.push(`${path.relative(root, file)} is out of date: run node tools/make-pages.mjs`)
 	} else {
 		mkdirSync(outDir, { recursive: true })
 		writeFileSync(file, text)
-		written.push(`${path.relative(root, file)}  (${Object.keys(page.keys).length} keys)`)
+		written.push(path.relative(root, file))
 	}
-}
-if (!check) {
-	const list = Object.entries(PAGES)
-		.map(([name, p]) => `- **${name}**: ${p.about}`)
-		.join('\n')
-	writeFileSync(path.join(outDir, 'pages.md'), `${list}\n`)
 }
 for (const w of written) console.log(`wrote ${w}`)
 if (problems.length) {
