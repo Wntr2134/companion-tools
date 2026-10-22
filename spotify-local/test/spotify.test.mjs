@@ -103,3 +103,50 @@ test('wide key viewers: display only, short enough for a normal key too', async 
 	}
 	if (out.section) assert.deepEqual(out.section.definitions, Object.keys(presets))
 })
+
+test('now-playing card: cover decoded, cropped to the key, darkened, progress bar drawn', async () => {
+	const jpeg = (await import('jpeg-js')).default
+	const { ArtCache, decodeArt, coverScale, withProgressBar, cardBackground, smallerArtUrl, SPOTIFY_GREEN } = await import('../src/artwork.js')
+	// a 64×64 test cover: left half red, right half blue
+	const raw = Buffer.alloc(64 * 64 * 4)
+	for (let y = 0; y < 64; y++)
+		for (let x = 0; x < 64; x++) {
+			const i = (y * 64 + x) * 4
+			raw[i] = x < 32 ? 255 : 0
+			raw[i + 2] = x < 32 ? 0 : 255
+			raw[i + 3] = 255
+		}
+	const bytes = jpeg.encode({ data: raw, width: 64, height: 64 }, 95).data
+	const art = decodeArt(bytes)
+	assert.deepEqual([art.width, art.height], [64, 64])
+
+	// wide key 458×196: cover crop keeps the middle, so the left edge is red and the right edge blue
+	const scaled = coverScale(art, 458, 196)
+	assert.ok(scaled[0] > 200 && scaled[2] < 60, 'left edge red')
+	const r = (196 * 458 - 1) * 3
+	assert.ok(scaled[r + 2] > 200 && scaled[r] < 60, 'right edge blue')
+
+	const bg = cardBackground(art, 72, 72)
+	assert.ok(bg[0] < 255 * 0.5, 'darkened so white text reads')
+
+	const card = withProgressBar(bg, 72, 72, 0.5, true)
+	const bottomLeft = ((72 - 1) * 72 + 0) * 3
+	assert.deepEqual([...card.slice(bottomLeft, bottomLeft + 3)], SPOTIFY_GREEN, 'played part is Spotify green')
+	const bottomRight = ((72 - 1) * 72 + 71) * 3
+	assert.notDeepEqual([...card.slice(bottomRight, bottomRight + 3)], SPOTIFY_GREEN, 'unplayed part is not')
+	const paused = withProgressBar(bg, 72, 72, 0.5, false)
+	assert.notDeepEqual([...paused.slice(bottomLeft, bottomLeft + 3)], SPOTIFY_GREEN, 'grey while paused')
+	assert.deepEqual(withProgressBar(bg, 72, 72, null, true), Uint8Array.from(bg), 'no bar without a track')
+
+	// cache: fetches once per cover, falls back to Spotify black meanwhile, then redraws
+	let fetched = 0
+	let ready = 0
+	const cache = new ArtCache({ fetchBytes: async () => (fetched++, bytes), onReady: () => ready++ })
+	assert.equal(cache.want('https://i.scdn.co/image/ab67616d0000b273abc'), null)
+	assert.equal(cache.background(10, 10)[0], 18 + 14, 'plain Spotify background until the cover arrives')
+	await new Promise((res) => setImmediate(res))
+	assert.equal(ready, 1)
+	assert.ok(cache.want('https://i.scdn.co/image/ab67616d0000b273abc'))
+	assert.equal(fetched, 1, 'same cover is not fetched again')
+	assert.equal(smallerArtUrl('https://i.scdn.co/image/ab67616d0000b273abc'), 'https://i.scdn.co/image/ab67616d00001e02abc')
+})

@@ -15,9 +15,12 @@ Controls the **Spotify app on the computer running Companion**. No Spotify login
 - No shuffle, repeat, seek or Spotify volume on Windows. Media keys go to whichever app is playing media, so pause other players (e.g. a browser) if it gets confused.
 - Playlist keys open the playlist in Spotify. On Windows you may need to press play.
 
+### Now playing card
+The **Now playing** preset and the **Wide key viewers** show the track's **album art**, darkened and softly blurred, behind the track and artist, with a thin progress bar along the bottom (Spotify green while playing, grey when paused). Made for the D200X's wide key, and it works on any key. On Windows (no album art from Spotify) it uses Spotify's dark background with the same bar. You can add it to any key as the feedback **Now playing card**.
+
 ### Presets
 - **Transport:** play/pause (⏸ / ▶, green while playing), previous, next, shuffle, repeat, open Spotify.
-- **Now playing:** track and artist, time.
+- **Now playing:** track and artist on the album-art card, time.
 - **Knobs:** volume (push = play/pause), track (turn = previous/next), seek (Mac, 5 s per click, push = restart).
 - **Knobs: − / + buttons and push keys:** the same on plain keys, for Stream Decks without dials and the D200X push row.
 - **Playlists:** one key to copy and edit per playlist.

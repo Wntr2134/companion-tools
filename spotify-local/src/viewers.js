@@ -4,7 +4,6 @@ import { combineRgb } from '@companion-module/base'
 
 const CATEGORY = 'Wide key viewers'
 const WHITE = combineRgb(255, 255, 255)
-const BLACK = combineRgb(0, 0, 0)
 
 export function getViewerPresets(self) {
 	const label = self.label || 'spotify-local'
@@ -13,14 +12,15 @@ export function getViewerPresets(self) {
 		type: 'button',
 		category: CATEGORY,
 		name,
-		style: { text, size: 'auto', color: WHITE, bgcolor: BLACK },
+		style: { text, size: 'auto', color: WHITE, bgcolor: combineRgb(18, 18, 18), show_topbar: false, alignment: 'left:center' },
 		steps: [{ down: [], up: [] }],
 		feedbacks,
 	})
-	const playing = [{ feedbackId: 'playing', options: {}, style: { bgcolor: combineRgb(0, 70, 30), color: WHITE } }]
+	// Album art behind the text, with a green progress bar (see artwork.js).
+	const card = [{ feedbackId: 'now_playing_art', options: {} }]
 	return {
-		view_now: viewer('Now playing (track, artist, time)', `${v('track')}\\n${v('artist')}\\n${v('time')}`, playing),
-		view_clock: viewer('Clock + now playing', `$(internal:time_hm)  ${v('play_icon')}\\n${v('track')}\\n${v('artist')}`, playing),
-		view_vol: viewer('Track + volume + time left', `${v('track')}\\nVOL ${v('volume')}%   ${v('remaining')}`, playing),
+		view_now: viewer('Now playing: album art, track, artist', `${v('track')}\\n${v('artist')}`, card),
+		view_time: viewer('Now playing + time', `${v('track')}\\n${v('artist')}  ·  ${v('time')}`, card),
+		view_clock: viewer('Clock + now playing', `$(internal:time_hm)\\n${v('track')}\\n${v('artist')}`, card),
 	}
 }
