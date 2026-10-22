@@ -287,3 +287,77 @@ test('restoreItems turns a saved layout into absolute placements', () => {
 	const items = restoreItems([{ app: 'Safari', bundleId: 'com.apple.Safari', windows: [{ title: 'A', index: 0, x: 1, y: 2, w: 3, h: 4 }] }], { launch: true })
 	assert.deepEqual(items, [{ app: 'Safari', bundleId: 'com.apple.Safari', title: 'A', index: 0, abs: { x: 1, y: 2, w: 3, h: 4 }, launch: true }])
 })
+
+test('Your Dock: the Dock apps in order, Finder first, spacers and files left out', async () => {
+	const { parseDock, fileUrlToPath, FINDER } = await import('../src/dock.js')
+	const tile = (label, url) => `
+		<dict>
+			<key>tile-data</key>
+			<dict>
+				<key>file-data</key>
+				<dict>
+					<key>_CFURLString</key>
+					<string>${url}</string>
+					<key>_CFURLStringType</key>
+					<integer>15</integer>
+				</dict>
+				<key>file-label</key>
+				<string>${label}</string>
+			</dict>
+			<key>tile-type</key>
+			<string>file-tile</string>
+		</dict>`
+	const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+	<key>autohide</key>
+	<true/>
+	<key>persistent-apps</key>
+	<array>${tile('Vivaldi', 'file:///Applications/Vivaldi.app/')}
+		<dict>
+			<key>tile-data</key>
+			<dict/>
+			<key>tile-type</key>
+			<string>spacer-tile</string>
+		</dict>${tile('Dante Controller', 'file:///Applications/Dante%20Controller.app/')}${tile('R&amp;D Notes', 'file:///Applications/R&amp;D%20Notes.app/')}${tile('Vivaldi', 'file:///Applications/Vivaldi.app/')}
+	</array>
+	<key>persistent-others</key>
+	<array>${tile('Downloads', 'file:///Users/will/Downloads/')}
+	</array>
+</dict>
+</plist>`
+	assert.deepEqual(parseDock(xml), [
+		FINDER,
+		{ name: 'Vivaldi', path: '/Applications/Vivaldi.app' },
+		{ name: 'Dante Controller', path: '/Applications/Dante Controller.app' },
+		{ name: 'R&D Notes', path: '/Applications/R&D Notes.app' },
+	])
+	assert.deepEqual(parseDock(''), [FINDER])
+	assert.equal(fileUrlToPath('file:///System/Applications/Music.app/'), '/System/Applications/Music.app')
+	assert.equal(fileUrlToPath('https://example.com'), '')
+})
+
+test('Bluetooth: paired devices from blueutil or the built-in script; addresses passed as arguments', async () => {
+	const { Bluetooth, parseBlueutil, normAddress, BT_SCRIPT } = await import('../src/bluetooth.js')
+	assert.deepEqual(parseBlueutil('[{"address":"AA-BB-CC-DD-EE-01","name":"AirPods Pro","connected":true},{"address":"aa-bb-cc-dd-ee-02","name":"","connected":false}]'), [
+		{ address: 'AA-BB-CC-DD-EE-01', name: 'AirPods Pro', connected: true },
+		{ address: 'aa-bb-cc-dd-ee-02', name: 'aa-bb-cc-dd-ee-02', connected: false },
+	])
+	assert.equal(normAddress('AA:BB:CC:DD:EE:01'), 'aa-bb-cc-dd-ee-01')
+
+	const calls = []
+	const exec = (reply) => (file, args, opts, cb) => {
+		calls.push([file, ...args])
+		setImmediate(() => cb(null, reply, ''))
+	}
+	const viaUtil = new Bluetooth({ exec: exec('[{"address":"AA-BB-CC-DD-EE-01","name":"Speaker","connected":false}]'), blueutil: '/opt/homebrew/bin/blueutil' })
+	assert.deepEqual(await viaUtil.list(), [{ address: 'aa-bb-cc-dd-ee-01', name: 'Speaker', connected: false }])
+	await viaUtil.set('AA:BB:CC:DD:EE:01', true)
+	assert.deepEqual(calls.at(-1), ['/opt/homebrew/bin/blueutil', '--connect', 'aa-bb-cc-dd-ee-01'])
+
+	const builtIn = new Bluetooth({ exec: exec('{"ok":false,"code":-536870212}'), blueutil: undefined })
+	await assert.rejects(builtIn.set('aa-bb-cc-dd-ee-01', true), /is the device on/)
+	assert.deepEqual(calls.at(-1).slice(0, 3), ['osascript', '-l', 'JavaScript'])
+	assert.equal(calls.at(-1)[4], BT_SCRIPT)
+	assert.deepEqual(calls.at(-1).slice(5), ['connect', 'aa-bb-cc-dd-ee-01'])
+})

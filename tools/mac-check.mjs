@@ -19,6 +19,8 @@ const music = await mod('apple-music-local/src/music.js')
 const sys = await mod('system-tools/src/mac-system.js')
 const win = await mod('system-tools/src/mac-windows.js')
 const info = await mod('system-tools/src/sysinfo.js')
+const dock = await mod('system-tools/src/dock.js')
+const bt = await mod('system-tools/src/bluetooth.js')
 const uc = await mod('echo360-capture/src/uc-keys.js')
 const ndi = await mod('ndi-router/src/virtual-input-mac.js')
 
@@ -52,6 +54,7 @@ const scripts = [
 	['System Tools: switch desktop', JS, [sys.SPACE_SWITCH]],
 	['System Tools: lock screen', JS, [sys.LOCK_SCREEN]],
 	['System Tools: windows', JS, [win.WINDOW_SCRIPT]],
+	['System Tools: Bluetooth', JS, [bt.BT_SCRIPT]],
 	['Echo360: shortcut', AS, uc.osascriptArgs('1').filter((a) => a !== '-e')],
 	['Echo360: shortcut, bring app forward', AS, uc.osascriptArgs('2', { activate: true }).filter((a) => a !== '-e').slice(0, -1)],
 	['NDI Router: Virtual Input menu', JS, [ndi.MENU_SCRIPT]],
@@ -97,6 +100,15 @@ await step('System Tools: screens', async () => {
 	if (!Array.isArray(list)) throw new Error(`not a list: ${JSON.stringify(list)}`)
 	for (const s of list) if (!(s.w > 0 && s.h > 0)) throw new Error(`bad screen ${JSON.stringify(s)}`)
 	return list.length ? list.map((s) => `${s.name} ${s.full.w}×${s.full.h}`).join(', ') : 'no display attached'
+})
+await step('System Tools: Dock apps', async () => {
+	const apps = await dock.readDock()
+	if (apps[0]?.name !== 'Finder') throw new Error(JSON.stringify(apps))
+	return apps.map((a) => a.name).join(', ')
+})
+await step('System Tools: Bluetooth paired devices (built-in, no blueutil)', async () => {
+	const list = await new bt.Bluetooth({ blueutil: undefined }).list()
+	return list.length ? list.map((d) => d.name).join(', ') : 'none paired here'
 })
 await step('System Tools: dark mode read', async () => `dark mode ${await sys.isDarkMode()}`)
 await step('System Tools: memory from vm_stat', async () => {
