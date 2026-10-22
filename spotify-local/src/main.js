@@ -2,9 +2,10 @@ import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@compan
 import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
+import { markPng, withBrand } from './brand.js'
 import { ArtCache, CARD_SHAPES, encodePng, withProgressBar } from './artwork.js'
 
-const GREEN = combineRgb(30, 185, 84) // Spotify green
+const GREEN = combineRgb(30, 215, 96) // Spotify green (#1ED760)
 const GREY = combineRgb(18, 18, 18) // Spotify black (#121212)
 const WHITE = combineRgb(255, 255, 255)
 const BLACK = combineRgb(0, 0, 0)
@@ -293,7 +294,9 @@ class SpotifyInstance extends InstanceBase {
 			steps: [{ down, up: [] }],
 			feedbacks,
 		})
-		const playingFb = [{ feedbackId: 'playing', options: {}, style: { bgcolor: GREEN, color: BLACK } }]
+		// When a key lights up green, the mark behind it turns dark so it still shows.
+		const ON = { bgcolor: GREEN, color: BLACK, png64: markPng([0, 0, 0], 0.16) }
+		const playingFb = [{ feedbackId: 'playing', options: {}, style: ON }]
 		const presets = {
 			playpause: key('Transport', 'Play / pause', v('play_icon'), [{ actionId: 'playpause', options: {} }], playingFb, '24'),
 			previous: key('Transport', 'Previous', '⏮', [{ actionId: 'previous', options: {} }], [], '24'),
@@ -338,8 +341,8 @@ class SpotifyInstance extends InstanceBase {
 		}
 		if (mac) {
 			presets.time = key('Now playing', 'Time', v('time'), [], playingFb, 'auto')
-			presets.shuffle = key('Transport', 'Shuffle', 'SHUFFLE', [{ actionId: 'shuffle', options: { mode: 'toggle' } }], [{ feedbackId: 'shuffle', options: {}, style: { bgcolor: GREEN, color: BLACK } }])
-			presets.repeat = key('Transport', 'Repeat', 'REPEAT', [{ actionId: 'repeat', options: { mode: 'toggle' } }], [{ feedbackId: 'repeat', options: {}, style: { bgcolor: GREEN, color: BLACK } }])
+			presets.shuffle = key('Transport', 'Shuffle', 'SHUFFLE', [{ actionId: 'shuffle', options: { mode: 'toggle' } }], [{ feedbackId: 'shuffle', options: {}, style: ON }])
+			presets.repeat = key('Transport', 'Repeat', 'REPEAT', [{ actionId: 'repeat', options: { mode: 'toggle' } }], [{ feedbackId: 'repeat', options: {}, style: ON }])
 			presets.seek_knob = {
 				type: 'button',
 				category: 'Knobs',
@@ -358,7 +361,8 @@ class SpotifyInstance extends InstanceBase {
 			}
 		}
 		// − / + keys and push keys for Stream Decks without dials, and the D200X's push row.
-		this.setPresetDefinitions(withSurfaceExtras({ ...presets, ...getViewerPresets(this) }))
+		// Every key gets the Spotify mark behind its label, to tell it apart from other apps' keys.
+		this.setPresetDefinitions(withBrand(withSurfaceExtras({ ...presets, ...getViewerPresets(this) })))
 		this.publish()
 	}
 
