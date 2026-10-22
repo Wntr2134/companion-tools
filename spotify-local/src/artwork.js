@@ -1,6 +1,7 @@
 // Draws the "now playing" card for a key: the album art, darkened and softly blurred, with a thin
 // progress bar along the bottom (Spotify green while playing, grey when paused). Companion puts the
 // track text on top. Without album art (Windows, nothing playing) it uses Spotify's dark background.
+import { deflateSync } from 'node:zlib'
 import jpeg from 'jpeg-js'
 
 export const SPOTIFY_GREEN = [30, 215, 96] // #1ED760
@@ -84,7 +85,7 @@ export function cardBackground(art, width, height) {
 		return out
 	}
 	const scaled = coverScale(art, width, height)
-	const blurred = boxBlur(scaled, width, height, Math.max(1, Math.round(Math.min(width, height) / 24)))
+	const blurred = boxBlur(scaled, width, height, Math.max(1, Math.round(Math.min(width, height) / 12)))
 	for (let i = 0; i < blurred.length; i++) blurred[i] = Math.round(blurred[i] * 0.42) // darken so white text reads
 	return blurred
 }
@@ -171,4 +172,58 @@ async function defaultFetch(url) {
 	const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
 	if (!res.ok) throw new Error(`HTTP ${res.status}`)
 	return new Uint8Array(await res.arrayBuffer())
+}
+
+// Companion 5 draws an advanced feedback's imageBuffer ON TOP of the key text, but a `png64` goes on
+// the image layer underneath it, so the card is sent as a PNG. Either way Companion fits the picture
+// inside the key without stretching, and it reports 72×58 for every key (even the D200X wide key),
+// so the card is drawn at the shape the user picks rather than the size Companion reports.
+export const CARD_SHAPES = {
+	wide: { width: 229, height: 98 }, // D200X wide key, 458×196 at half size (blurred, so it scales up fine)
+	square: { width: 98, height: 98 }, // normal keys
+}
+
+const CRC_TABLE = (() => {
+	const t = new Int32Array(256)
+	for (let n = 0; n < 256; n++) {
+		let c = n
+		for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+		t[n] = c
+	}
+	return t
+})()
+
+function crc32(buf) {
+	let c = -1
+	for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8)
+	return (c ^ -1) >>> 0
+}
+
+function pngChunk(type, data) {
+	const len = Buffer.alloc(4)
+	len.writeUInt32BE(data.length)
+	const body = Buffer.concat([Buffer.from(type, 'ascii'), data])
+	const crc = Buffer.alloc(4)
+	crc.writeUInt32BE(crc32(body))
+	return Buffer.concat([len, body, crc])
+}
+
+/** Encode RGB pixels as a PNG. Returns base64 (what Companion's png64 style wants). */
+export function encodePng(rgb, width, height) {
+	const ihdr = Buffer.alloc(13)
+	ihdr.writeUInt32BE(width, 0)
+	ihdr.writeUInt32BE(height, 4)
+	ihdr[8] = 8 // bit depth
+	ihdr[9] = 2 // colour type: RGB
+	const rows = Buffer.alloc((width * 3 + 1) * height)
+	for (let y = 0; y < height; y++) {
+		rows[y * (width * 3 + 1)] = 0 // filter: none
+		Buffer.from(rgb.buffer, rgb.byteOffset + y * width * 3, width * 3).copy(rows, y * (width * 3 + 1) + 1)
+	}
+	return Buffer.concat([
+		Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+		pngChunk('IHDR', ihdr),
+		pngChunk('IDAT', deflateSync(rows)),
+		pngChunk('IEND', Buffer.alloc(0)),
+	]).toString('base64')
 }

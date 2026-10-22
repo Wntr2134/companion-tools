@@ -2,7 +2,7 @@ import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@compan
 import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
-import { ArtCache, withProgressBar } from './artwork.js'
+import { ArtCache, CARD_SHAPES, encodePng, withProgressBar } from './artwork.js'
 
 const GREEN = combineRgb(30, 185, 84) // Spotify green
 const GREY = combineRgb(18, 18, 18) // Spotify black (#121212)
@@ -23,8 +23,22 @@ class SpotifyInstance extends InstanceBase {
 		this.config = config
 		this.spotify = new Spotify()
 		this.art = new ArtCache({ onReady: () => this.checkFeedbacks('now_playing_art') })
+		this.cardPngs = new Map()
 		this.updateDefinitions()
+		// Our own clock for the "Clock + now playing" viewer: Companion's $(internal:time_hm) shows $NA
+		// in the presets list, and this one works there too.
+		this.clockTimer = setInterval(() => this.tickClock(), 1000)
+		this.tickClock()
 		this.start()
+	}
+
+	tickClock() {
+		const now = new Date()
+		const clock = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+		if (clock !== this.clock) {
+			this.clock = clock
+			this.setVariableValues({ clock })
+		}
 	}
 
 	async configUpdated(config) {
@@ -35,6 +49,7 @@ class SpotifyInstance extends InstanceBase {
 
 	async destroy() {
 		this.stop()
+		clearInterval(this.clockTimer)
 	}
 
 	isMac() {
@@ -111,20 +126,19 @@ class SpotifyInstance extends InstanceBase {
 
 	/** The now-playing card for one key. Only the progress bar changes each second; the rest is cached. */
 	drawCard(fb) {
-		const w = fb.image?.width
-		const h = fb.image?.height
-		if (!w || !h) return {}
+		const { width: w, height: h } = CARD_SHAPES[fb.options?.shape] ?? CARD_SHAPES.square
 		const s = this.state
 		this.art.want(s.running ? s.artwork : '')
 		const progress = s.running && s.duration ? (s.position ?? 0) / s.duration : null
-		const buf = withProgressBar(this.art.background(w, h), w, h, progress, !!s.playing)
-		return {
-			imageBuffer: buf,
-			imageBufferEncoding: { pixelFormat: 'RGB' },
-			imageBufferPosition: { x: 0, y: 0, width: w, height: h },
-			color: combineRgb(255, 255, 255),
-			show_topbar: false,
+		// Re-encode only when what's drawn changes (the bar moves a pixel every few seconds).
+		const key = [w, h, this.art.url, !!this.art.art, !!s.playing, progress === null ? '' : Math.round(progress * w)].join('|')
+		let png = this.cardPngs.get(key)
+		if (!png) {
+			png = encodePng(withProgressBar(this.art.background(w, h), w, h, progress, !!s.playing), w, h)
+			if (this.cardPngs.size > 8) this.cardPngs.clear()
+			this.cardPngs.set(key, png)
 		}
+		return { png64: png, pngalignment: 'center:center', color: combineRgb(255, 255, 255), show_topbar: false }
 	}
 
 	/** Fast knob turns: keep a local target and send it, never more than one set at a time. */
@@ -234,7 +248,18 @@ class SpotifyInstance extends InstanceBase {
 				type: 'advanced',
 				name: 'Now playing card (album art + progress bar)',
 				description: 'Album art (darkened, blurred) behind the key text, with a progress bar. Mac shows the cover; Windows uses Spotify black.',
-				options: [],
+				options: [
+					{
+						type: 'dropdown',
+						id: 'shape',
+						label: 'Key shape',
+						default: 'square',
+						choices: [
+							{ id: 'square', label: 'Normal key' },
+							{ id: 'wide', label: 'D200X wide key' },
+						],
+					},
+				],
 				callback: (fb) => this.drawCard(fb),
 			},
 			closed: { type: 'boolean', name: 'Spotify is closed', defaultStyle: { bgcolor: GREY, color: combineRgb(150, 150, 150) }, options: [], callback: () => !this.state.running },
@@ -254,6 +279,7 @@ class SpotifyInstance extends InstanceBase {
 			{ variableId: 'time', name: 'Position / length (Mac)' },
 			{ variableId: 'shuffle', name: 'Shuffle ON/OFF (Mac)' },
 			{ variableId: 'repeat', name: 'Repeat ON/OFF (Mac)' },
+			{ variableId: 'clock', name: 'Time now (HH:MM)' },
 			{ variableId: 'play_icon', name: '▶ or ⏸ for the play/pause key' },
 		])
 
@@ -273,7 +299,7 @@ class SpotifyInstance extends InstanceBase {
 			previous: key('Transport', 'Previous', '⏮', [{ actionId: 'previous', options: {} }], [], '24'),
 			next: key('Transport', 'Next', '⏭', [{ actionId: 'next', options: {} }], [], '24'),
 			now: {
-				...key('Now playing', 'Track and artist (album art)', `${v('track')}\\n${v('artist')}`, [], [{ feedbackId: 'now_playing_art', options: {} }], 'auto'),
+				...key('Now playing', 'Track and artist (album art)', `${v('track')}\\n${v('artist')}`, [], [{ feedbackId: 'now_playing_art', options: { shape: 'square' } }], 'auto'),
 			},
 			open: key('Transport', 'Open Spotify', 'OPEN\\nSPOTIFY', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {} }]),
 			link: key('Playlists', 'Play a playlist (edit the link)', 'PLAYLIST', [{ actionId: 'play_link', options: { link: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M' } }]),

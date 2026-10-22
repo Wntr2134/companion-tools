@@ -16,7 +16,9 @@ Controls the **Spotify app on the computer running Companion**. No Spotify login
 - Playlist keys open the playlist in Spotify. On Windows you may need to press play.
 
 ### Now playing card
-The **Now playing** preset and the **Wide key viewers** show the track's **album art**, darkened and softly blurred, behind the track and artist, with a thin progress bar along the bottom (Spotify green while playing, grey when paused). Made for the D200X's wide key, and it works on any key. On Windows (no album art from Spotify) it uses Spotify's dark background with the same bar. You can add it to any key as the feedback **Now playing card**.
+The **Now playing** preset and the **Wide key viewers** show the track's **album art**, darkened and softly blurred, behind the track and artist, with a thin progress bar along the bottom (Spotify green while playing, grey when paused). Made for the D200X's wide key, and it works on any key. On Windows (no album art from Spotify) it uses Spotify's dark background with the same bar. You can add it to any key as the feedback **Now playing card**: set its **Key shape** to *D200X wide key* or *Normal key* (Companion doesn't tell modules a key's real shape). In Companion's own button grid a wide card shows as a band across the middle of the square; on the D200X it fills the wide key.
+
+The **Clock + now playing** viewer uses this module's own `clock` variable (HH:MM, the computer's time).
 
 ### Presets
 - **Transport:** play/pause (⏸ / ▶, green while playing), previous, next, shuffle, repeat, open Spotify.
