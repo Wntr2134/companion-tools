@@ -2,7 +2,7 @@
 
 > **New Mac, or setting up from scratch? Start with [SETUP-GUIDE.md](SETUP-GUIDE.md).** It's step-by-step for everything here.
 >
-> **Just want to install or update?** Download **[companion-tools-all-modules.tgz](https://github.com/Wntr2134/companion-tools/releases/download/latest/companion-tools-all-modules.tgz)** (every module in one file), then in Companion go to **Modules → Import Bundle**. No Terminal needed. Single modules are on the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest) (**Modules → Import Package**).
+> **Just want to install or update?** Download **[companion-tools-all-modules.tgz](https://github.com/Wntr2134/companion-tools/releases/download/latest/companion-tools-all-modules.tgz)** (every module in one file), then in Companion go to **Modules → Import offline module bundle** (the blue button; called *Import Bundle* in newer Companion). No Terminal needed. Single modules are on the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest) (**Modules → Import module package**).
 
 Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD, MagicQ and grandMA2 control, Echo360, NDI (Virtual Input, Studio Monitor), an app launcher, Spotify and a show health page.
 
