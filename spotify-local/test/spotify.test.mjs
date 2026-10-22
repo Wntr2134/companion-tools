@@ -215,3 +215,43 @@ test('every on/off feedback in a preset carries a style (without one, Companion 
 		assert.ok(!m[2], `preset feedback "${m[1]}" has no style`)
 	}
 })
+
+test('accounts: save and switch Spotify logins by swapping its prefs file, no passwords stored', async () => {
+	const { SpotifyAccounts, accountFromPrefs, prefsCandidates } = await import('../src/accounts.js')
+	const { mkdtemp, mkdir, writeFile, readFile } = await import('node:fs/promises')
+	const os = await import('node:os')
+	const path = await import('node:path')
+	assert.deepEqual(accountFromPrefs('ui.x=1\nautologin.canonical_username="will123"\nautologin.username="Will"\n'), { user: 'will123', display: 'Will' })
+	assert.equal(accountFromPrefs('ui.x=1\n'), null, 'logged out')
+	assert.match(prefsCandidates('darwin', {}, '/Users/w')[0], /Library\/Application Support\/Spotify\/prefs$/)
+
+	const root = await mkdtemp(path.join(os.tmpdir(), 'sp-'))
+	const prefs = path.join(root, 'Spotify', 'prefs')
+	await mkdir(path.dirname(prefs), { recursive: true })
+	let running = true
+	const calls = []
+	const exec = (file, args, opts, cb) => {
+		calls.push([file, ...args].join(' '))
+		if (file === 'pgrep') return cb(null, running ? '123\n' : '', '')
+		if (file === 'osascript') running = false
+		if (file === 'open') running = true
+		cb(null, '', '')
+	}
+	const acc = new SpotifyAccounts({ platform: 'darwin', exec, dir: path.join(root, 'saved'), prefs: [prefs], sleep: async () => {} })
+
+	await writeFile(prefs, 'autologin.canonical_username="anna"\nautologin.username="Anna"\nvol=1\n')
+	await acc.save(1, 'Anna')
+	await writeFile(prefs, 'autologin.canonical_username="ben"\nautologin.username="Ben"\nvol=2\n')
+	await acc.save(2)
+	assert.deepEqual(Object.fromEntries(Object.entries(await acc.meta()).map(([k, v]) => [k, [v.name, v.user]])), { 1: ['Anna', 'anna'], 2: ['Ben', 'ben'] })
+
+	calls.length = 0
+	await acc.switchTo(1)
+	assert.match(await readFile(prefs, 'utf8'), /anna/)
+	assert.deepEqual(calls, ['pgrep -x Spotify', 'osascript -e tell application "Spotify" to quit', 'pgrep -x Spotify', 'open -a Spotify'], 'quit, wait, swap, reopen')
+	assert.match(await readFile(path.join(root, 'saved', 'prefs.before-switch'), 'utf8'), /ben/, 'the previous login is kept')
+	assert.equal((await acc.status()).current.user, 'anna')
+	await assert.rejects(acc.switchTo(3), /isn't saved yet/)
+	await writeFile(prefs, 'nothing=1\n')
+	await assert.rejects(acc.save(3), /Nobody is logged in/)
+})

@@ -15,6 +15,14 @@ Controls the **Spotify app on the computer running Companion**. No Spotify login
 - No shuffle, repeat, seek or Spotify volume on Windows. Media keys go to whichever app is playing media, so pause other players (e.g. a browser) if it gets confused.
 - Playlist keys open the playlist in Spotify. On Windows you may need to press play.
 
+### Two (or more) Spotify accounts
+Swap who's logged in to the Spotify app with one key. No passwords are stored: Spotify keeps the login in its own settings file, and the module saves and swaps that file.
+1. In Spotify, log in as the first person. Press **SAVE AS ACCOUNT 1** (Presets → **Accounts**). Spotify closes and reopens while it saves.
+2. Log out, log in as the second person, and press **SAVE AS ACCOUNT 2**.
+3. From now on **ACCOUNT 1** / **ACCOUNT 2** quit Spotify, swap the login and reopen it (a few seconds). The key of whoever is logged in is lit; **LOGGED IN** shows the name.
+
+Names on the keys come from Spotify; to choose your own, edit the save key's *Name on the key* and press it again. Up to four accounts with the actions. If Spotify ever asks you to log in again after a switch, its saved login for that person expired: log in and press that person's SAVE key again. The login that was there before each switch is kept as a backup (`spotify-accounts/prefs.before-switch` in `~/Library/Application Support/Companion Tools/`).
+
 ### Spotify look
 Every preset has a faint Spotify mark behind its label, so Spotify keys are easy to tell apart from other apps' keys. Keys that light up (playing, shuffle, repeat) go Spotify green with a dark mark. To remove the mark from a key, clear its image in the button editor.
 
