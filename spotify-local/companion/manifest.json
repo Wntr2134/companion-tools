@@ -1,0 +1,22 @@
+{
+	"id": "spotify-local",
+	"name": "spotify-local",
+	"shortname": "Spotify (local)",
+	"description": "Controls the Spotify app on the computer running Companion, with no Spotify login: play/pause, tracks, volume, shuffle, playlists and now-playing info (Mac), or media keys and the current track (Windows).",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js",
+		"permissions": { "child-process": true }
+	},
+	"manufacturer": "Spotify",
+	"products": ["Spotify desktop app"],
+	"keywords": ["spotify", "music", "playlist", "play", "pause", "volume", "walk-in"]
+}

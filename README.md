@@ -4,7 +4,7 @@
 >
 > **Just want to install?** Download the ready-made `.tgz` packages from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), then in Companion go to **Modules → Import module package**. No Terminal needed.
 
-Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD, MagicQ and grandMA2 control, Echo360, NDI (Virtual Input, Studio Monitor), an app launcher and a show health page.
+Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ knob control, UAD Console, DiGiCo SD, MagicQ and grandMA2 control, Echo360, NDI (Virtual Input, Studio Monitor), an app launcher, Spotify and a show health page.
 
 | Folder | What it is | Status |
 |---|---|---|
@@ -15,6 +15,7 @@ Will's Bitfocus Companion add-ons and tools: the Ulanzi D200X, Panasonic PTZ kno
 | [`echo360-capture/`](echo360-capture/) | Echo360 lecture capture: REC/pause/HOLD STOP/extend with a live timer for Pro/Pod boxes, plus keyboard-shortcut keys for Universal Capture (no status) | Built and tested against a fake device; needs a test on the auditorium Pro |
 | [`magicq/`](magicq/) | ChamSys MagicQ (OSC) module (upstream v3.2.1) plus fixes and a D200X knob layer: playback fader knobs, selected-playback strip, Go/Pause/Release/Flash, feedback | Built and tested against a fake MagicQ; needs a test with Will's Compact Connect |
 | [`grandma2/`](grandma2/) | New module: grandMA2 console / onPC over Telnet, with optional Web Remote readback. Executor fader knobs (1-10 steps), Go/Go-/Pause/Flash/Temp keys, selected-executor strip, names, levels and cue names. Keeps the store module's actions | Built and tested against a fake console; needs a test on onPC 3.9.60.89 |
+| [`spotify-local/`](spotify-local/) | The Spotify app on the Companion computer, no login: transport, volume knob, shuffle/repeat, playlist keys and now-playing (full on Mac; media keys on Windows) | Built and tested against a fake Spotify; needs a test on a real Mac |
 | [`ndi-studio-monitor/`](ndi-studio-monitor/) | NDI Studio Monitor (Windows) over its web control: source, PiP/alpha overlay, mute and record keys with feedback | Built and tested against a fake Studio Monitor; needs a test with the real one |
 | [`ndi-router/`](ndi-router/) | NDI routes made by Companion: point NDI Virtual Input (or a monitor, OBS) at a route once, then switch cameras from buttons | Working on Will's Mac: routes, and switching NDI Virtual Input in the app |
 | [`app-launcher/`](app-launcher/) | Lists the apps installed on the Mac or PC running Companion: one key per app to launch it (green while running), plus quit and toggle actions | Built and tested; app list fixed in 1.0.1 (needs a re-check), Windows Store apps added in 1.1.0 |

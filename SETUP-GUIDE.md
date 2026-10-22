@@ -15,6 +15,7 @@ You will set up:
 - **Part I:** App launcher: a key for any app on the Companion computer
 - **Part J:** NDI router: switch which camera NDI Virtual Input (or a monitor) shows
 - **Part K:** NDI Studio Monitor (Windows): source, PiP, mute and record keys
+- **Part L:** Spotify: play/pause, volume knob, playlist keys and now playing
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -37,9 +38,10 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `app-launcher-….tgz`: app launcher (Part I)
    - `ndi-router-….tgz`: NDI router (Part J)
    - `ndi-studio-monitor-….tgz`: NDI Studio Monitor (Part K)
+   - `spotify-local-….tgz`: Spotify (Part L)
 3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A to K**, skipping the "dev version" steps.
+5. Carry on from **Part A to L**, skipping the "dev version" steps.
 
 To update later: download the new files from the same page and import them again.
 
@@ -552,6 +554,25 @@ Companion normally picks up the change by itself. If a module still behaves the 
 
 ---
 
+## Part L: Spotify (walk-in music, playlists)
+
+Controls the Spotify app on the computer running Companion. No Spotify login.
+
+### L.1 Add the connection
+1. **Connections → + Add connection** → search **Spotify (local)** → add it. Save.
+2. Mac: the first time a key is pressed, macOS asks *"Companion wants to control Spotify"*. Click **OK**.
+
+✅ The connection goes green. If Spotify is closed, the status says so.
+
+### L.2 Keys
+1. **Presets → Spotify (local)**:
+   - **Transport:** play/pause (green while playing), previous, next, shuffle, repeat.
+   - **Now playing:** track and artist.
+   - **Knobs:** volume (push = play/pause), track, seek. Use **Knobs: − / + buttons and push keys** on a Stream Deck without dials.
+2. **Playlist keys:** drag **Play a playlist** onto a key. In Spotify, right-click the playlist → **Share → Copy link to playlist**. Paste it into the key's **Spotify link** box. Make one key per playlist (walk-in, interval, outro…).
+
+On Windows: play/pause/next/previous and the track name work, and the volume keys change the system volume. Shuffle, repeat and seek are Mac only.
+
 ## Using a Stream Deck (or any surface) instead of the D200X
 
 Everything here works on any Companion surface, not just the D200X:
@@ -568,8 +589,8 @@ macOS asks for some permissions the first time a module needs them. If a key doe
 | **Allow accessories to connect** → Always | System Settings → Privacy & Security | The D200X showing up at all (A.2) |
 | **Accessibility** → Companion on | System Settings → Privacy & Security → Accessibility | Universal Capture keys (G), switching NDI Virtual Input in the app (J.4) |
 | **Automation** → Companion → *System Events* ticked | System Settings → Privacy & Security → Automation | The same keys: macOS asks *"Companion wants to control System Events"* the first time |
-| **Automation** → Companion → the app ticked | Same place | App Launcher's **Quit** action (macOS asks per app) |
-| **Module permissions** (run programs, read files, native add-ons) | Asked by Companion when you import or update a module | App Launcher, NDI Router, Show Health (ping), Echo360 (Universal Capture). Say yes |
+| **Automation** → Companion → the app ticked | Same place | App Launcher's **Quit** action (macOS asks per app), and **Spotify** (L) |
+| **Module permissions** (run programs, read files, native add-ons) | Asked by Companion when you import or update a module | App Launcher, NDI Router, Show Health (ping), Echo360 (Universal Capture), Spotify. Say yes |
 
 If you said no to one by mistake: turn it on in the place above, then press the key again. Nothing needs reinstalling.
 
