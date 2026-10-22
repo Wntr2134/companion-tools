@@ -93,11 +93,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp ulanzi-d200x/extras/D200X-layout.companionconfig packages/
+          cp system-tools/extras/pages/*.companionconfig packages/
           mkdir -p bundle
           bash tools/make-bundle.sh packages bundle/companion-tools-all-modules.tgz
           ls -l packages bundle
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest bundle/companion-tools-all-modules.tgz packages/*.tgz packages/D200X-layout.companionconfig \
+          gh release create latest bundle/companion-tools-all-modules.tgz packages/*.tgz packages/*.companionconfig \
             --title "Latest build ($(date -u +%Y-%m-%d) ${GITHUB_SHA::7})" \
             --notes "Installable Companion module packages, built from main at ${GITHUB_SHA::7}.
 
@@ -106,5 +107,7 @@ jobs:
           **One module:** Companion → **Modules** → **Import module package** → choose its .tgz.
 
           **D200X template page:** Import / Export → Import → D200X-layout.companionconfig, into an empty page. It labels every key and knob.
+
+          **Ready-made D200X pages (Mac):** D200X-Mac-Desk, -Windows, -Show-Machine, -Video-Calls and -Show-Apps .companionconfig. System Tools keys, with Spotify on keys 9–10, knob 3 and the wide key. Import / Export → Import, into an empty page, and match the connections to your System Tools and Spotify ones.
 
           See SETUP-GUIDE.md for the full walkthrough."

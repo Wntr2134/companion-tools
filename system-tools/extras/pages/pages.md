@@ -1,0 +1,5 @@
+- **Mac Desk**: Everyday Mac: Mission Control, show desktop, screenshot, Spotlight, lock; front window left / fill / right and onto the other screen; keep awake. Knob 1 = Mac volume (push = mute), knob 2 = desktops (push = Mission Control).
+- **Windows**: Window layouts for the window in front: thirds, two-thirds, quarters, centre, minimise. Knob 1 = move it to the previous / next screen (push = fill the screen), knob 2 = left / right half (push = centre).
+- **Show Machine**: Window layouts 1–4 (arrange your windows, press SAVE, then the LAYOUT key puts them back), keep awake, sleep screens, eject disks, dark mode. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
+- **Video Calls**: Zoom (top row) and Microsoft Teams (rows 2–3) with their default Mac shortcuts, sent to that app even when it isn't in front. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
+- **Show Apps**: Open your show apps (green while running), arrange them across screens in one press (edit ARRANGE SHOW to suit), hide everything else, and push the front window to screen 1 or 2. Knob 1 = Mac volume (push = mute), knob 2 = desktops.

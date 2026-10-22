@@ -193,6 +193,8 @@ jobs:
           done
           (cd digico-sd && npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps && npx tsc6 -p tsconfig.build.json)
       - run: node tools/preset-check.mjs
+      - name: Ready-made D200X pages are up to date and match the modules
+        run: node tools/make-pages.mjs --check
 
   # Compiles every Mac script (AppleScript and JavaScript for Automation) on a real Mac, against the
   # apps' own scripting dictionaries, and runs the ones that are safe without a person at the Mac.

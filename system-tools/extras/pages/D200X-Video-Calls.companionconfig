@@ -1,0 +1,1282 @@
+{
+ "version": 12,
+ "type": "page",
+ "page": {
+  "name": "Video Calls",
+  "controls": {
+   "0": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "ZOOM\\nMUTE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "-9AK0KKV2f_qHzbqJi5FW",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "a"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "zoom.us"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "ZOOM\\nVIDEO",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "uoxLC35PC_ebpqcHC9z2U",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "v"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "zoom.us"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "ZOOM\\nSHARE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "OVORR-TOJQJlxhmPNlL9q",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "s"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "zoom.us"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "ZOOM\\nHAND ✋",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "capAbRyYoVg-k-fSjeO5N",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "y"
+           },
+           "command": {
+            "isExpression": false,
+            "value": false
+           },
+           "option": {
+            "isExpression": false,
+            "value": true
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": false
+           },
+           "target": {
+            "isExpression": false,
+            "value": "zoom.us"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "4": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "OPEN\\nZOOM",
+      "textExpression": false,
+      "size": "auto",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "1OInllFoGie1jKtZlSR2G",
+       "type": "feedback",
+       "definitionId": "app_running",
+       "connectionId": "system-tools",
+       "options": {
+        "app": {
+         "isExpression": false,
+         "value": "zoom_us"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "9BhSqNj27P1TM8xLHK7sz",
+          "type": "action",
+          "definitionId": "launch",
+          "connectionId": "system-tools",
+          "options": {
+           "app": {
+            "isExpression": false,
+            "value": "custom"
+           },
+           "custom": {
+            "isExpression": false,
+            "value": "zoom.us"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "1": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "TEAMS\\nMUTE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "q6DSyBDIdFbtxR0JtLJvr",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "m"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "TEAMS\\nCAMERA",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "n3jNRNv12PgGFrOXmteC7",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "o"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "TEAMS\\nHAND ✋",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "wlwrD4nHkY605Y7WqPT0v",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "k"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "⏮",
+      "textExpression": false,
+      "size": "24",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "-sro18aS2P3Y85-Fd2RzI",
+          "type": "action",
+          "definitionId": "previous",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "4": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "⏭",
+      "textExpression": false,
+      "size": "24",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "cuhqYPoEE-fT1Oby7v9Qq",
+          "type": "action",
+          "definitionId": "next",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "2": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "TEAMS\\nSHARE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "6BriGWa5rtcebcambvQR4",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "e"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "TEAMS\\nLEAVE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "bmgKeNsDSlBXxVSmqY3Ut",
+          "type": "action",
+          "definitionId": "send_keys",
+          "connectionId": "system-tools",
+          "options": {
+           "key": {
+            "isExpression": false,
+            "value": "h"
+           },
+           "command": {
+            "isExpression": false,
+            "value": true
+           },
+           "option": {
+            "isExpression": false,
+            "value": false
+           },
+           "control": {
+            "isExpression": false,
+            "value": false
+           },
+           "shift": {
+            "isExpression": false,
+            "value": true
+           },
+           "target": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "OPEN\\nTEAMS",
+      "textExpression": false,
+      "size": "auto",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "Oq4Q1nYYDvzPSngaSo_JT",
+       "type": "feedback",
+       "definitionId": "app_running",
+       "connectionId": "system-tools",
+       "options": {
+        "app": {
+         "isExpression": false,
+         "value": "microsoft_teams"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 35900,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "Yh1q4y1bAKitGKX_b1PIB",
+          "type": "action",
+          "definitionId": "launch",
+          "connectionId": "system-tools",
+          "options": {
+           "app": {
+            "isExpression": false,
+            "value": "custom"
+           },
+           "custom": {
+            "isExpression": false,
+            "value": "Microsoft Teams"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "$(Spotify__local_:clock)\\n$(Spotify__local_:card_track_or_date)\\n$(Spotify__local_:card_artist)",
+      "textExpression": false,
+      "size": "auto",
+      "alignment": "left:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "Psfdy9xVPTWzos9HTolPp",
+       "type": "feedback",
+       "definitionId": "now_playing_art",
+       "connectionId": "spotify-local",
+       "options": {
+        "shape": {
+         "isExpression": false,
+         "value": "wide"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "3": {
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "VOL\\n$(System_Tools:volume)",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "6lSC5bI0Ho8_0L-5DESgX",
+       "type": "feedback",
+       "definitionId": "muted",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 13114910,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "pr_ntcPJHMoMVXxUHthMT",
+          "type": "action",
+          "definitionId": "mute",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "U3K5J1t_5NLFZSanr1Kfq",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "hbv6pdc8rPGNhh-6qvGb9",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "MIC\\n$(System_Tools:input_volume)",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "eNAHfGmNzfcCBCKeyTrt5",
+          "type": "action",
+          "definitionId": "input_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "Fo62IONUvM2z-8Im_Jwn1",
+          "type": "action",
+          "definitionId": "input_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "VOL\\n$(Spotify__local_:volume)%",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "WZpo6Aujq07h5liE_H62f",
+       "type": "feedback",
+       "definitionId": "playing",
+       "connectionId": "spotify-local",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 2021216,
+        "color": 0,
+        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAC1klEQVR4nO1cbafFMAwONWbMmDFmzJhx/v8fvC4ZVVtfknTtOfKQL9dOmz5tkzRpL4BCoVAoFAqFKAwAdAAwAcAMANuDzPhNh7/5abQ44B0APkTZsY229GAkMTBJ8ZE1lB4cByMAnBmIceXEvr4G//bieIEYVw7su1oYtA9vE+PKXKNBbzPZGY59qsaQty/ZmlQ5ayCpVnKqIKl2coqS9C3kFCHJVGaQY2V/y7vV4MqpMucmp6tgkFzJGkyWiJCl5chFzljB4KQky9lNymudTq6nx2V/J72TM5LUQRQDU5kF22gEdGmwrYVJmGiqJNWtX6T0kko8oCeStUsp0CZ0euDMlDhNG+w7xZGIBI8xcc9RWXYvliiRuMi3vU40orViCmw99jYzmZZoY1U1Jk9VY7KqGlQDHzIRLHPgi5zXhHaM5Xk4weZhecSUga2eNlmR9cTcv31AOa6skZ7SZ0dZJsLXsC9kT/UmXAk5CZ8uLEO9BRRbnO9LVTRsotwtswR+s+Uk6FJqSwgmT9wa9jHjCfZxY00IBnfUKWayshMUO7NSJeOrhC21UosStGU+bvRCOpJB7Xx7ucrZMXUlg9JpyTo5JWfFIig1/+x6NR9aHFDoftCYaLtCXssVlpv3BYp3Egq6qKmJT0IKRVpnL1KT9HfL1aASkvHRgW3eHTdSzQLLVoYOq08zcik+ZC4wnlYEbQir5yORu8pZJNxx20xoa65c9Ih/W17onw3pQuFKOI1f2QDpg69Iwiwl5RpSRippLzVpYvV67s1UCWJcNAJ6iYFT9onZSu1NTSxmdilO5BLxHDrVGz0NbIx0yRt++0Q0RSfxwiEwSs/2TDWESNeWxdmu1JWd7ThEDfYWgUqoPfsLg+hslxdAr7/EQS9QBaBX8CKglzh/iCS9K10rObWTVAU5F/QxSwT0OVQk9EFdJPRJZiT0UW8k9Fl4AvQfCygUCoVCoSiNPy9ESsyeW3CaAAAAAElFTkSuQmCC"
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "ubi0Kga5-xTJ-k8V8VrGl",
+          "type": "action",
+          "definitionId": "playpause",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "IRCadJ23gfTe5l10Jp7GU",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "spotify-local",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "Cx-_2YBWqFZz6FobUrqvY",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "spotify-local",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "4": {
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "VOL\\nPUSH",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "_xTBMLo4-ADxFDyxUZlUp",
+       "type": "feedback",
+       "definitionId": "muted",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 13114910,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "tSzKlWdbPWDQGBUcIJfWr",
+          "type": "action",
+          "definitionId": "mute",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "VOL\\nPUSH",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "8yEwLpatXiJKodKNT4X1V",
+       "type": "feedback",
+       "definitionId": "playing",
+       "connectionId": "spotify-local",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 2021216,
+        "color": 0,
+        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAC1klEQVR4nO1cbafFMAwONWbMmDFmzJhx/v8fvC4ZVVtfknTtOfKQL9dOmz5tkzRpL4BCoVAoFAqFKAwAdAAwAcAMANuDzPhNh7/5abQ44B0APkTZsY229GAkMTBJ8ZE1lB4cByMAnBmIceXEvr4G//bieIEYVw7su1oYtA9vE+PKXKNBbzPZGY59qsaQty/ZmlQ5ayCpVnKqIKl2coqS9C3kFCHJVGaQY2V/y7vV4MqpMucmp6tgkFzJGkyWiJCl5chFzljB4KQky9lNymudTq6nx2V/J72TM5LUQRQDU5kF22gEdGmwrYVJmGiqJNWtX6T0kko8oCeStUsp0CZ0euDMlDhNG+w7xZGIBI8xcc9RWXYvliiRuMi3vU40orViCmw99jYzmZZoY1U1Jk9VY7KqGlQDHzIRLHPgi5zXhHaM5Xk4weZhecSUga2eNlmR9cTcv31AOa6skZ7SZ0dZJsLXsC9kT/UmXAk5CZ8uLEO9BRRbnO9LVTRsotwtswR+s+Uk6FJqSwgmT9wa9jHjCfZxY00IBnfUKWayshMUO7NSJeOrhC21UosStGU+bvRCOpJB7Xx7ucrZMXUlg9JpyTo5JWfFIig1/+x6NR9aHFDoftCYaLtCXssVlpv3BYp3Egq6qKmJT0IKRVpnL1KT9HfL1aASkvHRgW3eHTdSzQLLVoYOq08zcik+ZC4wnlYEbQir5yORu8pZJNxx20xoa65c9Ih/W17onw3pQuFKOI1f2QDpg69Iwiwl5RpSRippLzVpYvV67s1UCWJcNAJ6iYFT9onZSu1NTSxmdilO5BLxHDrVGz0NbIx0yRt++0Q0RSfxwiEwSs/2TDWESNeWxdmu1JWd7ThEDfYWgUqoPfsLg+hslxdAr7/EQS9QBaBX8CKglzh/iCS9K10rObWTVAU5F/QxSwT0OVQk9EFdJPRJZiT0UW8k9Fl4AvQfCygUCoVCoSiNPy9ESsyeW3CaAAAAAElFTkSuQmCC"
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "FhoEZDGCryAAgsFimt_TG",
+          "type": "action",
+          "definitionId": "playpause",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   }
+  },
+  "gridSize": {
+   "minColumn": 0,
+   "maxColumn": 4,
+   "minRow": 0,
+   "maxRow": 4
+  }
+ },
+ "instances": {
+  "system-tools": {
+   "label": "System_Tools",
+   "moduleId": "system-tools",
+   "lastUpgradeIndex": -1,
+   "sortOrder": 0
+  },
+  "spotify-local": {
+   "label": "Spotify__local_",
+   "moduleId": "spotify-local",
+   "lastUpgradeIndex": -1,
+   "sortOrder": 1
+  }
+ },
+ "connectionCollections": [],
+ "oldPageNumber": 1
+}
