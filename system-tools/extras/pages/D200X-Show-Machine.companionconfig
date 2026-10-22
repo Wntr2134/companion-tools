@@ -1,0 +1,1248 @@
+{
+ "version": 12,
+ "type": "page",
+ "page": {
+  "name": "Show Machine",
+  "controls": {
+   "0": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "LAYOUT\\n1",
+      "textExpression": false,
+      "size": "18",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "A-J3L-wO3MrYodJ35v55D",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "1"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "nuQyHNw1bnBeQMM8oKXHq",
+          "type": "action",
+          "definitionId": "layout_restore",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "1"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "LAYOUT\\n2",
+      "textExpression": false,
+      "size": "18",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "JDuUqHqCpbqup8OiIni6R",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "2"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "f28aa4_9bNaHA27-pOuyA",
+          "type": "action",
+          "definitionId": "layout_restore",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "2"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "LAYOUT\\n3",
+      "textExpression": false,
+      "size": "18",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "tfhVSZNi5z3IBYg0xVRQu",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "3"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "WwFOT28Xa82nEjpXVDS6p",
+          "type": "action",
+          "definitionId": "layout_restore",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "3"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "LAYOUT\\n4",
+      "textExpression": false,
+      "size": "18",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "3JsFB2opj14GSWhqnTkXb",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "4"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "16TC2sQXWTPTCmVUBiqfd",
+          "type": "action",
+          "definitionId": "layout_restore",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "4"
+           },
+           "launch": {
+            "isExpression": false,
+            "value": false
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "4": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "KEEP\\nAWAKE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "Mb9IJcQMiYzZmT0vA3t4h",
+       "type": "feedback",
+       "definitionId": "keep_awake",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 15111680,
+        "color": 0
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "zbkoGywBXGKcftr1UAYjY",
+          "type": "action",
+          "definitionId": "keep_awake",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           },
+           "displays": {
+            "isExpression": false,
+            "value": true
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "1": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "SAVE\\nLAYOUT 1",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "cYbWwv6VLp7fuupE_tSJz",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "1"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "dkaqk47EGYZSoyCXjoI_i",
+          "type": "action",
+          "definitionId": "layout_save",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "1"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "SAVE\\nLAYOUT 2",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "YKkkNPJVi6NZeluUFvsSK",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "2"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "8Td5FHUmh2vh3J0aBnXoy",
+          "type": "action",
+          "definitionId": "layout_save",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "2"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "SAVE\\nLAYOUT 3",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "ouMo7nBN5Nii3b1JX5Rc_",
+       "type": "feedback",
+       "definitionId": "layout_saved",
+       "connectionId": "system-tools",
+       "options": {
+        "slot": {
+         "isExpression": false,
+         "value": "3"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 1984140,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "X_dE4I46eRlgJxCM3-jNG",
+          "type": "action",
+          "definitionId": "layout_save",
+          "connectionId": "system-tools",
+          "options": {
+           "slot": {
+            "isExpression": false,
+            "value": "3"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "⏮",
+      "textExpression": false,
+      "size": "24",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "clqt94eKpAEC3DZQQcQjo",
+          "type": "action",
+          "definitionId": "previous",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "4": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "⏭",
+      "textExpression": false,
+      "size": "24",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "XP5OrxMRv6QcXNGRuIh68",
+          "type": "action",
+          "definitionId": "next",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "2": {
+    "0": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "SLEEP\\nSCREENS",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "hymLOcCjMTopeM66ObTOe",
+          "type": "action",
+          "definitionId": "display_sleep",
+          "connectionId": "system-tools",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "EJECT\\nDISKS ⏏",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "P8cpAF6NIdromLkL5xHzH",
+          "type": "action",
+          "definitionId": "eject_disks",
+          "connectionId": "system-tools",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "DARK\\nMODE",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "26eocJPgyFNrr0PLpVUt1",
+       "type": "feedback",
+       "definitionId": "dark_mode",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 683750,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "rUaW60qLyRZFoSwFoWC1s",
+          "type": "action",
+          "definitionId": "dark_mode",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "$(Spotify__local_:clock)\\n$(Spotify__local_:card_track_or_date)\\n$(Spotify__local_:card_artist)",
+      "textExpression": false,
+      "size": "auto",
+      "alignment": "left:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "h-SSnKpDtHbjkgdmbBGBB",
+       "type": "feedback",
+       "definitionId": "now_playing_art",
+       "connectionId": "spotify-local",
+       "options": {
+        "shape": {
+         "isExpression": false,
+         "value": "wide"
+        }
+       },
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "3": {
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "VOL\\n$(System_Tools:volume)",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "b1c1AaMoqZjavkiVrvOwm",
+       "type": "feedback",
+       "definitionId": "muted",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 13114910,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "r47tMEKqurU8risTuvFfR",
+          "type": "action",
+          "definitionId": "mute",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "vxKlyBYOLYpQ88fPvhz1p",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "AFVTE_ygX3HWHHo7bT3_a",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "2": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "MIC\\n$(System_Tools:input_volume)",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "ALkt4RyMMgv40-ofu31pf",
+          "type": "action",
+          "definitionId": "input_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "yGhK5y1FH2nC8ktHDWkR0",
+          "type": "action",
+          "definitionId": "input_step",
+          "connectionId": "system-tools",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": true
+     },
+     "style": {
+      "text": "VOL\\n$(Spotify__local_:volume)%",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "HoZV74FvIw929RcgWW8oC",
+       "type": "feedback",
+       "definitionId": "playing",
+       "connectionId": "spotify-local",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 2021216,
+        "color": 0,
+        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAC1klEQVR4nO1cbafFMAwONWbMmDFmzJhx/v8fvC4ZVVtfknTtOfKQL9dOmz5tkzRpL4BCoVAoFAqFKAwAdAAwAcAMANuDzPhNh7/5abQ44B0APkTZsY229GAkMTBJ8ZE1lB4cByMAnBmIceXEvr4G//bieIEYVw7su1oYtA9vE+PKXKNBbzPZGY59qsaQty/ZmlQ5ayCpVnKqIKl2coqS9C3kFCHJVGaQY2V/y7vV4MqpMucmp6tgkFzJGkyWiJCl5chFzljB4KQky9lNymudTq6nx2V/J72TM5LUQRQDU5kF22gEdGmwrYVJmGiqJNWtX6T0kko8oCeStUsp0CZ0euDMlDhNG+w7xZGIBI8xcc9RWXYvliiRuMi3vU40orViCmw99jYzmZZoY1U1Jk9VY7KqGlQDHzIRLHPgi5zXhHaM5Xk4weZhecSUga2eNlmR9cTcv31AOa6skZ7SZ0dZJsLXsC9kT/UmXAk5CZ8uLEO9BRRbnO9LVTRsotwtswR+s+Uk6FJqSwgmT9wa9jHjCfZxY00IBnfUKWayshMUO7NSJeOrhC21UosStGU+bvRCOpJB7Xx7ucrZMXUlg9JpyTo5JWfFIig1/+x6NR9aHFDoftCYaLtCXssVlpv3BYp3Egq6qKmJT0IKRVpnL1KT9HfL1aASkvHRgW3eHTdSzQLLVoYOq08zcik+ZC4wnlYEbQir5yORu8pZJNxx20xoa65c9Ih/W17onw3pQuFKOI1f2QDpg69Iwiwl5RpSRippLzVpYvV67s1UCWJcNAJ6iYFT9onZSu1NTSxmdilO5BLxHDrVGz0NbIx0yRt++0Q0RSfxwiEwSs/2TDWESNeWxdmu1JWd7ThEDfYWgUqoPfsLg+hslxdAr7/EQS9QBaBX8CKglzh/iCS9K10rObWTVAU5F/QxSwT0OVQk9EFdJPRJZiT0UW8k9Fl4AvQfCygUCoVCoSiNPy9ESsyeW3CaAAAAAElFTkSuQmCC"
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "91YsyR-eJtyiVD8ygig57",
+          "type": "action",
+          "definitionId": "playpause",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": [],
+        "rotate_left": [
+         {
+          "id": "SMe-wwJDdKkPYX4TnT1zY",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "spotify-local",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "down"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "rotate_right": [
+         {
+          "id": "Mdsdn-UBi6ZEhXYvHk1az",
+          "type": "action",
+          "definitionId": "volume_step",
+          "connectionId": "spotify-local",
+          "options": {
+           "direction": {
+            "isExpression": false,
+            "value": "up"
+           },
+           "size": {
+            "isExpression": false,
+            "value": 2
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ]
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   },
+   "4": {
+    "1": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "VOL\\nPUSH",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1579550,
+      "show_topbar": false,
+      "png64": null
+     },
+     "feedbacks": [
+      {
+       "id": "O_ouUWh1QyWR8W2hSc5nh",
+       "type": "feedback",
+       "definitionId": "muted",
+       "connectionId": "system-tools",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 13114910,
+        "color": 16777215
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "9wU2XeYj2cNDdmBy0_11_",
+          "type": "action",
+          "definitionId": "mute",
+          "connectionId": "system-tools",
+          "options": {
+           "mode": {
+            "isExpression": false,
+            "value": "toggle"
+           }
+          },
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    },
+    "3": {
+     "type": "button",
+     "options": {
+      "stepProgression": "auto",
+      "rotaryActions": false
+     },
+     "style": {
+      "text": "VOL\\nPUSH",
+      "textExpression": false,
+      "size": "14",
+      "alignment": "center:center",
+      "pngalignment": "center:center",
+      "color": 16777215,
+      "bgcolor": 1184274,
+      "show_topbar": false,
+      "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
+     },
+     "feedbacks": [
+      {
+       "id": "5legDhvM0Hd5NXLWsvJPp",
+       "type": "feedback",
+       "definitionId": "playing",
+       "connectionId": "spotify-local",
+       "options": {},
+       "upgradeIndex": -1,
+       "isInverted": {
+        "isExpression": false,
+        "value": false
+       },
+       "style": {
+        "bgcolor": 2021216,
+        "color": 0,
+        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAC1klEQVR4nO1cbafFMAwONWbMmDFmzJhx/v8fvC4ZVVtfknTtOfKQL9dOmz5tkzRpL4BCoVAoFAqFKAwAdAAwAcAMANuDzPhNh7/5abQ44B0APkTZsY229GAkMTBJ8ZE1lB4cByMAnBmIceXEvr4G//bieIEYVw7su1oYtA9vE+PKXKNBbzPZGY59qsaQty/ZmlQ5ayCpVnKqIKl2coqS9C3kFCHJVGaQY2V/y7vV4MqpMucmp6tgkFzJGkyWiJCl5chFzljB4KQky9lNymudTq6nx2V/J72TM5LUQRQDU5kF22gEdGmwrYVJmGiqJNWtX6T0kko8oCeStUsp0CZ0euDMlDhNG+w7xZGIBI8xcc9RWXYvliiRuMi3vU40orViCmw99jYzmZZoY1U1Jk9VY7KqGlQDHzIRLHPgi5zXhHaM5Xk4weZhecSUga2eNlmR9cTcv31AOa6skZ7SZ0dZJsLXsC9kT/UmXAk5CZ8uLEO9BRRbnO9LVTRsotwtswR+s+Uk6FJqSwgmT9wa9jHjCfZxY00IBnfUKWayshMUO7NSJeOrhC21UosStGU+bvRCOpJB7Xx7ucrZMXUlg9JpyTo5JWfFIig1/+x6NR9aHFDoftCYaLtCXssVlpv3BYp3Egq6qKmJT0IKRVpnL1KT9HfL1aASkvHRgW3eHTdSzQLLVoYOq08zcik+ZC4wnlYEbQir5yORu8pZJNxx20xoa65c9Ih/W17onw3pQuFKOI1f2QDpg69Iwiwl5RpSRippLzVpYvV67s1UCWJcNAJ6iYFT9onZSu1NTSxmdilO5BLxHDrVGz0NbIx0yRt++0Q0RSfxwiEwSs/2TDWESNeWxdmu1JWd7ThEDfYWgUqoPfsLg+hslxdAr7/EQS9QBaBX8CKglzh/iCS9K10rObWTVAU5F/QxSwT0OVQk9EFdJPRJZiT0UW8k9Fl4AvQfCygUCoVCoSiNPy9ESsyeW3CaAAAAAElFTkSuQmCC"
+       }
+      }
+     ],
+     "localVariables": [],
+     "steps": {
+      "0": {
+       "action_sets": {
+        "down": [
+         {
+          "id": "s2zaR_VlM2QOiXpBHogKN",
+          "type": "action",
+          "definitionId": "playpause",
+          "connectionId": "spotify-local",
+          "options": {},
+          "upgradeIndex": -1
+         }
+        ],
+        "up": []
+       },
+       "options": {
+        "runWhileHeld": []
+       }
+      }
+     }
+    }
+   }
+  },
+  "gridSize": {
+   "minColumn": 0,
+   "maxColumn": 4,
+   "minRow": 0,
+   "maxRow": 4
+  }
+ },
+ "instances": {
+  "system-tools": {
+   "label": "System_Tools",
+   "moduleId": "system-tools",
+   "lastUpgradeIndex": -1,
+   "sortOrder": 0
+  },
+  "spotify-local": {
+   "label": "Spotify__local_",
+   "moduleId": "spotify-local",
+   "lastUpgradeIndex": -1,
+   "sortOrder": 1
+  }
+ },
+ "connectionCollections": [],
+ "oldPageNumber": 1
+}

@@ -509,7 +509,24 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 - **Keys and text**: screenshot, Spotlight, copy, paste, undo, any shortcut (edit the action: pick the key and tick ⌘ ⌥ ⌃ ⇧, optionally send it to one app), and **paste saved text** (signatures, IP addresses, stock replies).
 - **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
 
-### I.6 Wide key viewers
+### I.6 Ready-made D200X pages
+Five pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools.
+
+- **Mac Desk**: Everyday Mac: Mission Control, show desktop, screenshot, Spotlight, lock; front window left / fill / right and onto the other screen; keep awake. Knob 1 = Mac volume (push = mute), knob 2 = desktops (push = Mission Control).
+- **Windows**: Window layouts for the window in front: thirds, two-thirds, quarters, centre, minimise. Knob 1 = move it to the previous / next screen (push = fill the screen), knob 2 = left / right half (push = centre).
+- **Show Machine**: Window layouts 1–4 (arrange your windows, press SAVE, then the LAYOUT key puts them back), keep awake, sleep screens, eject disks, dark mode. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
+- **Video Calls**: Zoom (top row) and Microsoft Teams (rows 2–3) with their default Mac shortcuts, sent to that app even when it isn't in front. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
+- **Show Apps**: Open your show apps (green while running), arrange them across screens in one press (edit ARRANGE SHOW to suit), hide everything else, and push the front window to screen 1 or 2. Knob 1 = Mac volume (push = mute), knob 2 = desktops.
+
+**To import one:**
+1. Download it from the [latest release](https://github.com/Wntr2134/companion-tools/releases/tag/latest), e.g. `D200X-Mac-Desk.companionconfig`.
+2. In Companion: **Import / Export → Import**, choose the file, and pick an **empty page** to put it on.
+3. Under connections, match **System_Tools** to your System Tools connection (it may still be called App_Launcher) and **Spotify__local_** to your Spotify connection. Don't let it create new ones.
+4. Import. Any key you don't want: right-click → delete, or drag a preset over it.
+
+The Show Apps keys open apps by name: if yours are called something else, edit the key's **Launch** action and pick the app from the list. ARRANGE SHOW holds a written layout you can edit (*app, screen, position* per line).
+
+### I.7 Wide key viewers
 Clock and date, CPU and memory, disk and battery, IP address and uptime, volume and keep awake. The Spotify and Apple Music viewers can show System Tools info when nothing is playing: in their connection settings set *When nothing is playing* to e.g. `$(system-tools:cpu_memory)`.
 
 ## Part J: NDI router (switch cameras into Virtual Input)
