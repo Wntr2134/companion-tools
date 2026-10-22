@@ -513,7 +513,7 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 - **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
 
 ### I.6 Ready-made D200X pages
-Five pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
+Seven pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
 
 1. **Dock Apps**: Your Dock as keys: Finder then your Dock apps in order (11 keys), each named after its app and green while it runs. Rearrange the Dock and the keys follow. Knob 1 = Mac volume (push = mute), knob 2 = move the front window to the previous / next screen (push = fill).
 2. **Dock Apps 2**: Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).
