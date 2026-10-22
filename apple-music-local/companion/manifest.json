@@ -1,0 +1,22 @@
+{
+	"id": "apple-music-local",
+	"name": "apple-music-local",
+	"shortname": "Apple Music (local)",
+	"description": "Controls Apple's Music app on the Mac running Companion, with no Apple login: play/pause, tracks, volume, shuffle, repeat, favourites, your playlists and now-playing info with album art.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js",
+		"permissions": { "child-process": true, "filesystem": true }
+	},
+	"manufacturer": "Apple",
+	"products": ["Music app (macOS)"],
+	"keywords": ["apple music", "music", "itunes", "playlist", "play", "pause", "volume", "walk-in"]
+}

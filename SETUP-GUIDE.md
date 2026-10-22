@@ -16,6 +16,7 @@ You will set up:
 - **Part J:** NDI router: switch which camera NDI Virtual Input (or a monitor) shows
 - **Part K:** NDI Studio Monitor (Windows): source, PiP, mute and record keys
 - **Part L:** Spotify: play/pause, volume knob, playlist keys and now playing
+- **Part M:** Apple Music (Mac): play/pause, volume knob, your playlists and now playing
 
 You only need the parts for the gear you have. **Part 0 is always needed.**
 
@@ -41,9 +42,10 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `ndi-router-….tgz`: NDI router (Part J)
    - `ndi-studio-monitor-….tgz`: NDI Studio Monitor (Part K)
    - `spotify-local-….tgz`: Spotify (Part L)
+   - `apple-music-local-….tgz`: Apple Music (Part M)
    Then in Companion: **Modules** → **Import module package**, and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
-5. Carry on from **Part A to L**, skipping the "dev version" steps.
+5. Carry on from **Part A to M**, skipping the "dev version" steps.
 
 **To update everything later:** download the bundle again from the same link and import it with the same blue **Import offline module bundle** button. Modules that haven't changed are skipped. Then pick the new versions with the pencil ✏️ (step 4). Older versions stay installed until you remove them, so you can switch back if a new one misbehaves.
 
@@ -575,6 +577,26 @@ Controls the Spotify app on the computer running Companion. No Spotify login.
 
 On Windows: play/pause/next/previous and the track name work, and the volume keys change the system volume. Shuffle, repeat and seek are Mac only.
 
+Every Spotify key has a faint green Spotify mark behind it, so it's easy to tell apart from other apps' keys.
+
+## Part M: Apple Music (Mac)
+
+Controls Apple's Music app on the Mac running Companion. No Apple login. Mac only.
+
+### M.1 Add the connection
+1. **Connections → + Add connection** → search **Apple Music (local)** → add it. Save.
+2. The first time, macOS asks *"Companion wants to control Music"*. Click **OK**. (Said no? System Settings → Privacy & Security → **Automation** → Companion → tick **Music**.)
+
+✅ The connection goes green. If Music is closed, the status says so.
+
+### M.2 Keys
+1. **Presets → Apple Music (local)**:
+   - **Transport:** play/pause (red while playing), previous, next, shuffle, repeat (off → all → one), favourite (♥), open Music.
+   - **Now playing:** track and artist on the album-art card, time.
+   - **Knobs:** volume (push = play/pause), track, seek. Use **Knobs: − / + buttons and push keys** on a Stream Deck without dials.
+   - **Playlists:** one key per playlist in your library (the first 24). Made a new playlist? Edit the connection and save, and the list updates.
+2. Every Apple Music key has a faint red music note behind it, to tell it apart from Spotify's green keys.
+
 ## Wide key viewers (the D200X's big key)
 
 Every module has a **Wide key viewers** preset category: display-only keys made for the D200X's double-width key (row 2, col 3). They also work on any normal key. Drag one onto the wide key:
@@ -582,7 +604,7 @@ Every module has a **Wide key viewers** preset category: display-only keys made 
 | Module | Viewers |
 |---|---|
 | Show Health | **Clock** (time and date), **big clock**, **clock + show status**, **what's down** |
-| Spotify | **Now playing** (track, artist, time), **clock + now playing**, **track + volume** |
+| Spotify / Apple Music | **Now playing** on the album art (track, artist), **now playing + time**, **clock + now playing** |
 | PTZ | Camera zoom and focus |
 | UAD | Monitor level, selected channel + meter |
 | DiGiCo | Current and next snapshot, selected channel, console |
