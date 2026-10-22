@@ -50,13 +50,25 @@ export function iconFile(appPath, mtimeMs, dir = ICON_DIR) {
 	return path.join(dir, `${key}.png`)
 }
 
-/** Shorter names for the line under an icon: drops ".app" and common suffixes, then cuts to fit. */
-export function shortName(name, max = 12) {
-	const n = String(name ?? '')
+// Names people know by the second word, not the first.
+const KNOWN = { 'audio hijack': 'Hijack', 'visual studio code': 'VS Code', 'final cut pro': 'Final Cut', 'logic pro': 'Logic', 'system settings': 'Settings', 'system preferences': 'Settings', 'activity monitor': 'Activity', 'dante virtual soundcard': 'Dante DVS', 'dante controller': 'Dante', 'universal capture': 'Echo360' }
+const VENDORS = /^(Microsoft|Google|Adobe|Apple|Bitfocus|Rogue Amoeba|Affinity|JetBrains|Mozilla)\s+/i
+const SUFFIXES = /\s+(Browser|Desktop|for Mac|App|Mail|Client|Player|Studio)$/i
+
+/**
+ * A name that fits on one line under an icon (about 9 characters on a 72 px key): known short forms,
+ * then without the maker ("Google Chrome" → "Chrome") or a generic last word ("Brave Browser" → "Brave"),
+ * then the first word, then cut.
+ */
+export function shortName(name, max = 9) {
+	let n = String(name ?? '')
 		.replace(/\.app$/i, '')
-		.replace(/^Microsoft (Word|Excel|PowerPoint|Outlook|Teams)$/i, '$1')
-		.replace(/ (Desktop|for Mac)$/i, '')
 		.trim()
+	if (KNOWN[n.toLowerCase()]) return KNOWN[n.toLowerCase()]
+	if (n.length <= max) return n
+	n = n.replace(VENDORS, '')
+	if (n.length > max) n = n.replace(SUFFIXES, '')
+	if (n.length > max && n.includes(' ')) n = n.split(/\s+/)[0]
 	return n.length > max ? `${n.slice(0, max - 1)}…` : n
 }
 
