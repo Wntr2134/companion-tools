@@ -1,7 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
-import { getViewerPresets } from './viewers.js'
+import { getViewerPresets, cardLines, IDLE_DEFAULTS } from './viewers.js'
 import { markPng, withBrand } from './brand.js'
 import { ArtCache, CARD_SHAPES, encodePng, withProgressBar } from './artwork.js'
 
@@ -14,6 +14,7 @@ const ECHO_GUARD_MS = 1500 // after we change the volume, ignore read-backs this
 
 class SpotifyInstance extends InstanceBase {
 	state = { running: false }
+	idle = { line1: '', line2: '' }
 	timer = null
 	reading = false
 	volTarget = null
@@ -40,6 +41,29 @@ class SpotifyInstance extends InstanceBase {
 			this.clock = clock
 			this.setVariableValues({ clock })
 		}
+		void this.refreshIdle(now)
+	}
+
+	/** What the viewers show when nothing is playing: the idle lines from the settings (a clock and date by default). */
+	async refreshIdle(now = new Date()) {
+		if (this.state.running && this.state.track) return
+		const fallback = {
+			line1: this.clock ?? '',
+			line2: now.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
+		}
+		let line1 = fallback.line1
+		let line2 = fallback.line2
+		try {
+			line1 = await this.parseVariablesInString(String(this.config?.idle1 ?? IDLE_DEFAULTS.idle1))
+			line2 = await this.parseVariablesInString(String(this.config?.idle2 ?? IDLE_DEFAULTS.idle2))
+		} catch {
+			// keep the module's own clock and date
+		}
+		if (/\$NA/.test(line1)) line1 = fallback.line1
+		if (/\$NA/.test(line2)) line2 = fallback.line2
+		if (line1 === this.idle.line1 && line2 === this.idle.line2) return
+		this.idle = { line1, line2 }
+		this.setVariableValues(cardLines(this.state, this.idle))
 	}
 
 	async configUpdated(config) {
@@ -102,7 +126,7 @@ class SpotifyInstance extends InstanceBase {
 			album: s.album ?? '',
 			uri: s.uri ?? '',
 			artwork_url: s.artwork ?? '',
-			volume: s.volume ?? '',
+			volume: s.volume ?? '–',
 			position: fmtTime(s.position),
 			duration: fmtTime(s.duration),
 			remaining: remaining === null ? '' : `-${fmtTime(remaining)}`,
@@ -110,6 +134,7 @@ class SpotifyInstance extends InstanceBase {
 			shuffle: s.shuffle ? 'ON' : 'OFF',
 			repeat: s.repeat ? 'ON' : 'OFF',
 			play_icon: s.playing ? '⏸' : '▶',
+			...cardLines({ ...s, time: s.duration ? `${fmtTime(s.position)} / ${fmtTime(s.duration)}` : '' }, this.idle),
 		})
 		this.checkFeedbacks()
 	}
@@ -281,6 +306,11 @@ class SpotifyInstance extends InstanceBase {
 			{ variableId: 'shuffle', name: 'Shuffle ON/OFF (Mac)' },
 			{ variableId: 'repeat', name: 'Repeat ON/OFF (Mac)' },
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
+			{ variableId: 'card_line1', name: 'Viewers: track, or idle line 1 (clock) when nothing is playing' },
+			{ variableId: 'card_line2', name: 'Viewers: artist, or idle line 2 (date) when nothing is playing' },
+			{ variableId: 'card_line2_time', name: 'Viewers: artist · time, or idle line 2' },
+			{ variableId: 'card_track_or_date', name: 'Viewers: track, or idle line 2' },
+			{ variableId: 'card_artist', name: 'Viewers: artist, or blank' },
 			{ variableId: 'play_icon', name: '▶ or ⏸ for the play/pause key' },
 		])
 
@@ -302,9 +332,9 @@ class SpotifyInstance extends InstanceBase {
 			previous: key('Transport', 'Previous', '⏮', [{ actionId: 'previous', options: {} }], [], '24'),
 			next: key('Transport', 'Next', '⏭', [{ actionId: 'next', options: {} }], [], '24'),
 			now: {
-				...key('Now playing', 'Track and artist (album art)', `${v('track')}\\n${v('artist')}`, [], [{ feedbackId: 'now_playing_art', options: { shape: 'square' } }], 'auto'),
+				...key('Now playing', 'Track and artist (album art)', `${v('card_line1')}\\n${v('card_line2')}`, [], [{ feedbackId: 'now_playing_art', options: { shape: 'square' } }], 'auto'),
 			},
-			open: key('Transport', 'Open Spotify', 'OPEN\\nSPOTIFY', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {} }]),
+			open: key('Transport', 'Open Spotify', 'OPEN\\nSPOTIFY', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {}, style: { color: combineRgb(150, 150, 150) } }]),
 			link: key('Playlists', 'Play a playlist (edit the link)', 'PLAYLIST', [{ actionId: 'play_link', options: { link: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M' } }]),
 			volume_knob: {
 				type: 'button',
@@ -375,6 +405,22 @@ class SpotifyInstance extends InstanceBase {
 				label: 'What this controls',
 				value:
 					'The Spotify app on the computer running Companion. No Spotify login needed.<br><b>Mac:</b> full control and now-playing info. The first time, macOS asks to let Companion control Spotify: click OK (or turn it on in System Settings → Privacy &amp; Security → Automation).<br><b>Windows:</b> play/pause, next and previous use the media keys, and the track comes from Spotify\'s window title. Volume keys change the system volume.',
+			},
+			{
+				type: 'textinput',
+				id: 'idle1',
+				label: 'When nothing is playing, viewers show (line 1)',
+				width: 6,
+				default: IDLE_DEFAULTS.idle1,
+				useVariables: true,
+			},
+			{
+				type: 'textinput',
+				id: 'idle2',
+				label: 'When nothing is playing, viewers show (line 2)',
+				width: 6,
+				default: IDLE_DEFAULTS.idle2,
+				useVariables: true,
 			},
 			{ type: 'number', id: 'poll', label: 'Check Spotify every (seconds, 0 = off)', width: 6, default: process.platform === 'darwin' ? 1 : 3, min: 0, max: 30 },
 		]

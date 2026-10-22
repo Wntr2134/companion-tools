@@ -1,7 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Music, fmtTime, permissionHint } from './music.js'
 import { withSurfaceExtras } from './surface-extras.js'
-import { getViewerPresets } from './viewers.js'
+import { getViewerPresets, cardLines, IDLE_DEFAULTS } from './viewers.js'
 import { markPng, withBrand } from './brand.js'
 import { ArtCache, CARD_SHAPES, encodePng, withProgressBar } from './artwork.js'
 
@@ -14,6 +14,7 @@ const REPEAT_NEXT = { off: 'all', all: 'one', one: 'off' }
 
 class AppleMusicInstance extends InstanceBase {
 	state = { running: false }
+	idle = { line1: '', line2: '' }
 	timer = null
 	reading = false
 	volTarget = null
@@ -39,6 +40,29 @@ class AppleMusicInstance extends InstanceBase {
 			this.clock = clock
 			this.setVariableValues({ clock })
 		}
+		void this.refreshIdle(now)
+	}
+
+	/** What the viewers show when nothing is playing: the idle lines from the settings (a clock and date by default). */
+	async refreshIdle(now = new Date()) {
+		if (this.state.running && this.state.track) return
+		const fallback = {
+			line1: this.clock ?? '',
+			line2: now.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
+		}
+		let line1 = fallback.line1
+		let line2 = fallback.line2
+		try {
+			line1 = await this.parseVariablesInString(String(this.config?.idle1 ?? IDLE_DEFAULTS.idle1))
+			line2 = await this.parseVariablesInString(String(this.config?.idle2 ?? IDLE_DEFAULTS.idle2))
+		} catch {
+			// keep the module's own clock and date
+		}
+		if (/\$NA/.test(line1)) line1 = fallback.line1
+		if (/\$NA/.test(line2)) line2 = fallback.line2
+		if (line1 === this.idle.line1 && line2 === this.idle.line2) return
+		this.idle = { line1, line2 }
+		this.setVariableValues(cardLines(this.state, this.idle))
 	}
 
 	async configUpdated(config) {
@@ -110,7 +134,7 @@ class AppleMusicInstance extends InstanceBase {
 			track: s.track ?? '',
 			artist: s.artist ?? '',
 			album: s.album ?? '',
-			volume: s.volume ?? '',
+			volume: s.volume ?? '–',
 			position: fmtTime(s.position),
 			duration: fmtTime(s.duration),
 			remaining: remaining === null ? '' : `-${fmtTime(remaining)}`,
@@ -119,6 +143,7 @@ class AppleMusicInstance extends InstanceBase {
 			repeat: (s.repeat ?? 'off').toUpperCase(),
 			favourite: s.favourite ? '♥' : '♡',
 			play_icon: s.playing ? '⏸' : '▶',
+			...cardLines({ ...s, time: s.duration ? `${fmtTime(s.position)} / ${fmtTime(s.duration)}` : '' }, this.idle),
 		})
 		this.checkFeedbacks()
 	}
@@ -306,6 +331,11 @@ class AppleMusicInstance extends InstanceBase {
 			{ variableId: 'repeat', name: 'Repeat OFF/ALL/ONE' },
 			{ variableId: 'favourite', name: '♥ when the song is a favourite, else ♡' },
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
+			{ variableId: 'card_line1', name: 'Viewers: track, or idle line 1 (clock) when nothing is playing' },
+			{ variableId: 'card_line2', name: 'Viewers: artist, or idle line 2 (date) when nothing is playing' },
+			{ variableId: 'card_line2_time', name: 'Viewers: artist · time, or idle line 2' },
+			{ variableId: 'card_track_or_date', name: 'Viewers: track, or idle line 2' },
+			{ variableId: 'card_artist', name: 'Viewers: artist, or blank' },
 			{ variableId: 'play_icon', name: '▶ or ⏸ for the play/pause key' },
 		])
 
@@ -337,8 +367,8 @@ class AppleMusicInstance extends InstanceBase {
 			shuffle: key('Transport', 'Shuffle', 'SHUFFLE', [{ actionId: 'shuffle', options: { mode: 'toggle' } }], lit('shuffle')),
 			repeat: key('Transport', 'Repeat (off → all → one)', `REPEAT\\n${v('repeat')}`, [{ actionId: 'repeat', options: { mode: 'cycle' } }], lit('repeat')),
 			favourite: key('Transport', 'Favourite the current song', `${v('favourite')}\\nFAVE`, [{ actionId: 'favourite', options: { mode: 'toggle' } }], lit('favourite')),
-			open: key('Transport', 'Open Music', 'OPEN\\nMUSIC', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {} }]),
-			now: key('Now playing', 'Track and artist (album art)', `${v('track')}\\n${v('artist')}`, [], [{ feedbackId: 'now_playing_art', options: { shape: 'square' } }], 'auto'),
+			open: key('Transport', 'Open Music', 'OPEN\\nMUSIC', [{ actionId: 'open', options: {} }], [{ feedbackId: 'closed', options: {}, style: { color: combineRgb(150, 150, 150) } }]),
+			now: key('Now playing', 'Track and artist (album art)', `${v('card_line1')}\\n${v('card_line2')}`, [], [{ feedbackId: 'now_playing_art', options: { shape: 'square' } }], 'auto'),
 			time: key('Now playing', 'Time', v('time'), [], lit('playing'), 'auto'),
 			volume_knob: knob(
 				'Volume knob (push = play/pause)',
@@ -384,6 +414,22 @@ class AppleMusicInstance extends InstanceBase {
 				label: 'What this controls',
 				value:
 					"Apple's Music app on the Mac running Companion. No Apple login needed. The first time, macOS asks to let Companion control Music: click OK (or turn it on in System Settings → Privacy &amp; Security → Automation). Mac only.",
+			},
+			{
+				type: 'textinput',
+				id: 'idle1',
+				label: 'When nothing is playing, viewers show (line 1)',
+				width: 6,
+				default: IDLE_DEFAULTS.idle1,
+				useVariables: true,
+			},
+			{
+				type: 'textinput',
+				id: 'idle2',
+				label: 'When nothing is playing, viewers show (line 2)',
+				width: 6,
+				default: IDLE_DEFAULTS.idle2,
+				useVariables: true,
 			},
 			{ type: 'number', id: 'poll', label: 'Check Music every (seconds, 0 = off)', width: 6, default: 1, min: 0, max: 30 },
 		]
