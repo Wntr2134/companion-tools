@@ -17,6 +17,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - Spotify module: `node --test test/spotify.test.mjs` in `spotify-local/`.
 - Ulanzi plugin: `yarn build` (or `tsc --noEmit`) in `ulanzi-d200x/` must pass.
 - Plain Australian English in docs. No model names in commits or code.
+- **Bump the module's version in `package.json` with every change.** Will updates with the all-in-one bundle (`tools/make-bundle.sh`, published as `companion-tools-all-modules.tgz`), and Companion skips any module whose version is already installed.
 
 ## Every module must work on every surface
 Will uses the Ulanzi D200X, but modules must also work perfectly on Stream Decks (15-key, XL, Mini, Stream Deck+) and on plain buttons. Check this for every new module or preset change:
