@@ -17,6 +17,7 @@ import { IpadRelay } from './ipadRelay.js'
 import { OSC_QUERY_TIMEOUT_MS, type OSCValue } from './osc.js'
 import { getKnobPresets, getKnobVariableValues } from './knobs.js'
 import { withSurfaceExtrasV2 } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 import {
 	entityRecordDefinitions,
 	entityRoots,
@@ -101,7 +102,11 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 	private updateKnobPresets(): void {
 		const knobs = getKnobPresets(this)
-		const { structure, presets } = withSurfaceExtrasV2(knobs.structure, knobs.presets)
+		const viewers = getViewerPresets(this)
+		const { structure, presets } = withSurfaceExtrasV2([...knobs.structure, viewers.section], {
+			...knobs.presets,
+			...viewers.presets,
+		})
 		this.setPresetDefinitions(structure as any, presets as any)
 	}
 

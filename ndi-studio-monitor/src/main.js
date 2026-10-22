@@ -1,5 +1,6 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb, Regex } from '@companion-module/base'
 import { StudioMonitorClient, AuthError } from './client.js'
+import { getViewerPresets } from './viewers.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const RED = combineRgb(200, 0, 0)
@@ -354,7 +355,7 @@ class StudioMonitorInstance extends InstanceBase {
 				feedbacks: [{ feedbackId: 'overlay_is', options: { source: src }, style: { bgcolor: BLUE, color: WHITE } }],
 			}
 		})
-		this.setPresetDefinitions(presets)
+		this.setPresetDefinitions({ ...presets, ...getViewerPresets(this) })
 	}
 
 	getConfigFields() {

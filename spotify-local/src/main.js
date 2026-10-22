@@ -1,6 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
+import { getViewerPresets } from './viewers.js'
 
 const GREEN = combineRgb(30, 185, 84) // Spotify green
 const GREY = combineRgb(40, 40, 40)
@@ -302,7 +303,7 @@ class SpotifyInstance extends InstanceBase {
 			}
 		}
 		// − / + keys and push keys for Stream Decks without dials, and the D200X's push row.
-		this.setPresetDefinitions(withSurfaceExtras(presets))
+		this.setPresetDefinitions(withSurfaceExtras({ ...presets, ...getViewerPresets(this) }))
 		this.publish()
 	}
 

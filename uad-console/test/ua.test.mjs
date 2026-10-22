@@ -402,3 +402,18 @@ test('every knob preset also gets − / + buttons and a push key (Stream Deck wi
 		['s_buttons', ['k__minus', 'k__plus', 'k__push']],
 	])
 })
+
+test('wide key viewers: display only, short enough for a normal key too', async () => {
+	const { getViewerPresets } = await import('../src/viewers.js')
+	const out = getViewerPresets({ label: 'x' })
+	const presets = out.presets ?? out
+	assert.ok(Object.keys(presets).length > 0)
+	for (const p of Object.values(presets)) {
+		if (out.section === undefined) assert.equal(p.category, 'Wide key viewers')
+		assert.deepEqual(p.steps, [{ down: [], up: [] }], 'viewers never do anything when pressed')
+		assert.equal(p.style.size, 'auto')
+		assert.ok(p.style.text.split('\\n').length <= 3, `at most 3 lines: ${p.name}`)
+		assert.ok(!p.options?.rotaryActions)
+	}
+	if (out.section) assert.deepEqual(out.section.definitions, Object.keys(presets))
+})

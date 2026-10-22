@@ -2,6 +2,7 @@ import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@compan
 import { candidateLibraries, openNdi, splitSourceName } from './ndi.js'
 import { Router, parseRouteNames } from './router.js'
 import { runMenuScript, selectWithAutoOpen } from './virtual-input-mac.js'
+import { getViewerPresets } from './viewers.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const RED = combineRgb(180, 0, 0)
@@ -310,7 +311,7 @@ class NdiRouterInstance extends InstanceBase {
 		if (this.presetTimer) clearTimeout(this.presetTimer)
 		this.presetTimer = setTimeout(() => {
 			this.presetTimer = null
-			this.setPresetDefinitions(this.buildPresets(names, known))
+			this.setPresetDefinitions({ ...this.buildPresets(names, known), ...getViewerPresets(this) })
 		}, this.router ? 1000 : 0)
 	}
 

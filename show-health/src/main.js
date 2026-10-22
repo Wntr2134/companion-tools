@@ -1,5 +1,6 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Monitor, parseDevices } from './monitor.js'
+import { getViewerPresets } from './viewers.js'
 
 const GREEN = combineRgb(0, 150, 0)
 const RED = combineRgb(200, 0, 0)
@@ -144,7 +145,7 @@ class ShowHealthInstance extends InstanceBase {
 				],
 			}
 		}
-		this.setPresetDefinitions(presets)
+		this.setPresetDefinitions({ ...presets, ...getViewerPresets(this) })
 		this.#publish()
 	}
 

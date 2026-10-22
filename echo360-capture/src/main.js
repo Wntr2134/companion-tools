@@ -1,4 +1,5 @@
 import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/base'
+import { getViewerPresets } from './viewers.js'
 import { EchoClient, DEFAULT_PORT, DEFAULT_POLL_MS } from './echo-client.js'
 import { UCKeys, UC_DEFAULT_APP } from './uc-keys.js'
 import { isUC, DEFAULT_MINUTES, DEFAULT_TITLE, getActions, getFeedbacks, getPresets, getVariableDefinitions, getVariableValues } from './controls.js'
@@ -89,7 +90,7 @@ class Echo360Instance extends InstanceBase {
 		this.setActionDefinitions(getActions(this))
 		this.setFeedbackDefinitions(getFeedbacks(this))
 		this.setVariableDefinitions(getVariableDefinitions(this))
-		this.setPresetDefinitions(getPresets(this))
+		this.setPresetDefinitions({ ...getPresets(this), ...getViewerPresets(this) })
 		this.#refresh()
 	}
 
