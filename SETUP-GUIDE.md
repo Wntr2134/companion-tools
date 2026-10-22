@@ -325,10 +325,17 @@ Companion already knows whether these are connected. For each one:
 
 A device only turns red after two missed checks in a row, so one dropped ping doesn't flash it. Pressing any of these keys checks everything straight away.
 
+### E.2b One key for everything
+The **Summary → Everything OK?** key (and the **Everything OK?** wide key viewers) goes red when a device is down **or** any Companion connection shows an error: console, cameras, lighting, whatever is on the Connections page. No need to set up E.1 for each one.
+- It says **ALL OK**, or **3 PROBLEMS**, and the wide key viewer lists them: *FOH SD9 down · digico error*.
+- To get names for connections (not just a count), list their labels in Show Health's settings under **Connections to name**, one per line, exactly as on the Connections page.
+- Warnings (amber in Companion, e.g. *Spotify is not open*) don't count unless you tick **Count connection warnings as problems**.
+- Only want connections, no pinged devices? Clear the device list: it watches the connections on their own.
+
 ### E.3 Alerts (optional)
 To get told when something drops mid-show:
 1. **Triggers → + Add trigger**.
-2. Event: **Variable changed**. Variable: `$(show-health:down_count)`.
+2. Event: **Variable changed**. Variable: `$(show-health:down_count)` (devices only) or `$(show-health:conn_errors)` (connections).
 3. Condition: value is greater than 0.
 4. Action: for example jump the D200X to the health page, flash a key, or send a message with a webhook module (Pushover, Slack, Discord).
 
