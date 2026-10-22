@@ -28,7 +28,7 @@ export class InstanceBase {
 	setVariableDefinitions(d) { this.__defs.variables = d ?? [] }
 	setVariableValues() {}
 	getVariableValue() { return undefined }
-	setPresetDefinitions(a, b) { if (Array.isArray(a)) { this.__defs.structure = a; this.__defs.presets = b ?? {} } else this.__defs.presets = a ?? {} }
+	setPresetDefinitions(a, b) { this.__defs.feedbacksAtPresets = Object.keys(this.__defs.feedbacks); if (Array.isArray(a)) { this.__defs.structure = a; this.__defs.presets = b ?? {} } else this.__defs.presets = a ?? {} }
 	checkFeedbacks() {}
 	checkFeedbacksById() {}
 	checkAllFeedbacks() {}
