@@ -194,3 +194,24 @@ test('branding: the Spotify mark goes behind every key that has no image of its 
 	assert.ok(out.a.style.png64.length > 100)
 	assert.equal(out.b.style.png64, 'x', 'a key with its own image keeps it')
 })
+
+test('viewers never go blank: a clock and date (or the idle lines) when nothing is playing', async () => {
+	const { cardLines, IDLE_DEFAULTS } = await import('../src/viewers.js')
+	const idle = { line1: '14:05', line2: 'Wednesday 22 October' }
+	const closed = cardLines({ running: false }, idle)
+	assert.equal(closed.card_line1, '14:05')
+	assert.equal(closed.card_line2, 'Wednesday 22 October')
+	assert.equal(closed.card_artist, '')
+	const playing = cardLines({ running: true, track: 'Song', artist: 'Band', time: '0:10 / 3:00' }, idle)
+	assert.deepEqual([playing.card_line1, playing.card_line2_time], ['Song', 'Band  ·  0:10 / 3:00'])
+	assert.match(IDLE_DEFAULTS.idle1, /time_hm/)
+})
+
+test('every on/off feedback in a preset carries a style (without one, Companion 5.1 blanks the key)', async () => {
+	const { readFile } = await import('node:fs/promises')
+	const src = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
+	for (const m of src.matchAll(/\{ feedbackId: '(\w+)', options: \{[^}]*\}( \})?/g)) {
+		if (m[1] === 'now_playing_art') continue // advanced: draws its own style
+		assert.ok(!m[2], `preset feedback "${m[1]}" has no style`)
+	}
+})

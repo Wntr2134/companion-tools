@@ -16,6 +16,9 @@ Every preset has a faint red music note behind its label, so Apple Music keys ar
 ### Now playing card
 The **Now playing** preset and the **Wide key viewers** show the track's **album art**, darkened and softly blurred, behind the track and artist, with a thin progress bar along the bottom (red while playing, grey when paused). Some streamed songs and radio stations don't give Music's scripting their cover: those keys use a plain dark background. You can add it to any key as the feedback **Now playing card**: set its **Key shape** to *D200X wide key* or *Normal key*. In Companion's own button grid a wide card shows as a band across the middle of the square; on the D200X it fills the wide key.
 
+### When nothing is playing
+The now-playing key and the wide key viewers never go blank: when Music is closed or stopped they show a **clock and the date**. To show something else, edit the connection and change *When nothing is playing, viewers show (line 1 / line 2)*. Any variables work there, e.g. another module's status or the System Tools CPU and memory.
+
 ### Presets
 - **Transport:** play/pause (⏸ / ▶, red while playing), previous, next, shuffle, repeat, favourite, open Music.
 - **Now playing:** track and artist on the album-art card, time.
