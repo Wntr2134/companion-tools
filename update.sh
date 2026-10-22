@@ -14,6 +14,7 @@ echo "== app-launcher"; (cd app-launcher && yarn install)
 echo "== ndi-router"; (cd ndi-router && yarn install)
 echo "== ndi-studio-monitor"; (cd ndi-studio-monitor && yarn install)
 echo "== spotify-local"; (cd spotify-local && yarn install)
+echo "== apple-music-local"; (cd apple-music-local && yarn install)
 echo "== digico-sd"; (cd digico-sd && yarn install && yarn build)
 echo "== grandma2"; (cd grandma2 && yarn install)
 echo
