@@ -93,7 +93,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp ulanzi-d200x/extras/D200X-layout.companionconfig packages/
-          cp system-tools/extras/pages/*.companionconfig packages/
+          cp system-tools/extras/pages/D200X-pages.companionconfig packages/
           mkdir -p bundle
           bash tools/make-bundle.sh packages bundle/companion-tools-all-modules.tgz
           ls -l packages bundle
@@ -108,6 +108,6 @@ jobs:
 
           **D200X template page:** Import / Export → Import → D200X-layout.companionconfig, into an empty page. It labels every key and knob.
 
-          **Ready-made D200X pages (Mac):** D200X-Dock-Apps, -Dock-Apps-2, -Apps-and-Windows, -Mac-Desk, -Windows, -Show-Machine and -Show-Apps .companionconfig. System Tools keys, with Spotify on keys 9–10, knob 3 and the wide key. Import / Export → Import, into an empty page, and match the connections to your System Tools and Spotify ones.
+          **Ready-made D200X pages (Mac), all in one file:** D200X-pages.companionconfig. Import / Export → Import → the **Buttons** tab (not Full Import): pick a page from the file, pick an empty page of yours, match the connections to your System Tools and Spotify ones, Import. Repeat for any other pages you want, without loading the file again.
 
           See SETUP-GUIDE.md for the full walkthrough."
