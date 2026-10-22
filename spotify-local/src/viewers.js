@@ -19,8 +19,38 @@ export function getViewerPresets(self) {
 	// Album art behind the text, with a green progress bar (see artwork.js).
 	const card = [{ feedbackId: 'now_playing_art', options: { shape: 'wide' } }]
 	return {
-		view_now: viewer('Now playing: album art, track, artist', `${v('track')}\\n${v('artist')}`, card),
-		view_time: viewer('Now playing + time', `${v('track')}\\n${v('artist')}  ·  ${v('time')}`, card),
-		view_clock: viewer('Clock + now playing', `${v('clock')}\\n${v('track')}\\n${v('artist')}`, card),
+		view_now: viewer('Now playing: album art, track, artist', `${v('card_line1')}\\n${v('card_line2')}`, card),
+		view_time: viewer('Now playing + time', `${v('card_line1')}\\n${v('card_line2_time')}`, card),
+		view_clock: viewer('Clock + now playing', `${v('clock')}\\n${v('card_track_or_date')}\\n${v('card_artist')}`, card),
+	}
+}
+
+/** Defaults for what the viewers show when nothing is playing (editable in the connection's settings). */
+export const IDLE_DEFAULTS = {
+	idle1: '$(internal:time_hm)',
+	idle2: '$(internal:date_weekday) $(internal:date_d) $(internal:date_monthname)',
+}
+
+/**
+ * The text the viewers show. While a track is loaded (playing or paused): the track. When the app is
+ * closed or stopped: the idle lines (a clock and date unless changed), so the key never goes blank.
+ */
+export function cardLines(state, idle) {
+	const hasTrack = !!(state.running && state.track)
+	if (hasTrack) {
+		return {
+			card_line1: state.track,
+			card_line2: state.artist ?? '',
+			card_line2_time: state.time ? `${state.artist ?? ''}  ·  ${state.time}` : state.artist ?? '',
+			card_track_or_date: state.track,
+			card_artist: state.artist ?? '',
+		}
+	}
+	return {
+		card_line1: idle.line1,
+		card_line2: idle.line2,
+		card_line2_time: idle.line2,
+		card_track_or_date: idle.line2,
+		card_artist: '',
 	}
 }
