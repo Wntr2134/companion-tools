@@ -125,18 +125,18 @@ jobs:
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
       - run: node --test test/ndi.test.mjs test/virtual-input.test.mjs
 
-  app-launcher:
+  system-tools:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app-launcher
+        working-directory: system-tools
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
-      - run: node --test test/apps.test.mjs
+      - run: node --test test/apps.test.mjs test/system.test.mjs
 
   show-health:
     runs-on: ubuntu-latest

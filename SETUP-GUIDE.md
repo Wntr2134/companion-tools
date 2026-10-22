@@ -12,7 +12,7 @@ You will set up:
 - **Part F:** grandMA2 (lighting): executor faders on the knobs, Go/Pause/Flash keys with cue names
 - **Part G:** Echo360 lecture recording: the auditorium Pro box, and Universal Capture rooms
 - **Part H:** ChamSys MagicQ lighting: playback faders on the knobs
-- **Part I:** App launcher: a key for any app on the Companion computer
+- **Part I:** System Tools (was App Launcher): apps, window moving and layouts, keep awake, sound, Shortcuts and more
 - **Part J:** NDI router: switch which camera NDI Virtual Input (or a monitor) shows
 - **Part K:** NDI Studio Monitor (Windows): source, PiP, mute and record keys
 - **Part L:** Spotify: play/pause, volume knob, playlist keys and now playing
@@ -38,7 +38,7 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `grandma2-plus-….tgz`: grandMA2 lighting (Part F)
    - `echo360-capture-….tgz`: Echo360 recording (Part G)
    - `chamsys-magicq-osc-….tgz`: ChamSys MagicQ (Part H)
-   - `app-launcher-….tgz`: app launcher (Part I)
+   - `system-tools-….tgz`: System Tools, was App Launcher (Part I)
    - `ndi-router-….tgz`: NDI router (Part J)
    - `ndi-studio-monitor-….tgz`: NDI Studio Monitor (Part K)
    - `spotify-local-….tgz`: Spotify (Part L)
@@ -471,27 +471,39 @@ Step size works like the other modules: **1** = tiny, **2** = default, **10** = 
 
 ---
 
-## Part I: App launcher (open apps from a key)
+## Part I: System Tools (apps, windows, keep awake…)
 
-Works on Mac and Windows, on the computer Companion runs on.
+Your computer from Companion keys, on the computer Companion runs on. It used to be called **App Launcher**: it does everything that did, plus a lot more. App keys work on Mac and Windows; the rest is Mac (volume, mute and lock also work on Windows).
 
-### I.1 Add the connection
-1. **Connections → + Add connection** → search **App Launcher** → add it (pick the version you imported, or **dev**).
-2. Save. The connection goes green and its status shows how many apps it found (e.g. *62 apps*).
-   - Mac: tick **include built-in apps** if you want Safari, Notes, System Settings and so on.
-   - Windows: the list comes from the Start Menu, so anything with a Start Menu entry is there.
+### I.1 Add the connection (or upgrade App Launcher)
+- **Already have App Launcher?** Import the new bundle, then on the App Launcher connection click the pencil ✏️ next to its version and pick **System Tools**. Your app keys keep working.
+- **New:** **Connections → + Add connection** → search **System Tools** → add it. Save. The status shows how many apps it found.
+- **Mac permissions (once):** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. This is needed for moving windows, keyboard shortcuts, typing text and locking the screen. If it was already on and things still don't work after a Companion update, remove Companion from the list with **−** and add it again. Ejecting disks and dark mode ask *"Companion wants to control Finder / System Events"* the first time: click **OK**.
 
-### I.2 Put apps on keys
-1. **Buttons → Presets → App Launcher**. The apps are grouped **Apps A–C**, **Apps D–F** and so on.
-2. Drag an app onto a key. Press = open it, or bring it to the front if it's already open.
+### I.2 Apps
+**Presets → System Tools → Apps A–C**, **Apps D–F** and so on. Press = open it, or bring it to the front. ✅ The key goes **green while the app is running**. Installed something new? Press **Rescan apps**.
 
-✅ The key goes **green while the app is running**.
+### I.3 Windows and screens (Mac)
+- **Windows: front window**: put whatever window is in front into the left half, right half, thirds, quarters, fill, centre, or onto the **next screen**.
+- **Windows: screens**: fill screen 1, screen 2… Screen 1 is the one with the menu bar; the others are numbered left to right.
+- **One app, one spot:** drag any of those, then edit the action **Window: move / resize** and pick the app in *Window of* (it can open the app first). Several of these actions on one key arrange several apps at once.
+- **Window layouts (easiest):** arrange your windows by hand (or with Magnet), then press **Save layout 1**. Later, **Layout 1** puts them all back. The key is blue when a layout is saved. Six slots.
+- **Written layout:** the **Arrange apps** key takes one line per app: `Resolume Arena, 2, fill` / `Dante Controller, 1, left`.
+- Full-screen windows (the green button) can't be moved: take them out of full screen first.
+- **Magnet (needs Magnet)**: keys that press Magnet's own default shortcuts, if you prefer Magnet's moves.
 
-### I.3 Other things you can do
-- **Quit an app:** add the action **App Launcher: Quit** to a key. Tick **Force quit** only if the app hangs; unsaved work is lost.
-- **One key that opens and closes:** action **Launch if closed, quit if open**.
-- **An app that isn't in the list:** in **Launch**, pick *(Type a name or path below)* and type the app's name (Mac) or full path (Windows).
-- **Installed something new?** Press the **Rescan apps** preset, or change and save the connection.
+### I.4 Show machine, sound and desktop
+- **Keep awake**: stops the Mac sleeping or dimming mid-show. Amber while on. It switches off with the key, or when Companion closes.
+- **Sleep screens, lock, screen saver, eject disks, dark mode.**
+- **Sound**: volume knob (push = mute) and microphone level knob, with − / + keys for Stream Decks. Volume shows – for outputs macOS can't set (e.g. some interfaces and HDMI).
+- **Desktop**: Mission Control, show desktop, the front app's windows, desktop left / right, hide others, show all.
+
+### I.5 Keys, text and Shortcuts
+- **Keys and text**: screenshot, Spotlight, copy, paste, undo, any shortcut (edit the action: pick the key and tick ⌘ ⌥ ⌃ ⇧, optionally send it to one app), and **paste saved text** (signatures, IP addresses, stock replies).
+- **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
+
+### I.6 Wide key viewers
+Clock and date, CPU and memory, disk and battery, IP address and uptime, volume and keep awake. The Spotify and Apple Music viewers can show System Tools info when nothing is playing: in their connection settings set *When nothing is playing* to e.g. `$(system-tools:cpu_memory)`.
 
 ## Part J: NDI router (switch cameras into Virtual Input)
 
@@ -628,10 +640,10 @@ macOS asks for some permissions the first time a module needs them. If a key doe
 | Permission | Where | Needed for |
 |---|---|---|
 | **Allow accessories to connect** → Always | System Settings → Privacy & Security | The D200X showing up at all (A.2) |
-| **Accessibility** → Companion on | System Settings → Privacy & Security → Accessibility | Universal Capture keys (G), switching NDI Virtual Input in the app (J.4) |
+| **Accessibility** → Companion on | System Settings → Privacy & Security → Accessibility | Universal Capture keys (G), switching NDI Virtual Input in the app (J.4), System Tools window moving, keyboard shortcuts, text and lock (I) |
 | **Automation** → Companion → *System Events* ticked | System Settings → Privacy & Security → Automation | The same keys: macOS asks *"Companion wants to control System Events"* the first time |
-| **Automation** → Companion → the app ticked | Same place | App Launcher's **Quit** action (macOS asks per app), and **Spotify** (L) |
-| **Module permissions** (run programs, read files, native add-ons) | Asked by Companion when you import or update a module | App Launcher, NDI Router, Show Health (ping), Echo360 (Universal Capture), Spotify. Say yes |
+| **Automation** → Companion → the app ticked | Same place | System Tools' **Quit** action (macOS asks per app), eject disks (Finder), **Spotify** (L) and **Apple Music** (M) |
+| **Module permissions** (run programs, read files, native add-ons) | Asked by Companion when you import or update a module | System Tools, NDI Router, Show Health (ping), Echo360 (Universal Capture), Spotify, Apple Music. Say yes |
 
 If you said no to one by mistake: turn it on in the place above, then press the key again. Nothing needs reinstalling.
 
@@ -648,7 +660,7 @@ If you said no to one by mistake: turn it on in the place above, then press the 
 | D200X goes black after about a minute | Run `update.sh` (the keep-alive fix is in the dev version), and check the screensaver is off (A.5). |
 | A knob moves the wrong way | Swap the actions under **Rotate left** and **Rotate right**. |
 | A key does nothing and the log mentions *Accessibility*, *Automation*, *-1743* or *-25211* | See **Mac permissions** above. |
-| App Launcher, NDI Router, Show Health or Echo360 seems to do nothing at all | Update to the latest .tgz and accept the module permissions Companion asks for. Older versions didn't ask, and Companion blocked them silently. |
+| System Tools, NDI Router, Show Health or Echo360 seems to do nothing at all | Update to the latest .tgz and accept the module permissions Companion asks for. Older versions didn't ask, and Companion blocked them silently. |
 | Panasonic connection is red | Check the camera IP. Open `http://CAMERA-IP` in a browser: the camera's web page should load. |
 | grandMA2 connection stuck on Connecting | Check the IP, **Telnet = Login Enabled** in Setup → Console → Global Settings, and the Windows firewall (F.1). |
 | UAD connection is red | Open UAD Console once, then check the IP is `127.0.0.1` on the same Mac. Then run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs`. It should list your devices. |

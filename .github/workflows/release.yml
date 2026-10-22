@@ -41,7 +41,7 @@ jobs:
           - dir: show-health
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build
-          - dir: app-launcher
+          - dir: system-tools
             install: npm install --ignore-scripts --no-audit --no-fund
             build: npx companion-module-build
           - dir: ndi-router

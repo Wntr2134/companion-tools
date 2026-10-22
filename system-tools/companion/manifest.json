@@ -1,0 +1,22 @@
+{
+	"id": "system-tools",
+	"name": "system-tools",
+	"shortname": "System Tools",
+	"description": "Your computer from Companion keys. Apps (Mac and Windows): launch and quit, green while running. Mac: move and resize windows across screens, saved window layouts, keep awake, sound, dark mode, lock, eject, Mission Control, keyboard shortcuts, saved text, your Shortcuts and system info.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
+	"bugs": "https://github.com/Wntr2134/companion-tools/issues",
+	"maintainers": [{ "name": "Will Petts" }],
+	"legacyIds": ["app-launcher"],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/main.js",
+		"permissions": {"child-process": true, "filesystem": true}
+	},
+	"manufacturer": "Generic",
+	"products": ["System tools", "App launcher"],
+	"keywords": ["launch", "app", "open", "quit", "mac", "windows", "shortcut", "window", "screen", "display", "layout", "magnet", "keep awake", "volume", "system"]
+}
