@@ -736,7 +736,7 @@
       "rotaryActions": false
      },
      "style": {
-      "text": "KEEP\\nAWAKE",
+      "text": "OPEN\\nCOMPANION",
       "textExpression": false,
       "size": "14",
       "alignment": "center:center",
@@ -746,24 +746,7 @@
       "show_topbar": false,
       "png64": null
      },
-     "feedbacks": [
-      {
-       "id": "I_gBuCfPII-gY9a7LLD_3",
-       "type": "feedback",
-       "definitionId": "keep_awake",
-       "connectionId": "system-tools",
-       "options": {},
-       "upgradeIndex": -1,
-       "isInverted": {
-        "isExpression": false,
-        "value": false
-       },
-       "style": {
-        "bgcolor": 15111680,
-        "color": 0
-       }
-      }
-     ],
+     "feedbacks": [],
      "localVariables": [],
      "steps": {
       "0": {
@@ -772,16 +755,12 @@
          {
           "id": "V_TB3yNdSrXIID5otpaCi",
           "type": "action",
-          "definitionId": "keep_awake",
+          "definitionId": "open_companion",
           "connectionId": "system-tools",
           "options": {
-           "mode": {
+           "page": {
             "isExpression": false,
-            "value": "toggle"
-           },
-           "displays": {
-            "isExpression": false,
-            "value": true
+            "value": ""
            }
           },
           "upgradeIndex": -1

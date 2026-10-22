@@ -89,7 +89,7 @@ const PAGES = {
 		},
 	},
 	'Dock Apps 2': {
-		about: 'Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and open Companion's admin page. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).',
+		about: 'Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).',
 		keys: {
 			...spotify(),
 			...dockKeys(['0/0', '0/1', '0/2', '0/3', '0/4'], 12),
