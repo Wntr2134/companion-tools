@@ -79,11 +79,13 @@ export function parseLayout(text) {
 		.forEach((raw, i) => {
 			const line = raw.trim()
 			if (!line || line.startsWith('#')) return
-			const parts = line.split(',').map((s) => s.trim())
-			if (parts.length < 3) return errors.push(`Line ${i + 1}: needs "app, screen, position"`)
-			const position = parts.pop()
-			const screen = parts.pop()
-			const app = parts.join(',').trim()
+			// the last two commas split off screen and position, so app names may contain commas
+			const b = line.lastIndexOf(',')
+			const a = b > 0 ? line.lastIndexOf(',', b - 1) : -1
+			if (a < 0) return errors.push(`Line ${i + 1}: needs "app, screen, position"`)
+			const app = line.slice(0, a).trim()
+			const screen = line.slice(a + 1, b).trim()
+			const position = line.slice(b + 1).trim()
 			const pos = positionFromWords(position)
 			const s = screen.toLowerCase()
 			const scr = /^\d+$/.test(s) ? Number(s) : s === 'prev' ? 'previous' : ['same', 'next', 'previous'].includes(s) ? s : null
