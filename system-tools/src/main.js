@@ -32,6 +32,7 @@ import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
 import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
+import { IconCache, shortName } from './icons.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const BLUE = combineRgb(10, 110, 230) // lit system keys (macOS accent blue)
@@ -144,6 +145,7 @@ class SystemToolsInstance extends InstanceBase {
 			this.updateStatus(InstanceStatus.UnknownError, 'App scan failed: see log')
 		}
 		await this.refreshDock(false)
+		void this.refreshIcons()
 		this.updateDefinitions()
 		await this.pollRunning()
 		this.startPolls()
@@ -186,6 +188,29 @@ class SystemToolsInstance extends InstanceBase {
 		setTimeout(() => void this.refreshBluetooth(), 1500)
 	}
 
+	get showIcons() {
+		return this.mac && this.config.icons !== false
+	}
+
+	/** Draws (or loads from the cache) the icon of every listed app and Dock app, then shows them. */
+	async refreshIcons() {
+		if (!this.showIcons) return
+		this.icons ??= new IconCache()
+		try {
+			const n = await this.icons.ensure([...this.dock.map((d) => d.path), ...this.apps.map((a) => a.path)])
+			this.log('debug', `${n} app icons ready`)
+			this.checkFeedbacks('app_icon', 'dock_icon')
+		} catch (e) {
+			this.log('debug', `App icons: ${e.message}`)
+		}
+	}
+
+	/** An icon as the key's picture (under the name). */
+	iconStyle(appPath) {
+		const png = appPath && this.showIcons ? this.icons?.get(appPath) : undefined
+		return png ? { png64: png, pngalignment: 'center:center' } : {}
+	}
+
 	/** The apps in the Mac's Dock, for the "Your Dock" keys. Redraws the presets only when the Dock changed. */
 	async refreshDock(redefine = true) {
 		if (!this.mac) return
@@ -194,9 +219,13 @@ class SystemToolsInstance extends InstanceBase {
 			const changed = dock.map((d) => d.path).join('\n') !== this.dock.map((d) => d.path).join('\n')
 			this.dock = dock
 			const values = { dock_count: dock.length }
-			for (let i = 1; i <= DOCK_SLOTS; i++) values[`dock_${i}`] = dock[i - 1]?.name ?? ''
+			for (let i = 1; i <= DOCK_SLOTS; i++) {
+				values[`dock_${i}`] = dock[i - 1]?.name ?? ''
+				values[`dock_${i}_short`] = shortName(dock[i - 1]?.name ?? '')
+			}
 			this.setVariableValues(values)
 			if (changed && redefine) this.updateDefinitions()
+			if (changed && redefine) void this.refreshIcons()
 		} catch (e) {
 			this.log('debug', `Dock read failed: ${e.message}`)
 		}
@@ -943,6 +972,19 @@ class SystemToolsInstance extends InstanceBase {
 				options: [btOption],
 				callback: (fb) => !!this.btDevices.find((d) => d.address === fb.options.device)?.connected,
 			},
+			app_icon: {
+				type: 'advanced',
+				name: "App's icon on the key (Mac)",
+				description: 'Draws the app icon in the top of the key, with room for the name underneath (text aligned to the bottom).',
+				options: [appOption],
+				callback: (fb) => this.iconStyle(this.byId(fb.options.app)?.path),
+			},
+			dock_icon: {
+				type: 'advanced',
+				name: "Dock app's icon on the key (Mac)",
+				options: [dockSlotOption],
+				callback: (fb) => this.iconStyle(this.dock[Number(fb.options.slot) - 1]?.path),
+			},
 			dock_running: {
 				type: 'boolean',
 				name: 'The app in a Dock position is running (Mac)',
@@ -963,6 +1005,7 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'dock_count', name: 'Number of apps in the Dock (Mac)' },
 			{ variableId: 'bt_connected', name: 'Bluetooth devices connected now (Mac)' },
 			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}`, name: `Dock app ${i + 1} (Mac)` })),
+			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}_short`, name: `Dock app ${i + 1}, short name for under its icon (Mac)` })),
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
 			{ variableId: 'date', name: 'Date (Wednesday 22 October)' },
 			{ variableId: 'date_short', name: 'Date (Wed 22 Oct)' },
@@ -1001,6 +1044,8 @@ class SystemToolsInstance extends InstanceBase {
 			feedbacks,
 		})
 		const act = (actionId, options = {}) => [{ actionId, options }]
+		// App keys: icon on top, short name underneath (Mac; can be switched off in the settings)
+		const icons = this.showIcons
 		const presets = {}
 
 		// Windows: the one in front
@@ -1094,9 +1139,14 @@ class SystemToolsInstance extends InstanceBase {
 				type: 'button',
 				category: 'Your Dock',
 				name: this.dock[i - 1] ? `Dock ${i}: ${this.dock[i - 1].name}` : `Dock app ${i}`,
-				style: { text: v(`dock_${i}`), size: 'auto', color: WHITE, bgcolor: GREY, show_topbar: false },
+				style: icons
+					? { text: v(`dock_${i}_short`), size: '14', alignment: 'center:bottom', color: WHITE, bgcolor: GREY, show_topbar: false }
+					: { text: v(`dock_${i}`), size: 'auto', color: WHITE, bgcolor: GREY, show_topbar: false },
 				steps: [{ down: act('dock_launch', { slot: String(i) }), up: [] }],
-				feedbacks: [{ feedbackId: 'dock_running', options: { slot: String(i) }, style: { bgcolor: GREEN, color: WHITE } }],
+				feedbacks: [
+					...(icons ? [{ feedbackId: 'dock_icon', options: { slot: String(i) } }] : []),
+					{ feedbackId: 'dock_running', options: { slot: String(i) }, style: { bgcolor: GREEN, color: WHITE } },
+				],
 			}
 		}
 		// Bluetooth: one key per paired device, blue while connected
@@ -1116,9 +1166,14 @@ class SystemToolsInstance extends InstanceBase {
 				type: 'button',
 				category: `Apps ${groupFor(app.name)}`,
 				name: app.name,
-				style: { text: app.name, size: 'auto', color: WHITE, bgcolor: GREY },
+				style: icons
+					? { text: shortName(app.name), size: '14', alignment: 'center:bottom', color: WHITE, bgcolor: GREY, show_topbar: false }
+					: { text: app.name, size: 'auto', color: WHITE, bgcolor: GREY },
 				steps: [{ down: act('launch', { app: app.id, custom: '' }), up: [] }],
-				feedbacks: [{ feedbackId: 'app_running', options: { app: app.id }, style: { bgcolor: GREEN, color: WHITE } }],
+				feedbacks: [
+					...(icons ? [{ feedbackId: 'app_icon', options: { app: app.id } }] : []),
+					{ feedbackId: 'app_running', options: { app: app.id }, style: { bgcolor: GREEN, color: WHITE } },
+				],
 			}
 		}
 		return presets
@@ -1135,6 +1190,7 @@ class SystemToolsInstance extends InstanceBase {
 					'Apps (Mac and Windows): one key per installed app, green while running. Mac: move and resize windows across screens and save window layouts, keep awake, sound, dark mode, lock, eject, Mission Control, keyboard shortcuts, saved text and your Shortcuts. Window moving and keyboard shortcuts need Companion allowed under System Settings → Privacy &amp; Security → <b>Accessibility</b>.',
 			},
 			{ type: 'checkbox', id: 'includeSystem', label: 'Mac: include built-in apps (Safari, Notes, System Settings…)', width: 6, default: false },
+			{ type: 'checkbox', id: 'icons', label: 'Mac: show app icons on app keys', width: 6, default: true },
 			{ type: 'number', id: 'pollSeconds', label: 'Check which apps are running every (seconds, 0 = off)', width: 6, default: 3, min: 0, max: 60 },
 			{ type: 'textinput', id: 'extraFolders', label: 'Mac: extra folders to search for apps (one per line)', width: 12, default: '', multiline: true },
 		]

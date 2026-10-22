@@ -9,6 +9,9 @@ Your computer from Companion keys: the computer Companion runs on. (This used to
 - Actions: launch, quit (tick *Force quit* only if it hangs), launch-or-quit toggle, hide, hide all the others, show all, rescan.
 - Mac: the apps in `/Applications` (and sub-folders) and `~/Applications`; tick *include built-in apps* for Safari, Notes and so on. Windows: the Start Menu.
 
+### App icons (Mac)
+App keys and Dock keys show the app's own icon, with its name underneath, and still go green while the app runs. Icons are drawn once and kept in `~/Library/Application Support/Companion Tools/icons/`, and only redrawn when an app updates. Prefer plain names? Untick *show app icons on app keys* in the settings and drag the keys in again.
+
 ### Your Dock (Mac)
 **Your Dock** presets: one key per app in your Mac's Dock (Finder first, then in Dock order), showing the app's name, green while it runs. The action *Open the app in a Dock position* does the same on any key. Rearrange the Dock and the keys follow (checked every minute, or press *Re-read Dock*).
 

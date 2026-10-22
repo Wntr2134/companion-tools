@@ -13,10 +13,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_1)",
+       "text": "$(System_Tools:dock_1_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -26,6 +26,23 @@
       "feedbacks": [
        {
         "id": "PaG5xhoE_NpLMHrG-DcVc",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "1"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "O_cxHbOSL3M24C2pEvgMv",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -80,10 +97,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_2)",
+       "text": "$(System_Tools:dock_2_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -93,6 +110,23 @@
       "feedbacks": [
        {
         "id": "r6i9PH_1U9tZZcD6EHSec",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "2"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "rN_4OG2djzKsgxjX2GHD3",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -147,10 +181,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_3)",
+       "text": "$(System_Tools:dock_3_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -160,6 +194,23 @@
       "feedbacks": [
        {
         "id": "8pJgtnDZOQlRihqqEdSry",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "3"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "VJhfmBHTIBUmuIrg2f3Mq",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -214,10 +265,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_4)",
+       "text": "$(System_Tools:dock_4_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -227,6 +278,23 @@
       "feedbacks": [
        {
         "id": "e-4whja_mL2-ITW9ZbXeT",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "4"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "In3gp_jacXkbW_V8JIj0-",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -281,10 +349,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_5)",
+       "text": "$(System_Tools:dock_5_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -294,6 +362,23 @@
       "feedbacks": [
        {
         "id": "sxjAq0rhXy0jVU8kNpLEh",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "5"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "t_Qei_qZKtHR71cDHu7Jx",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -350,10 +435,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_6)",
+       "text": "$(System_Tools:dock_6_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -363,6 +448,23 @@
       "feedbacks": [
        {
         "id": "nI9J7Y_XR3LOig3fuyjh3",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "6"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "6mwAzL1Ic4HrzkRWGDy6z",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -417,10 +519,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_7)",
+       "text": "$(System_Tools:dock_7_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -430,6 +532,23 @@
       "feedbacks": [
        {
         "id": "wjxqd9lWyAbvIb9q2P7UK",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "7"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "1jyy6oBWex-mcvxYrZp2D",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -484,10 +603,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_8)",
+       "text": "$(System_Tools:dock_8_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -497,6 +616,23 @@
       "feedbacks": [
        {
         "id": "Ac8w66R78xzSL6H0chMe7",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "8"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "XgLkFzHbD2LCRlQaI3KYq",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -633,10 +769,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_9)",
+       "text": "$(System_Tools:dock_9_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -646,6 +782,23 @@
       "feedbacks": [
        {
         "id": "Lkahtu_GOdJYJZwjli-8v",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "9"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "MvCfa9rmWOX6TGRnPCPUH",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -700,10 +853,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_10)",
+       "text": "$(System_Tools:dock_10_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -713,6 +866,23 @@
       "feedbacks": [
        {
         "id": "ZkmWcRZediquthW8RBIvY",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "10"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "uva-1F1ig8VC9KTrV8gZo",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -767,10 +937,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_11)",
+       "text": "$(System_Tools:dock_11_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -780,6 +950,23 @@
       "feedbacks": [
        {
         "id": "KXDKRA5mfJ7y4IuZlHXsJ",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "11"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "hMYoo7HwEreX8_g5MSmYD",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -1370,10 +1557,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_12)",
+       "text": "$(System_Tools:dock_12_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -1383,6 +1570,23 @@
       "feedbacks": [
        {
         "id": "s29FQIk5QrL1ocdGcbtSD",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "12"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "NclyeRQ7RDds2UQJNNfX6",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -1437,10 +1641,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_13)",
+       "text": "$(System_Tools:dock_13_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -1450,6 +1654,23 @@
       "feedbacks": [
        {
         "id": "4WhFsgEl9kqbpw1S3fkUb",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "13"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "lEpRMeiULRN-IVpvwRIG6",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -1504,10 +1725,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_14)",
+       "text": "$(System_Tools:dock_14_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -1517,6 +1738,23 @@
       "feedbacks": [
        {
         "id": "07XxvUbdSwhpLiWZxbWsj",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "14"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "W_B0Za_fu-QuwZln-fXcL",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -1571,10 +1809,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_15)",
+       "text": "$(System_Tools:dock_15_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -1584,6 +1822,23 @@
       "feedbacks": [
        {
         "id": "6hSCE_0O6Z9AFaShSZwp3",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "15"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "Nkg20YaELyMMIdG3QfZP2",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -1638,10 +1893,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_16)",
+       "text": "$(System_Tools:dock_16_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -1651,6 +1906,23 @@
       "feedbacks": [
        {
         "id": "7KxJCa8jbJBACsCzsgycY",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "16"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "AyNw5g-JQwRub1dB88E4B",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -2675,10 +2947,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_1)",
+       "text": "$(System_Tools:dock_1_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -2688,6 +2960,23 @@
       "feedbacks": [
        {
         "id": "rBhhIlLiaDlhtcJQ2lPut",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "1"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "JZsdtI55HgSR3elYpD6xq",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -2742,10 +3031,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_2)",
+       "text": "$(System_Tools:dock_2_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -2755,6 +3044,23 @@
       "feedbacks": [
        {
         "id": "gjIZwsTxDf0x4J6yA82_T",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "2"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "BGO8fAZjsYo1JawelxL1f",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -2809,10 +3115,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_3)",
+       "text": "$(System_Tools:dock_3_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -2822,6 +3128,23 @@
       "feedbacks": [
        {
         "id": "5sMi7UXGNicYQF7k8P4rS",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "3"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "oB91MCd9i-W3kKfZAu11s",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -2876,10 +3199,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_4)",
+       "text": "$(System_Tools:dock_4_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -2889,6 +3212,23 @@
       "feedbacks": [
        {
         "id": "Y7B7htUcYi3g3HGMePc88",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "4"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "BjI0iqSNmee5uRiOzNgHp",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
@@ -2943,10 +3283,10 @@
        "rotaryActions": false
       },
       "style": {
-       "text": "$(System_Tools:dock_5)",
+       "text": "$(System_Tools:dock_5_short)",
        "textExpression": false,
-       "size": "auto",
-       "alignment": "center:center",
+       "size": "14",
+       "alignment": "center:bottom",
        "pngalignment": "center:center",
        "color": 16777215,
        "bgcolor": 2631720,
@@ -2956,6 +3296,23 @@
       "feedbacks": [
        {
         "id": "61P2nlbODjueRqhZ6R4yF",
+        "type": "feedback",
+        "definitionId": "dock_icon",
+        "connectionId": "system-tools",
+        "options": {
+         "slot": {
+          "isExpression": false,
+          "value": "5"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "jlp4S0WlTGQCG_3zrfY06",
         "type": "feedback",
         "definitionId": "dock_running",
         "connectionId": "system-tools",
