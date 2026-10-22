@@ -26,7 +26,9 @@ You only need the parts for the gear you have. **Part 0 is always needed.**
 Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac where you also want automatic updates from GitHub.
 
 1. Install **Companion** (step 0.5 below).
-2. Open <https://github.com/Wntr2134/companion-tools/releases/tag/latest> and download the `.tgz` file for each module you need:
+2. **Everything in one go (easiest):** download **[companion-tools-all-modules.tgz](https://github.com/Wntr2134/companion-tools/releases/download/latest/companion-tools-all-modules.tgz)**. In Companion, go to **Modules** → **Import Bundle** and choose it. Every module, including the D200X plugin, is installed at once. Then skip to step 4.
+   - This link always gets the newest build, so bookmark it.
+3. **Or just some modules:** open <https://github.com/Wntr2134/companion-tools/releases/tag/latest> and download the `.tgz` for each one you need:
    - `ulanzi-stream-controller-….tgz`: D200X
    - `panasonic-ptz-….tgz`: PTZ cameras
    - `uad-console-….tgz`: Apollo / UAD Console
@@ -39,11 +41,11 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
    - `ndi-router-….tgz`: NDI router (Part J)
    - `ndi-studio-monitor-….tgz`: NDI Studio Monitor (Part K)
    - `spotify-local-….tgz`: Spotify (Part L)
-3. In Companion, go to **Modules** → **Import module package** and choose the file. Repeat for each one.
+   Then in Companion: **Modules** → **Import Package**, and choose the file. Repeat for each one.
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A to L**, skipping the "dev version" steps.
 
-To update later: download the new files from the same page and import them again.
+**To update everything later:** download the bundle again from the same link and **Import Bundle**. Modules that haven't changed are skipped. Then pick the new versions with the pencil ✏️ (step 4). Older versions stay installed until you remove them, so you can switch back if a new one misbehaves.
 
 ---
 
