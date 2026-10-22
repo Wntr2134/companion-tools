@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds one Companion "module bundle" from the module packages (.tgz) in a folder.
-# In Companion: Modules → Import Bundle → choose companion-tools-all-modules.tgz. Every module inside is
+# In Companion: Modules → Import offline module bundle (5.x; "Import Bundle" in newer versions) →
+# choose companion-tools-all-modules.tgz. Not "Import module package": that takes one module only. Every module inside is
 # installed in one go (versions already installed are skipped).
 #
 # Bundle layout (what Companion expects): a top folder, then one folder per module, each with
