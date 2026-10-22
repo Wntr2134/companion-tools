@@ -397,3 +397,47 @@ test('app icons: cached per app version, made in one batch, short names for unde
 	await again.ensure([app])
 	assert.equal(runs.length, 2, 'app updated: icon redrawn')
 })
+
+test('auto-update: newest installed release per module, only ours unless asked, via the REST API', async () => {
+	const { planUpdates, compareVersions, scanInstalled, companionRoot, CompanionApi } = await import('../src/updater.js')
+	const { mkdtemp, mkdir, writeFile } = await import('node:fs/promises')
+	const os = await import('node:os')
+	const path = await import('node:path')
+	assert.ok(compareVersions('2.10.0', '2.9.9') > 0)
+	assert.ok(compareVersions('2.3.0-beta.1', '2.3.0') < 0)
+	assert.equal(companionRoot('darwin', {}, '/Users/will'), '/Users/will/Library/Application Support/companion')
+	assert.equal(companionRoot('win32', { APPDATA: 'C:\\Users\\will\\AppData\\Roaming' }, 'x'), path.join('C:\\Users\\will\\AppData\\Roaming', 'companion'))
+
+	const root = await mkdtemp(path.join(os.tmpdir(), 'mods-'))
+	const add = async (dir, id, version, repository = 'git+https://github.com/Wntr2134/companion-tools.git') => {
+		await mkdir(path.join(root, dir, 'companion'), { recursive: true })
+		await writeFile(path.join(root, dir, 'companion', 'manifest.json'), JSON.stringify({ id, version, repository }))
+	}
+	await add('spotify-local-1.3.0', 'spotify-local', '1.3.0')
+	await add('spotify-local-1.3.1', 'spotify-local', '1.3.1')
+	await add('spotify-local-1.4.0-beta.1', 'spotify-local', '1.4.0-beta.1')
+	await add('system-tools-2.2.0', 'system-tools', '2.2.0')
+	await add('bmd-atem-3.1.0', 'bmd-atem', '3.1.0', 'git+https://github.com/bitfocus/companion-module-bmd-atem.git')
+	await add('bmd-atem-3.2.0', 'bmd-atem', '3.2.0', 'git+https://github.com/bitfocus/companion-module-bmd-atem.git')
+	const installed = await scanInstalled(root)
+	const connections = [
+		{ id: 'a', label: 'Spotify__local_', moduleId: 'spotify-local', moduleVersionId: '1.3.0' },
+		{ id: 'b', label: 'System_Tools', moduleId: 'system-tools', moduleVersionId: '2.2.0' },
+		{ id: 'c', label: 'atem', moduleId: 'bmd-atem', moduleVersionId: '3.1.0' },
+		{ id: 'd', label: 'dev one', moduleId: 'spotify-local', moduleVersionId: 'dev' },
+	]
+	assert.deepEqual(planUpdates(connections, installed), [{ id: 'a', label: 'Spotify__local_', moduleId: 'spotify-local', from: '1.3.0', to: '1.3.1' }], 'newest release, ours only, dev left alone')
+	assert.equal(planUpdates(connections, installed, { onlyOurs: false }).length, 2)
+
+	const calls = []
+	const fetchFn = async (url, opts) => {
+		calls.push([opts.method, url, opts.headers.Authorization, opts.body])
+		if (opts.method === 'GET') return { ok: true, status: 200, text: async () => JSON.stringify({ data: connections }) }
+		return { ok: false, status: 403, text: async () => '{}' }
+	}
+	const api = new CompanionApi({ port: 8000, key: 'k1', fetchFn })
+	assert.equal((await api.connections()).length, 4)
+	assert.deepEqual(calls[0].slice(0, 3), ['GET', 'http://127.0.0.1:8000/api/v2/connections/v1/', 'Bearer k1'])
+	await assert.rejects(api.setVersion('a', '1.3.1'), /connections" and "write" scopes/)
+	assert.deepEqual(calls[1], ['PATCH', 'http://127.0.0.1:8000/api/v2/connections/v1/a', 'Bearer k1', '{"versionId":"1.3.1"}'])
+})

@@ -47,7 +47,7 @@ Use this when a Mac only needs to *run* the modules. Part 0 below is for a Mac w
 4. On each connection or surface integration, click the pencil ✏️ next to the version and pick the version you just imported.
 5. Carry on from **Part A to M**, skipping the "dev version" steps.
 
-**To update everything later:** download the bundle again from the same link and import it with the same blue **Import offline module bundle** button. Modules that haven't changed are skipped. Then pick the new versions with the pencil ✏️ (step 4). Older versions stay installed until you remove them, so you can switch back if a new one misbehaves.
+**To update everything later:** download the bundle again from the same link and import it with the same blue **Import offline module bundle** button. Modules that haven't changed are skipped. Then pick the new versions with the pencil ✏️ (step 4), or let System Tools do it: see **Auto-update** in Part I. Older versions stay installed until you remove them, so you can switch back if a new one misbehaves.
 
 ---
 
@@ -486,6 +486,14 @@ Your computer from Companion keys, on the computer Companion runs on. It used to
 - **Already have App Launcher?** Import the new bundle, then on the App Launcher connection click the pencil ✏️ next to its version and pick **System Tools**. Your app keys keep working.
 - **New:** **Connections → + Add connection** → search **System Tools** → add it. Save. The status shows how many apps it found.
 - **Mac permissions (once):** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. This is needed for moving windows, keyboard shortcuts, typing text and locking the screen. If it was already on and things still don't work after a Companion update, remove Companion from the list with **−** and add it again. Ejecting disks and dark mode ask *"Companion wants to control Finder / System Events"* the first time: click **OK**.
+
+### I.1b Auto-update module versions (once)
+Companion adds a newly imported version next to the old one but leaves your connections on the old one. System Tools can move them for you, within a minute of importing a bundle:
+1. Companion → **Settings → REST API**: switch it on, then **Add API key**, tick **connections** and **write**, and copy the key.
+2. Open the **System Tools** connection, paste it into **Companion API key**, and save. *Auto-update module versions* is on by default.
+3. That's it. After each bundle import, your companion-tools connections switch to the new versions by themselves. (Tick *Also other imported modules* to do the same for any other modules you import.) The **UPDATE MODULES** key does it straight away, and the `last_update` variable says what it did.
+
+The D200X plugin (a surface, not a connection) still needs the pencil ✏️ under Surfaces the rare times it updates.
 
 ### I.2 Apps
 **Presets → System Tools → Apps A–C**, **Apps D–F** and so on. On a Mac each key shows the app's icon with its name underneath. Press = open it, or bring it to the front. ✅ The key goes **green while the app is running**. Installed something new? Press **Rescan apps**.

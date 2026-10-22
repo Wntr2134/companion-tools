@@ -102,7 +102,7 @@ jobs:
             --title "Latest build ($(date -u +%Y-%m-%d) ${GITHUB_SHA::7})" \
             --notes "Installable Companion module packages, built from main at ${GITHUB_SHA::7}.
 
-          **Install or update everything at once:** download **companion-tools-all-modules.tgz**, then Companion → **Modules** → **Import offline module bundle** (the blue button; *Import Bundle* in newer Companion). Then pick the new versions on your connections / the D200X surface.
+          **Install or update everything at once:** download **companion-tools-all-modules.tgz**, then Companion → **Modules** → **Import offline module bundle** (the blue button; *Import Bundle* in newer Companion). Then pick the new versions on your connections / the D200X surface (or let System Tools' auto-update do the connections: SETUP-GUIDE.md, Part I).
 
           **One module:** Companion → **Modules** → **Import module package** → choose its .tgz.
 

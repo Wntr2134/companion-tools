@@ -4,6 +4,9 @@ Your computer from Companion keys: the computer Companion runs on. (This used to
 
 **Mac permission, once:** System Settings → Privacy & Security → **Accessibility** → turn on **Companion**. Needed for moving windows, keyboard shortcuts, typing text and locking the screen. After a Companion update, if it stops working, remove Companion from that list with **−** and add it again.
 
+### Auto-update module versions
+After you import a new bundle, System Tools moves your companion-tools connections onto the new versions by itself (checked every minute; the **UPDATE MODULES** key does it now). Companion can't do this for imported modules on its own, so it uses Companion's REST API: **Settings → REST API** → switch on → **Add API key** with the **connections** and **write** scopes → paste the key into this connection's settings. Dev and built-in versions are left alone, and pre-releases are skipped.
+
 ### Apps (Mac and Windows)
 - One key per installed app under **Apps A–C**, **Apps D–F** and so on. Press = open, or bring to the front. **Green while running.**
 - Actions: launch, quit (tick *Force quit* only if it hangs), launch-or-quit toggle, hide, hide all the others, show all, rescan.
