@@ -3,6 +3,7 @@ import { Spotify, toSpotifyUri, fmtTime, permissionHint } from './spotify.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets, cardLines, IDLE_DEFAULTS } from './viewers.js'
 import { markPng, withBrand } from './brand.js'
+import { SpotifyAccounts, ACCOUNT_SLOTS } from './accounts.js'
 import { ArtCache, CARD_SHAPES, encodePng, withProgressBar } from './artwork.js'
 
 const GREEN = combineRgb(30, 215, 96) // Spotify green (#1ED760)
@@ -89,11 +90,14 @@ class SpotifyInstance extends InstanceBase {
 		const seconds = Number(this.config.poll ?? (this.isMac() ? 1 : 3))
 		if (seconds > 0) this.timer = setInterval(() => void this.poll(), seconds * 1000)
 		void this.poll()
+		this.accountTimer = setInterval(() => void this.refreshAccounts(), 5000)
+		void this.refreshAccounts().then(() => this.updateDefinitions())
 	}
 
 	stop() {
 		if (this.timer) clearInterval(this.timer)
 		this.timer = null
+		clearInterval(this.accountTimer)
 	}
 
 	async poll() {
@@ -137,6 +141,44 @@ class SpotifyInstance extends InstanceBase {
 			...cardLines({ ...s, time: s.duration ? `${fmtTime(s.position)} / ${fmtTime(s.duration)}` : '' }, this.idle),
 		})
 		this.checkFeedbacks()
+	}
+
+	/** Who is logged in, and the saved accounts (read from Spotify's settings file every few seconds). */
+	async refreshAccounts() {
+		try {
+			this.accounts ??= new SpotifyAccounts()
+			const st = await this.accounts.status()
+			const before = JSON.stringify(this.accountState)
+			this.accountState = st
+			if (JSON.stringify(st) === before) return
+			const values = { account: st.current?.display ?? 'logged out' }
+			for (let i = 1; i <= ACCOUNT_SLOTS; i++) values[`account_${i}_name`] = st.slots[i]?.name ?? `ACCOUNT ${i}`
+			this.setVariableValues(values)
+			this.checkFeedbacks('account_is')
+		} catch (e) {
+			this.log('debug', `Spotify accounts: ${e.message}`)
+		}
+	}
+
+	async accountAction(what, slot, name) {
+		if (this.switching) return this.log('info', 'Already switching Spotify accounts')
+		this.switching = true
+		try {
+			this.accounts ??= new SpotifyAccounts()
+			if (what === 'save') {
+				const a = await this.accounts.save(slot, name)
+				this.log('info', `Saved the Spotify login ${a.user} as account ${slot} (${a.name})`)
+			} else {
+				const a = await this.accounts.switchTo(slot)
+				this.log('info', `Switched Spotify to account ${slot} (${a.name})`)
+			}
+		} catch (e) {
+			this.log('error', `Spotify account ${slot}: ${e.message}`)
+		} finally {
+			this.switching = false
+			await this.refreshAccounts()
+			setTimeout(() => void this.poll(), 2000)
+		}
 	}
 
 	async send(cmd, arg = '') {
@@ -264,6 +306,19 @@ class SpotifyInstance extends InstanceBase {
 		} else {
 			actions.mute = { name: 'System mute (Windows mute key)', options: [], callback: () => this.send('mute') }
 		}
+		const slotOption = { type: 'dropdown', id: 'slot', label: 'Account', default: 1, choices: Array.from({ length: ACCOUNT_SLOTS }, (_, i) => ({ id: i + 1, label: `${i + 1}${this.accountState?.slots?.[i + 1] ? `: ${this.accountState.slots[i + 1].name}` : ''}` })) }
+		actions.account_switch = {
+			name: 'Accounts: switch to a saved account',
+			description: 'Quits Spotify, swaps to that saved login and opens Spotify again (a few seconds). No passwords are stored.',
+			options: [slotOption],
+			callback: (a) => this.accountAction('switch', Number(a.options.slot)),
+		}
+		actions.account_save = {
+			name: 'Accounts: save who is logged in now as an account',
+			description: "Log in to Spotify as that person first. Spotify is closed and reopened while it's saved.",
+			options: [slotOption, { type: 'textinput', id: 'name', label: 'Name on the key (blank = their Spotify name)', default: '' }],
+			callback: (a) => this.accountAction('save', Number(a.options.slot), String(a.options.name ?? '')),
+		}
 		this.setActionDefinitions(actions)
 
 		this.setFeedbackDefinitions({
@@ -288,6 +343,16 @@ class SpotifyInstance extends InstanceBase {
 				],
 				callback: (fb) => this.drawCard(fb),
 			},
+			account_is: {
+				type: 'boolean',
+				name: 'Accounts: this saved account is the one logged in',
+				defaultStyle: { bgcolor: GREEN, color: BLACK },
+				options: [slotOption],
+				callback: (fb) => {
+					const saved = this.accountState?.slots?.[fb.options.slot]
+					return !!saved && saved.user === this.accountState?.current?.user
+				},
+			},
 			closed: { type: 'boolean', name: 'Spotify is closed', defaultStyle: { bgcolor: GREY, color: combineRgb(150, 150, 150) }, options: [], callback: () => !this.state.running },
 		})
 
@@ -306,6 +371,8 @@ class SpotifyInstance extends InstanceBase {
 			{ variableId: 'shuffle', name: 'Shuffle ON/OFF (Mac)' },
 			{ variableId: 'repeat', name: 'Repeat ON/OFF (Mac)' },
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
+			{ variableId: 'account', name: 'Spotify account logged in now' },
+			...Array.from({ length: ACCOUNT_SLOTS }, (_, i) => ({ variableId: `account_${i + 1}_name`, name: `Saved account ${i + 1}: name` })),
 			{ variableId: 'card_line1', name: 'Viewers: track, or idle line 1 (clock) when nothing is playing' },
 			{ variableId: 'card_line2', name: 'Viewers: artist, or idle line 2 (date) when nothing is playing' },
 			{ variableId: 'card_line2_time', name: 'Viewers: artist · time, or idle line 2' },
@@ -390,6 +457,12 @@ class SpotifyInstance extends InstanceBase {
 				feedbacks: [],
 			}
 		}
+		// Accounts: switch keys (lit for the one logged in) and save keys
+		for (let i = 1; i <= 2; i++) {
+			presets[`account_${i}`] = key('Accounts', `Switch to account ${i}`, `${v(`account_${i}_name`)}`, [{ actionId: 'account_switch', options: { slot: i } }], [{ feedbackId: 'account_is', options: { slot: i }, style: ON }], 'auto')
+			presets[`account_${i}_save`] = key('Accounts', `Save who's logged in as account ${i}`, `SAVE AS\\nACCOUNT ${i}`, [{ actionId: 'account_save', options: { slot: i, name: '' } }])
+		}
+		presets.account_now = key('Accounts', 'Who is logged in', `LOGGED IN\\n${v('account')}`, [], [], 'auto')
 		// − / + keys and push keys for Stream Decks without dials, and the D200X's push row.
 		// Every key gets the Spotify mark behind its label, to tell it apart from other apps' keys.
 		this.setPresetDefinitions(withBrand(withSurfaceExtras({ ...presets, ...getViewerPresets(this) })))
