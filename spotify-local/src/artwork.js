@@ -208,17 +208,18 @@ function pngChunk(type, data) {
 	return Buffer.concat([len, body, crc])
 }
 
-/** Encode RGB pixels as a PNG. Returns base64 (what Companion's png64 style wants). */
-export function encodePng(rgb, width, height) {
+/** Encode RGB (or RGBA, channels = 4) pixels as a PNG. Returns base64 (what Companion's png64 style wants). */
+export function encodePng(rgb, width, height, channels = 3) {
 	const ihdr = Buffer.alloc(13)
 	ihdr.writeUInt32BE(width, 0)
 	ihdr.writeUInt32BE(height, 4)
 	ihdr[8] = 8 // bit depth
-	ihdr[9] = 2 // colour type: RGB
-	const rows = Buffer.alloc((width * 3 + 1) * height)
+	ihdr[9] = channels === 4 ? 6 : 2 // colour type: RGBA or RGB
+	const row = width * channels
+	const rows = Buffer.alloc((row + 1) * height)
 	for (let y = 0; y < height; y++) {
-		rows[y * (width * 3 + 1)] = 0 // filter: none
-		Buffer.from(rgb.buffer, rgb.byteOffset + y * width * 3, width * 3).copy(rows, y * (width * 3 + 1) + 1)
+		rows[y * (row + 1)] = 0 // filter: none
+		Buffer.from(rgb.buffer, rgb.byteOffset + y * row, row).copy(rows, y * (row + 1) + 1)
 	}
 	return Buffer.concat([
 		Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),

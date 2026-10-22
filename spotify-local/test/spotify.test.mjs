@@ -176,3 +176,21 @@ test('now-playing card goes under the text as a PNG, at the shape picked (Compan
 		assert.ok(!p.style.text.includes('$(internal:'), 'internal variables show $NA in the presets list')
 	}
 })
+
+test('branding: the Spotify mark goes behind every key that has no image of its own', async () => {
+	const { withBrand, markCoverage, markPng } = await import('../src/brand.js')
+	const cov = markCoverage(72)
+	assert.equal(cov[0], 0, 'corners are clear')
+	assert.ok(cov[36 * 72 + 8] > 0.9, 'the circle fills the middle row')
+	const arcsCut = [...cov].filter((c) => c === 0).length
+	assert.ok(arcsCut > 72 * 72 * 0.5 - 1, 'transparent outside the circle and in the arcs')
+	const png = Buffer.from(markPng(), 'base64')
+	assert.equal(png[25], 6, 'RGBA, so the key colour shows through')
+
+	const out = withBrand({
+		a: { type: 'button', style: { text: 'A' }, feedbacks: [] },
+		b: { type: 'button', style: { text: 'B', png64: 'x' }, feedbacks: [] },
+	})
+	assert.ok(out.a.style.png64.length > 100)
+	assert.equal(out.b.style.png64, 'x', 'a key with its own image keeps it')
+})
