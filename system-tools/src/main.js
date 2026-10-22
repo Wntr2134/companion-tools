@@ -33,6 +33,7 @@ import { getViewerPresets } from './viewers.js'
 import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
+import { CompanionApi, companionRoot, planUpdates, scanInstalled } from './updater.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const BLUE = combineRgb(10, 110, 230) // lit system keys (macOS accent blue)
@@ -91,8 +92,9 @@ class SystemToolsInstance extends InstanceBase {
 		return process.platform === 'darwin'
 	}
 
-	async init(config) {
+	async init(config, _isFirstInit, secrets) {
 		this.config = config
+		this.secrets = secrets ?? {}
 		this.keepAwake = new KeepAwake()
 		this.keepAwake.onChange = () => {
 			this.setVariableValues({ keep_awake: this.keepAwake.on ? 'ON' : 'OFF' })
@@ -107,8 +109,9 @@ class SystemToolsInstance extends InstanceBase {
 		}
 	}
 
-	async configUpdated(config) {
+	async configUpdated(config, secrets) {
 		this.config = config
+		this.secrets = secrets ?? {}
 		await this.rescan()
 		if (this.mac) void this.refreshShortcuts()
 	}
@@ -239,6 +242,8 @@ class SystemToolsInstance extends InstanceBase {
 		this.timers.push(setInterval(() => this.tickClock(), 1000))
 		if (this.mac) this.timers.push(setInterval(() => void this.refreshScreens(), 30000))
 		if (this.mac) this.timers.push(setInterval(() => void this.refreshDock(), 60000))
+		this.timers.push(setInterval(() => void this.autoUpdate(), 60000))
+		setTimeout(() => void this.autoUpdate(), 5000)
 		if (this.mac) this.timers.push(setInterval(() => void this.refreshBluetooth(), 10000))
 		if (this.mac) void this.refreshBluetooth()
 		this.tickClock()
@@ -459,6 +464,35 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	/** The port Companion's admin pages are on (Settings → Admin port), 8000 unless changed. */
+	/**
+	 * Moves connections onto the newest installed version of their module (the bundle import adds new
+	 * versions next to the old ones). Needs a Companion REST API key in the settings.
+	 */
+	async autoUpdate(manual = false) {
+		const key = String(this.secrets?.apiKey ?? '').trim()
+		if (this.config.autoUpdate === false && !manual) return
+		if (!key) {
+			if (manual) this.log('warn', 'Auto-update needs a Companion API key: see this connection\'s settings')
+			return
+		}
+		try {
+			const installed = await scanInstalled(path.join(companionRoot(), 'modules'))
+			const api = new CompanionApi({ port: await this.companionAdminPort(), key })
+			const plan = planUpdates(await api.connections(), installed, { onlyOurs: this.config.updateAll !== true })
+			// System Tools itself goes last: switching it restarts this module.
+			plan.sort((a, b) => (a.moduleId === 'system-tools') - (b.moduleId === 'system-tools'))
+			for (const p of plan) {
+				this.log('info', `Updating ${p.label} (${p.moduleId}) from ${p.from} to ${p.to}`)
+				await api.setVersion(p.id, p.to)
+			}
+			this.setVariableValues({ last_update: plan.length ? `${plan.length} updated ${this.clock ?? ''}`.trim() : 'all up to date' })
+			if (manual && !plan.length) this.log('info', 'Every connection is already on its newest installed version')
+		} catch (e) {
+			this.log('warn', `Auto-update: ${e.message}`)
+			this.setVariableValues({ last_update: 'failed: see log' })
+		}
+	}
+
 	async companionAdminPort() {
 		try {
 			const port = (await this.parseVariablesInString('$(internal:bind_port)')).trim()
@@ -650,6 +684,12 @@ class SystemToolsInstance extends InstanceBase {
 				callback: (a) => this.setBluetooth(String(a.options.device), a.options.mode),
 			},
 			refresh_bluetooth: { name: 'Bluetooth: re-read the paired devices (Mac)', options: [], callback: () => this.refreshBluetooth() },
+			update_modules: {
+				name: 'Companion: put every connection on its newest module version',
+				description: 'Runs the auto-update now. Needs a Companion API key in this connection\'s settings.',
+				options: [],
+				callback: () => this.autoUpdate(true),
+			},
 			refresh_dock: { name: 'App: re-read the Dock (Mac)', options: [], callback: () => this.refreshDock() },
 			rescan: { name: 'App: rescan for apps', description: 'Run after installing or removing apps.', options: [], callback: async () => this.rescan() },
 			hide_app: {
@@ -1017,6 +1057,7 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'battery', name: 'Battery (blank on desktops)' },
 			{ variableId: 'disk_battery', name: 'Disk free and battery on one line' },
 			{ variableId: 'ip', name: 'IP address' },
+			{ variableId: 'last_update', name: 'Auto-update: what it last did' },
 			{ variableId: 'companion_url', name: "Companion's address for other devices (http://IP:port)" },
 			{ variableId: 'uptime', name: 'Time since the computer started' },
 			{ variableId: 'volume', name: 'Output volume (Mac; – when the device has no volume)' },
@@ -1076,6 +1117,7 @@ class SystemToolsInstance extends InstanceBase {
 		presets.keep_awake = key('Show machine', 'Keep awake (toggle)', 'KEEP\\nAWAKE', act('keep_awake', { mode: 'toggle', displays: true }), [{ feedbackId: 'keep_awake', options: {}, style: { bgcolor: AMBER, color: BLACK } }])
 		presets.display_sleep = key('Show machine', 'Sleep the displays', 'SLEEP\\nSCREENS', act('display_sleep'))
 		presets.lock = key('Show machine', 'Lock the screen', 'LOCK', act('lock_screen'), [], '18')
+		presets.update_modules = key('Show machine', 'Put connections on their newest module versions', 'UPDATE\\nMODULES', act('update_modules'))
 		presets.open_companion = key('Show machine', "Open Companion's admin page", 'OPEN\\nCOMPANION', act('open_companion', { page: '' }))
 		presets.screen_saver = key('Show machine', 'Screen saver', 'SCREEN\\nSAVER', act('screen_saver'))
 		presets.eject = key('Show machine', 'Eject all disks', 'EJECT\\nDISKS ⏏', act('eject_disks'))
@@ -1191,6 +1233,17 @@ class SystemToolsInstance extends InstanceBase {
 			},
 			{ type: 'checkbox', id: 'includeSystem', label: 'Mac: include built-in apps (Safari, Notes, System Settings…)', width: 6, default: false },
 			{ type: 'checkbox', id: 'icons', label: 'Mac: show app icons on app keys', width: 6, default: true },
+			{
+				type: 'static-text',
+				id: 'update_info',
+				width: 12,
+				label: 'Auto-update module versions',
+				value:
+					'After you import a new bundle, this moves your connections onto the new versions by itself (checked every minute). Companion can\'t do this for imported modules on its own. Once: Companion → <b>Settings → REST API</b> → switch it on → <b>Add API key</b> with the <b>connections</b> and <b>write</b> scopes → paste the key below.',
+			},
+			{ type: 'checkbox', id: 'autoUpdate', label: 'Auto-update module versions', width: 4, default: true },
+			{ type: 'checkbox', id: 'updateAll', label: 'Also other imported modules (not just companion-tools)', width: 8, default: false },
+			{ type: 'secret-text', id: 'apiKey', label: 'Companion API key', width: 12, default: '' },
 			{ type: 'number', id: 'pollSeconds', label: 'Check which apps are running every (seconds, 0 = off)', width: 6, default: 3, min: 0, max: 60 },
 			{ type: 'textinput', id: 'extraFolders', label: 'Mac: extra folders to search for apps (one per line)', width: 12, default: '', multiline: true },
 		]
