@@ -359,10 +359,19 @@ test('Bluetooth: paired devices from blueutil or the built-in script; addresses 
 	assert.deepEqual(calls.at(-1), ['/opt/homebrew/bin/blueutil', '--connect', 'aa-bb-cc-dd-ee-01'])
 
 	const builtIn = new Bluetooth({ exec: exec('{"ok":false,"code":-536870212}'), blueutil: undefined })
-	await assert.rejects(builtIn.set('aa-bb-cc-dd-ee-01', true), /is the device on/)
+	await assert.rejects(builtIn.set('aa-bb-cc-dd-ee-01', true), /general error, 0xe00002bc.*is the device on/)
 	assert.deepEqual(calls.at(-1).slice(0, 3), ['osascript', '-l', 'JavaScript'])
 	assert.equal(calls.at(-1)[4], BT_SCRIPT)
 	assert.deepEqual(calls.at(-1).slice(5), ['connect', 'aa-bb-cc-dd-ee-01'])
+})
+
+test('Bluetooth: connect calls the method (JXA hands back a function for openConnection) and checks it connected', async () => {
+	const { BT_SCRIPT, btCode } = await import('../src/bluetooth.js')
+	assert.match(BT_SCRIPT, /m\(\$\(\)\)/)
+	assert.match(BT_SCRIPT, /isConnected/)
+	assert.equal(btCode(0xe00002d6 | 0), 'timed out, 0xe00002d6')
+	assert.equal(btCode(5), 'code 0x5')
+	assert.match(btCode('undefined'), /no result/)
 })
 
 test('app icons: cached per app version, made in one batch, short names for under the icon', async () => {
