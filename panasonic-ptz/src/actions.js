@@ -1411,11 +1411,14 @@ export function getActionDefinitions(self) {
 					choices: [
 						{ id: '0', label: 'Desktop' },
 						{ id: '1', label: 'Hanging' },
+						{ id: 'flip', label: 'Flip (Desktop ↔ Hanging)' },
 					],
 				},
 			],
 			callback: async (action) => {
-				await sendPTZ(self, 'INS' + action.options.position)
+				// Flip goes by the position the camera last reported (Desktop if it hasn't said yet).
+				const position = action.options.position === 'flip' ? (self.data.ins === 'Hanging' ? '0' : '1') : action.options.position
+				await sendPTZ(self, 'INS' + position)
 			},
 		}
 	}

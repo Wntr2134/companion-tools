@@ -1562,6 +1562,22 @@ export function getPresetDefinitions(self) {
 		}
 	}
 
+	if (seriesActions.ins) {
+		presets['system-ins-flip'] = {
+			type: 'button',
+			category: 'System',
+			name: 'Flip orientation (Desktop ↔ Hanging), amber while hanging',
+			style: {
+				text: `FLIP\\n$(${self.label || 'Panasonic-PTZ'}:ins)`,
+				size: 'auto',
+				color: 16777215,
+				bgcolor: combineRgb(40, 40, 40),
+			},
+			steps: [{ down: [{ actionId: 'insPosition', options: { position: 'flip' } }], up: [] }],
+			feedbacks: [{ feedbackId: 'insState', options: { option: '1' }, style: { color: 0, bgcolor: combineRgb(255, 160, 0) } }],
+		}
+	}
+
 	if (seriesActions.sdCard) {
 		presets['system-sd-card-recording-start'] = {
 			type: 'button',

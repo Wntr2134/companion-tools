@@ -276,3 +276,22 @@ test('wide key viewers: display only, short enough for a normal key too', async 
 	}
 	if (out.section) assert.deepEqual(out.section.definitions, Object.keys(presets))
 })
+
+test('flip orientation: one key toggles Desktop ↔ Hanging from what the camera last reported', async () => {
+	const { getActionDefinitions } = await import('../src/actions.js')
+	const self = makeSelf()
+	self.config.model = 'AW-HE40'
+	self.data = { model: 'AW-HE40', modelTCP: 'AW-HE40', series: 'Auto', ins: 'Desktop' }
+	self.checkFeedbacks = () => {}
+	const defs = getActionDefinitions(self)
+	const flip = () => defs.insPosition.callback({ options: { position: 'flip' } })
+	cam.log = []
+	await flip()
+	self.data.ins = 'Hanging'
+	await flip()
+	self.data.ins = 'NaN' // not reported yet: goes to Hanging (desktop is the default)
+	await flip()
+	await defs.insPosition.callback({ options: { position: '0' } })
+	await idle(self)
+	assert.deepEqual(cam.log.map((l) => l.cmd), ['#INS1', '#INS0', '#INS1', '#INS0'])
+})
