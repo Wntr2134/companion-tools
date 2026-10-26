@@ -90,8 +90,10 @@ export function checkButton(where, p, actions, feedbacks) {
 	const style = p.style ?? {}
 	if (!style.text && !style.png64 && !(p.feedbacks ?? []).length) problems.push(`${where}: no text or image`)
 	for (const step of p.steps ?? []) {
-		for (const [kind, list] of Object.entries(step)) {
-			if (!Array.isArray(list)) continue
+		for (const [kind, set] of Object.entries(step)) {
+			// hold sets look like 5000: { options, actions: [...] }
+			const list = Array.isArray(set) ? set : Array.isArray(set?.actions) ? set.actions : null
+			if (!list) continue
 			for (const a of list) {
 				if (!a?.actionId) continue
 				const def = actions[a.actionId]

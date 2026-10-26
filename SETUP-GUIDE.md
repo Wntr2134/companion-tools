@@ -521,7 +521,7 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 - **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
 
 ### I.6 Ready-made D200X pages
-Seven pages that work straight away. On every one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
+Eight pages that work straight away. On the seven Mac pages, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. Page 8 is for a Panasonic PTZ camera. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
 
 1. **Dock Apps**: Your Dock as keys: Finder then your Dock apps in order (11 keys), each named after its app and green while it runs. Rearrange the Dock and the keys follow. Knob 1 = Mac volume (push = mute), knob 2 = move the front window to the previous / next screen (push = fill).
 2. **Dock Apps 2**: Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).
@@ -530,13 +530,14 @@ Seven pages that work straight away. On every one, **Spotify keeps the same spot
 5. **Windows**: Window layouts for the window in front: thirds, two-thirds, quarters, centre, minimise. Knob 1 = move it to the previous / next screen (push = fill the screen), knob 2 = left / right half (push = centre).
 6. **Show Machine**: Window layouts 1–4 (arrange your windows, press SAVE, then the LAYOUT key puts them back), keep awake, sleep screens, eject disks, dark mode. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
 7. **Show Apps**: Open your show apps (green while running), arrange them across screens in one press (edit ARRANGE SHOW to suit), hide everything else, and push the front window to screen 1 or 2. Knob 1 = Mac volume (push = mute), knob 2 = desktops.
+8. **PTZ Camera**: Panasonic PTZ: camera presets 1–5 on the top row (press = recall, hold 5 s = save over it; red SAVED when done, green for the last one recalled). The wide key flips the camera between Desktop and Hanging (amber while hanging). Knob 1 = pan (push = home), knob 2 = tilt, knob 3 = zoom. The second and third rows are left free for you.
 
 **To import them (one file, all pages):**
 1. Download **[D200X-pages.companionconfig](https://github.com/Wntr2134/companion-tools/releases/download/latest/D200X-pages.companionconfig)**.
 2. In Companion: **Import / Export → Import**, choose the file.
 3. Go to the **Buttons** tab. **Not Full Import**: that would replace your whole setup.
 4. On the left pick a page from the file (1 Dock Apps, 2 Dock Apps 2…); on the right pick an **empty page** of yours.
-5. Under connections, match **System_Tools** to your System Tools connection (it may still be called App_Launcher) and **Spotify__local_** to your Spotify one. Don't let it create new ones.
+5. Under connections, match **System_Tools** to your System Tools connection (it may still be called App_Launcher) **Spotify__local_** to your Spotify one and **Panasonic-PTZ** to your camera. Don't let it create new ones.
 6. **Import**. For another page, pick it on the left and import again: no need to load the file again.
 
 Any key you don't want: right-click → delete, or drag a preset over it.

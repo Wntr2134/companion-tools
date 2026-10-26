@@ -1,11 +1,11 @@
 // Builds ready-to-import D200X pages (system-tools/extras/pages/D200X-pages.companionconfig, every page in
 // one file) from the modules' own presets, so every key looks and behaves exactly like the preset it came from.
 //
-// On every page, Spotify keeps the same spots: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume
+// On every Mac page, Spotify keeps the same spots: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume
 // (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays).
-// Everything else is System Tools.
+// Everything else is System Tools. The PTZ Camera page is Panasonic PTZ only.
 //
-// Run from the repo root (after `npm install` in system-tools/ and spotify-local/):
+// Run from the repo root (after `npm install` in system-tools/, spotify-local/ and panasonic-ptz/):
 //   node tools/make-pages.mjs          writes the pages
 //   node tools/make-pages.mjs --check  checks they're up to date (CI)
 import { createHash } from 'node:crypto'
@@ -22,6 +22,7 @@ const { loadModule, checkButton, root } = await import('./module-host.mjs')
 const CONN = {
 	sys: { id: 'system-tools', label: 'System_Tools', moduleId: 'system-tools' },
 	sp: { id: 'spotify-local', label: 'Spotify__local_', moduleId: 'spotify-local' },
+	ptz: { id: 'panasonic-ptz', label: 'Panasonic-PTZ', moduleId: 'panasonic-ptz' },
 }
 const DARK = 0x181a1e
 const WHITE = 0xffffff
@@ -188,6 +189,21 @@ const PAGES = {
 			...knobs(systemVolume(), desktopKnob()),
 		},
 	},
+	'PTZ Camera': {
+		about: 'Panasonic PTZ: camera presets 1–5 on the top row (press = recall, hold 5 s = save over it; red SAVED when done, green for the last one recalled). The wide key flips the camera between Desktop and Hanging (amber while hanging). Knob 1 = pan (push = home), knob 2 = tilt, knob 3 = zoom. The second and third rows are left free for you.',
+		keys: {
+			'0/0': preset('ptz', 'save-recall-presets-0'),
+			'0/1': preset('ptz', 'save-recall-presets-1'),
+			'0/2': preset('ptz', 'save-recall-presets-2'),
+			'0/3': preset('ptz', 'save-recall-presets-3'),
+			'0/4': preset('ptz', 'save-recall-presets-4'),
+			'2/3': preset('ptz', 'system-ins-flip'),
+			'3/1': preset('ptz', 'knob-pan'),
+			'4/1': preset('ptz', 'pan-tilt-home'),
+			'3/2': preset('ptz', 'knob-tilt'),
+			'3/3': preset('ptz', 'knob-zoom'),
+		},
+	},
 }
 
 // ---------- to Companion's page format ----------
@@ -203,6 +219,13 @@ function toControl(page, pos, b) {
 	for (const set of ['down', 'up', 'rotate_left', 'rotate_right']) {
 		if (set.startsWith('rotate') && !b.options?.rotaryActions) continue
 		action_sets[set] = (step[set] ?? []).map((a, i) => entity('action', `${set}${i}`, a.actionId, a.options))
+	}
+	// Hold actions: a preset's `5000: { options, actions }` is the set that fires after 5 s held.
+	const runWhileHeld = []
+	for (const [set, v] of Object.entries(step)) {
+		if (!/^\d+$/.test(set)) continue
+		action_sets[set] = (v.actions ?? []).map((a, i) => entity('action', `${set}_${i}`, a.actionId, a.options))
+		if (v.options?.runWhileHeld) runWhileHeld.push(Number(set))
 	}
 	const s = b.style ?? {}
 	return {
@@ -226,7 +249,7 @@ function toControl(page, pos, b) {
 			...(f.style ? { style: f.style } : {}),
 		})),
 		localVariables: [],
-		steps: { 0: { action_sets, options: { runWhileHeld: [] } } },
+		steps: { 0: { action_sets, options: { runWhileHeld } } },
 	}
 }
 

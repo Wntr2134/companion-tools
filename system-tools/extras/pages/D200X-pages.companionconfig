@@ -9296,6 +9296,877 @@
     "minRow": 0,
     "maxRow": 4
    }
+  },
+  "8": {
+   "name": "PTZ Camera",
+   "controls": {
+    "0": {
+     "0": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "PRESET\\n1",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "xBCpPHgNStzcqSiqvD0S3",
+        "type": "feedback",
+        "definitionId": "presetActive",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "00"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 30720,
+         "color": 16777215
+        }
+       },
+       {
+        "id": "Q0jya6Hok10KNpMK02pDG",
+        "type": "feedback",
+        "definitionId": "presetSaved",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "00"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 13107200,
+         "color": 16777215,
+         "text": "SAVED\\n1"
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "5000": [
+          {
+           "id": "9tqUc2jfzwpVLbg3JP_qK",
+           "type": "action",
+           "definitionId": "savePset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "00"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "down": [],
+         "up": [
+          {
+           "id": "66x2dQLY1CK7XCZQ7p6Od",
+           "type": "action",
+           "definitionId": "recallPset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "00"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": [
+          5000
+         ]
+        }
+       }
+      }
+     },
+     "1": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "PRESET\\n2",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "QYn6A5IvSjpCJP9xxFPNn",
+        "type": "feedback",
+        "definitionId": "presetActive",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "01"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 30720,
+         "color": 16777215
+        }
+       },
+       {
+        "id": "UoO4NN_xG4sHyBp2oN1RW",
+        "type": "feedback",
+        "definitionId": "presetSaved",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "01"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 13107200,
+         "color": 16777215,
+         "text": "SAVED\\n2"
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "5000": [
+          {
+           "id": "MYrYHAUfyNTnZqHAL2EjO",
+           "type": "action",
+           "definitionId": "savePset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "01"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "down": [],
+         "up": [
+          {
+           "id": "9xdEut4mTPY9wu_bMH3D3",
+           "type": "action",
+           "definitionId": "recallPset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "01"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": [
+          5000
+         ]
+        }
+       }
+      }
+     },
+     "2": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "PRESET\\n3",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "uQidivtpb0faUPkE8Uxps",
+        "type": "feedback",
+        "definitionId": "presetActive",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "02"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 30720,
+         "color": 16777215
+        }
+       },
+       {
+        "id": "nCrnHlds5AZvZIqGr07Lq",
+        "type": "feedback",
+        "definitionId": "presetSaved",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "02"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 13107200,
+         "color": 16777215,
+         "text": "SAVED\\n3"
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "5000": [
+          {
+           "id": "VyIrq36uQdZ8fYvC0dxsr",
+           "type": "action",
+           "definitionId": "savePset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "02"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "down": [],
+         "up": [
+          {
+           "id": "CTQ5hCcZuGUrYmsprU4ZS",
+           "type": "action",
+           "definitionId": "recallPset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "02"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": [
+          5000
+         ]
+        }
+       }
+      }
+     },
+     "3": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "PRESET\\n4",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "jFvcbbj3as-Um3WwsRevm",
+        "type": "feedback",
+        "definitionId": "presetActive",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "03"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 30720,
+         "color": 16777215
+        }
+       },
+       {
+        "id": "JT25iXOGI228E1dC6EFJ8",
+        "type": "feedback",
+        "definitionId": "presetSaved",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "03"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 13107200,
+         "color": 16777215,
+         "text": "SAVED\\n4"
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "5000": [
+          {
+           "id": "qMnXklxR0jvgUBJEo1GRo",
+           "type": "action",
+           "definitionId": "savePset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "03"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "down": [],
+         "up": [
+          {
+           "id": "D_dnzcaC4KuQsB6GNAn93",
+           "type": "action",
+           "definitionId": "recallPset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "03"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": [
+          5000
+         ]
+        }
+       }
+      }
+     },
+     "4": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "PRESET\\n5",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "GXdFAv_fiVAfkB7ITTQaU",
+        "type": "feedback",
+        "definitionId": "presetActive",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "04"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 30720,
+         "color": 16777215
+        }
+       },
+       {
+        "id": "9uCUUU5zB7SKLvTxDVyn1",
+        "type": "feedback",
+        "definitionId": "presetSaved",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "val": {
+          "isExpression": false,
+          "value": "04"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "bgcolor": 13107200,
+         "color": 16777215,
+         "text": "SAVED\\n5"
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "5000": [
+          {
+           "id": "epxvcy_lS30PSmLfo-HxF",
+           "type": "action",
+           "definitionId": "savePset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "04"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "down": [],
+         "up": [
+          {
+           "id": "g-F4R4pbHA40i7SWzKzqz",
+           "type": "action",
+           "definitionId": "recallPset",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "val": {
+             "isExpression": false,
+             "value": "04"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": [
+          5000
+         ]
+        }
+       }
+      }
+     }
+    },
+    "2": {
+     "3": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "FLIP\\n$(Panasonic-PTZ:ins)",
+       "textExpression": false,
+       "size": "auto",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 2631720,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [
+       {
+        "id": "lVGEOwVb-M_fdQv1LwCDf",
+        "type": "feedback",
+        "definitionId": "insState",
+        "connectionId": "panasonic-ptz",
+        "options": {
+         "option": {
+          "isExpression": false,
+          "value": "1"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        },
+        "style": {
+         "color": 0,
+         "bgcolor": 16752640
+        }
+       }
+      ],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "down": [
+          {
+           "id": "Ud5AXUHw16CKfG-YVU6M1",
+           "type": "action",
+           "definitionId": "insPosition",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "position": {
+             "isExpression": false,
+             "value": "flip"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "up": []
+        },
+        "options": {
+         "runWhileHeld": []
+        }
+       }
+      }
+     }
+    },
+    "3": {
+     "1": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": true
+      },
+      "style": {
+       "text": "PAN\\n$(Panasonic-PTZ:panPosition)",
+       "textExpression": false,
+       "size": "14",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 2631720,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "down": [],
+         "up": [],
+         "rotate_left": [
+          {
+           "id": "zHKo948Yh266PoJVSLYme",
+           "type": "action",
+           "definitionId": "knobPanTiltStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "left"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "rotate_right": [
+          {
+           "id": "csDy0kGPWkcLZA-Mx-bO2",
+           "type": "action",
+           "definitionId": "knobPanTiltStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "right"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": []
+        }
+       }
+      }
+     },
+     "2": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": true
+      },
+      "style": {
+       "text": "TILT\\n$(Panasonic-PTZ:tiltPosition)",
+       "textExpression": false,
+       "size": "14",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 2631720,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "down": [],
+         "up": [],
+         "rotate_left": [
+          {
+           "id": "RD1R4axrHXprWgDrFkNZw",
+           "type": "action",
+           "definitionId": "knobPanTiltStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "down"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "rotate_right": [
+          {
+           "id": "Yl87VUdLvhfXfB_3Jiy1V",
+           "type": "action",
+           "definitionId": "knobPanTiltStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "up"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": []
+        }
+       }
+      }
+     },
+     "3": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": true
+      },
+      "style": {
+       "text": "ZOOM\\n$(Panasonic-PTZ:zoomPosition)%",
+       "textExpression": false,
+       "size": "14",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 2631720,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "down": [],
+         "up": [],
+         "rotate_left": [
+          {
+           "id": "ytLmjPLTP6IYlGwh6x5Tx",
+           "type": "action",
+           "definitionId": "knobZoomStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "out"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            },
+            "method": {
+             "isExpression": false,
+             "value": "position"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ],
+         "rotate_right": [
+          {
+           "id": "RgCJm5M4TKB784WjD9cYD",
+           "type": "action",
+           "definitionId": "knobZoomStep",
+           "connectionId": "panasonic-ptz",
+           "options": {
+            "direction": {
+             "isExpression": false,
+             "value": "in"
+            },
+            "size": {
+             "isExpression": false,
+             "value": 2
+            },
+            "method": {
+             "isExpression": false,
+             "value": "position"
+            }
+           },
+           "upgradeIndex": -1
+          }
+         ]
+        },
+        "options": {
+         "runWhileHeld": []
+        }
+       }
+      }
+     }
+    },
+    "4": {
+     "1": {
+      "type": "button",
+      "options": {
+       "stepProgression": "auto",
+       "rotaryActions": false
+      },
+      "style": {
+       "text": "HOME",
+       "textExpression": false,
+       "size": "18",
+       "alignment": "center:center",
+       "pngalignment": "center:center",
+       "color": 16777215,
+       "bgcolor": 0,
+       "show_topbar": false,
+       "png64": null
+      },
+      "feedbacks": [],
+      "localVariables": [],
+      "steps": {
+       "0": {
+        "action_sets": {
+         "down": [
+          {
+           "id": "F6NTXg5mSsNddTOneRbbc",
+           "type": "action",
+           "definitionId": "home",
+           "connectionId": "panasonic-ptz",
+           "options": {},
+           "upgradeIndex": -1
+          }
+         ],
+         "up": []
+        },
+        "options": {
+         "runWhileHeld": []
+        }
+       }
+      }
+     }
+    }
+   },
+   "gridSize": {
+    "minColumn": 0,
+    "maxColumn": 4,
+    "minRow": 0,
+    "maxRow": 4
+   }
   }
  },
  "instances": {
@@ -9310,6 +10181,12 @@
    "moduleId": "spotify-local",
    "lastUpgradeIndex": -1,
    "sortOrder": 1
+  },
+  "panasonic-ptz": {
+   "label": "Panasonic-PTZ",
+   "moduleId": "panasonic-ptz",
+   "lastUpgradeIndex": -1,
+   "sortOrder": 2
   }
  },
  "connectionCollections": []
