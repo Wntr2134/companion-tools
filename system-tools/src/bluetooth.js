@@ -35,7 +35,9 @@ function run(argv) {
 	const want = cmd === 'connect'
 	for (let i = 0; i < 20 && !!d.isConnected !== want; i++) delay(0.25)
 	const connected = !!d.isConnected
-	return JSON.stringify({ ok: connected === want, code: typeof code === 'number' ? code : String(code), connected })
+	// Without BridgeSupport JXA can hand the result code back as an object ("[id nil]"), so whether it
+	// worked is judged by isConnected; the code is only for the log.
+	return JSON.stringify({ ok: connected === want, ran: code !== undefined, code: typeof code === 'number' ? code : String(code), connected })
 }
 `
 
@@ -88,6 +90,8 @@ export class Bluetooth {
 			return
 		}
 		const r = JSON.parse((await this.#run('osascript', ['-l', 'JavaScript', '-e', BT_SCRIPT, connect ? 'connect' : 'disconnect', normAddress(address)])).trim() || '{}')
-		if (!r.ok) throw new Error(r.error ?? `macOS said no (${btCode(r.code)}): is the device on, nearby and not connected to another phone or computer?`)
+		if (r.ok) return
+		const why = typeof r.code === 'number' && r.code !== 0 ? `macOS said no (${btCode(r.code)})` : `it didn't ${connect ? 'connect' : 'disconnect'}`
+		throw new Error(r.error ?? `${why}: is the device on, nearby and not connected to another phone or computer?`)
 	}
 }

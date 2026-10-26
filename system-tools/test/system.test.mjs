@@ -369,6 +369,11 @@ test('Bluetooth: connect calls the method (JXA hands back a function for openCon
 	const { BT_SCRIPT, btCode } = await import('../src/bluetooth.js')
 	assert.match(BT_SCRIPT, /m\(\$\(\)\)/)
 	assert.match(BT_SCRIPT, /isConnected/)
+	assert.match(BT_SCRIPT, /ran: code !== undefined/)
+	// a code JXA couldn't read as a number: judged on whether it connected
+	const { Bluetooth } = await import('../src/bluetooth.js')
+	const bt = new Bluetooth({ exec: (f, a, o, cb) => cb(null, '{"ok":false,"ran":true,"code":"[id nil]","connected":false}', ''), blueutil: undefined })
+	await assert.rejects(bt.set('aa-bb-cc-dd-ee-01', true), /it didn't connect: is the device on/)
 	assert.equal(btCode(0xe00002d6 | 0), 'timed out, 0xe00002d6')
 	assert.equal(btCode(5), 'code 0x5')
 	assert.match(btCode('undefined'), /no result/)

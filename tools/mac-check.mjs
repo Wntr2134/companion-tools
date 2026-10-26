@@ -116,7 +116,7 @@ await step('System Tools: Bluetooth connect really calls macOS (a made-up device
 	const out = await exec('osascript', ['-l', 'JavaScript', '-e', bt.BT_SCRIPT, 'connect', '00-11-22-33-44-55'], { timeout: 60000 })
 	const r = JSON.parse(out.stdout.trim())
 	if (r.error === 'not paired') return 'no Bluetooth device object here'
-	if (typeof r.code !== 'number') throw new Error(`connect didn't run: ${out.stdout.trim()}`)
+	if (!r.ran || r.connected) throw new Error(`connect didn't run: ${out.stdout.trim()}`)
 	return `code ${r.code}, connected ${r.connected}`
 })
 await step('System Tools: app icons drawn (Finder, Safari, Music)', async () => {
