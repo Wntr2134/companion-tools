@@ -3,7 +3,7 @@ import os from 'node:os'
 import { execFile } from 'node:child_process'
 import path from 'node:path'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { scanApps, runningApps, launchCommand, quitCommand, run } from './apps.js'
+import { scanApps, runningApps, launchCommand, quitCommand, openCommand, run } from './apps.js'
 import { POSITIONS, parseLayout, windowRequest, placeItem, restoreItems, summarise } from './mac-windows.js'
 import {
 	SOUND_READ,
@@ -855,22 +855,38 @@ class SystemToolsInstance extends InstanceBase {
 							{ id: 'tablet', label: 'Web buttons' },
 						],
 					},
+					{
+						type: 'textinput',
+						id: 'browser',
+						label: 'Open in, Mac (blank = your default browser)',
+						tooltip: 'An app name such as Safari, Google Chrome, Firefox or Arc. Naming one skips link pickers like OpenIn.',
+						default: '',
+					},
 				],
 				callback: async (a) => {
 					const url = `http://127.0.0.1:${await this.companionAdminPort()}/${a.options.page ?? ''}`
-					if (process.platform === 'win32') await run('explorer.exe', [url]).catch(() => null)
-					else await run('open', [url]).catch((e) => this.fail('Open Companion', e))
+					const [file, args] = openCommand(url, a.options.browser)
+					await run(file, args).catch((e) => (process.platform === 'win32' ? null : this.fail('Open Companion', e)))
 				},
 			},
 			open_target: {
 				name: 'Open a file, folder or web link',
-				options: [{ type: 'textinput', id: 'target', label: 'Path or link (variables allowed)', default: 'https://', useVariables: true }],
+				options: [
+					{ type: 'textinput', id: 'target', label: 'Path or link (variables allowed)', default: 'https://', useVariables: true },
+					{
+						type: 'textinput',
+						id: 'browser',
+						label: 'Open in, Mac (blank = the usual app)',
+						tooltip: 'An app name such as Safari, Google Chrome, Firefox or Arc. Naming one skips link pickers like OpenIn.',
+						default: '',
+					},
+				],
 				callback: async (a, ctx) => {
 					const target = (await ctx.parseVariablesInString(String(a.options.target ?? ''))).trim()
 					if (!target) return
 					const t = target.startsWith('~/') ? path.join(os.homedir(), target.slice(2)) : target
-					if (process.platform === 'win32') await run('explorer.exe', [t]).catch(() => null)
-					else await run('open', [t]).catch((e) => this.fail(`Open ${target}`, e))
+					const [file, args] = openCommand(t, a.options.browser)
+					await run(file, args).catch((e) => (process.platform === 'win32' ? null : this.fail(`Open ${target}`, e)))
 				},
 			},
 

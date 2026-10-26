@@ -146,6 +146,17 @@ export function launchCommand(app, platform = process.platform) {
 	throw new Error(`Launching apps isn't supported on ${platform}`)
 }
 
+/**
+ * Opens a link or file, on a Mac in a named browser/app when one is given ("Safari", "Google Chrome", "Firefox").
+ * Naming the browser hands the link straight to it, so link pickers such as OpenIn are skipped.
+ */
+export function openCommand(target, browser = '', platform = process.platform) {
+	const app = String(browser ?? '').trim()
+	if (platform === 'darwin') return ['open', app ? ['-a', app, target] : [target]]
+	if (platform === 'win32') return ['explorer.exe', [target]] // Mac only for now: Windows uses the default browser
+	return ['xdg-open', [target]]
+}
+
 const appleScriptString = (s) => '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
 
 /** A plain-English reason for common macOS automation refusals, or ''. */

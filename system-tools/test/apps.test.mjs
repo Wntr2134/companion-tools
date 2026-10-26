@@ -12,6 +12,7 @@ import {
 	parseWindowsScan,
 	parseTasklist,
 	launchCommand,
+	openCommand,
 	quitCommand,
 } from '../src/apps.js'
 
@@ -122,4 +123,11 @@ test('launch and quit commands never go through a shell', () => {
 	assert.deepEqual(quitCommand(win, { force: true }, 'win32'), ['taskkill', ['/IM', 'DanteController.exe', '/F']])
 	assert.throws(() => quitCommand({ name: 'typed', path: 'C:\\a.exe' }, {}, 'win32'))
 	assert.throws(() => launchCommand(mac, 'linux'))
+})
+
+test('openCommand: a named browser skips link pickers like OpenIn (Mac)', () => {
+	assert.deepEqual(openCommand('http://127.0.0.1:8000/', 'Safari', 'darwin'), ['open', ['-a', 'Safari', 'http://127.0.0.1:8000/']])
+	assert.deepEqual(openCommand('http://127.0.0.1:8000/', ' ', 'darwin'), ['open', ['http://127.0.0.1:8000/']])
+	assert.deepEqual(openCommand('http://127.0.0.1:8000/', undefined, 'darwin'), ['open', ['http://127.0.0.1:8000/']])
+	assert.deepEqual(openCommand('http://127.0.0.1:8000/', 'Safari', 'win32'), ['explorer.exe', ['http://127.0.0.1:8000/']])
 })
