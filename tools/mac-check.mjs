@@ -112,6 +112,13 @@ await step('System Tools: Bluetooth paired devices (built-in, no blueutil)', asy
 	const list = await new bt.Bluetooth({ blueutil: undefined }).list()
 	return list.length ? list.map((d) => d.name).join(', ') : 'none paired here'
 })
+await step('System Tools: Bluetooth connect really calls macOS (a made-up device, so it fails with a code)', async () => {
+	const out = await exec('osascript', ['-l', 'JavaScript', '-e', bt.BT_SCRIPT, 'connect', '00-11-22-33-44-55'], { timeout: 60000 })
+	const r = JSON.parse(out.stdout.trim())
+	if (r.error === 'not paired') return 'no Bluetooth device object here'
+	if (!r.ran || r.connected) throw new Error(`connect didn't run: ${out.stdout.trim()}`)
+	return `code ${r.code}, connected ${r.connected}`
+})
 await step('System Tools: app icons drawn (Finder, Safari, Music)', async () => {
 	const cache = new icons.IconCache({ dir: path.join(tmp, 'icons') })
 	const apps = ['/System/Library/CoreServices/Finder.app', '/Applications/Safari.app', '/System/Applications/Music.app']

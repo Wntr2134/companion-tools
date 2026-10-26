@@ -28,8 +28,16 @@ function run(argv) {
 	}
 	const d = $.IOBluetoothDevice.deviceWithAddressString(address)
 	if (!d || d.isNil()) return JSON.stringify({ ok: false, error: 'not paired' })
-	const result = cmd === 'connect' ? d.openConnection : d.closeConnection
-	return JSON.stringify({ ok: result === 0, code: result })
+	// "openConnection" is two methods to JXA (openConnection and openConnection:), so reading it gives a
+	// function rather than calling it. Call it with no target ($()), which waits until it has connected.
+	const m = cmd === 'connect' ? d.openConnection : d.closeConnection
+	const code = typeof m === 'function' ? (cmd === 'connect' ? m($()) : m()) : m
+	const want = cmd === 'connect'
+	for (let i = 0; i < 20 && !!d.isConnected !== want; i++) delay(0.25)
+	const connected = !!d.isConnected
+	// Without BridgeSupport JXA can hand the result code back as an object ("[id nil]"), so whether it
+	// worked is judged by isConnected; the code is only for the log.
+	return JSON.stringify({ ok: connected === want, ran: code !== undefined, code: typeof code === 'number' ? code : String(code), connected })
 }
 `
 
@@ -46,6 +54,14 @@ export function parseBlueutil(json) {
 
 /** Addresses as macOS writes them (blueutil uses dashes, the framework colons): aa-bb-… */
 export const normAddress = (a) => String(a ?? '').toLowerCase().replace(/:/g, '-')
+
+/** macOS's Bluetooth result codes, readable: 0xe00002bc style, plus the usual ones in words. */
+export function btCode(code) {
+	if (typeof code !== 'number') return `no result: ${code}`
+	const hex = `0x${(code >>> 0).toString(16)}`
+	const words = { 0xe00002bc: 'general error', 0xe00002d6: 'timed out', 0xe00002c0: 'no device', 0xe00002c2: 'not permitted', 0xe00002e2: 'not ready' }[code >>> 0]
+	return words ? `${words}, ${hex}` : `code ${hex}`
+}
 
 export class Bluetooth {
 	constructor({ exec = execFile, blueutil = BLUEUTIL_PATHS.find((p) => existsSync(p)) } = {}) {
@@ -74,6 +90,8 @@ export class Bluetooth {
 			return
 		}
 		const r = JSON.parse((await this.#run('osascript', ['-l', 'JavaScript', '-e', BT_SCRIPT, connect ? 'connect' : 'disconnect', normAddress(address)])).trim() || '{}')
-		if (!r.ok) throw new Error(r.error ?? `macOS said no (code ${r.code}): is the device on and nearby?`)
+		if (r.ok) return
+		const why = typeof r.code === 'number' && r.code !== 0 ? `macOS said no (${btCode(r.code)})` : `it didn't ${connect ? 'connect' : 'disconnect'}`
+		throw new Error(r.error ?? `${why}: is the device on, nearby and not connected to another phone or computer?`)
 	}
 }
