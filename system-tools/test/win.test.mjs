@@ -7,7 +7,8 @@ import { PassThrough } from 'node:stream'
 import { mkdtemp, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { WinHost, WinKeepAwake, keyRequest, WIN_SHORTCUTS, HOST_PS1 } from '../src/win-host.js'
+import { WinHost, WinKeepAwake, keyRequest, WIN_SHORTCUTS, HOST_SCRIPT } from '../src/win-host.js'
+import { HELPER_PS1 } from '../src/win-helper.js'
 import { HOST_CS } from '../src/win-host-cs.js'
 
 /** A fake powershell.exe: answers each JSON line with `answer(request)`. */
@@ -51,9 +52,10 @@ test('helper: one PowerShell process, files written once per version, replies ma
 	assert.equal(spawned[0].file, 'powershell.exe')
 	assert.ok(spawned[0].args.includes('-Sta'), 'STA, for the clipboard')
 	assert.equal(spawned[0].opts.windowsHide, true)
-	assert.equal(await readFile(spawned[0].opts.env.ST_HOST_CS, 'utf8'), HOST_CS)
-	assert.equal(await readFile(spawned[0].args.at(-1), 'utf8'), HOST_PS1)
-	assert.match(spawned[0].opts.env.ST_HOST_DLL, /host\.dll$/)
+	assert.equal(await readFile(spawned[0].opts.env.CT_HELPER_CS, 'utf8'), HOST_CS)
+	assert.equal(await readFile(spawned[0].opts.env.CT_HELPER_SCRIPT, 'utf8'), HOST_SCRIPT)
+	assert.equal(await readFile(spawned[0].args.at(-1), 'utf8'), HELPER_PS1)
+	assert.match(spawned[0].opts.env.CT_HELPER_DLL, /helper\.dll$/)
 	host.stop()
 })
 

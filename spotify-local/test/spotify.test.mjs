@@ -1,7 +1,7 @@
 // Run with: node --test test/spotify.test.mjs
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { Spotify, parseMacState, parseWinState, toSpotifyUri, fmtTime, permissionHint, MAC_COMMAND, MAC_READ, WIN_KEY } from '../src/spotify.js'
+import { Spotify, parseMacState, fromWinRead, toSpotifyUri, fmtTime, permissionHint, MAC_COMMAND, MAC_READ } from '../src/spotify.js'
 
 const fakeExec = (reply) => {
 	const calls = []
@@ -45,22 +45,55 @@ test('Mac: reading never starts Spotify; commands pass the argument separately',
 	assert.deepEqual(calls[1].args.slice(2), ['volume', '70'])
 })
 
-test('Windows: media keys, the track from the window title, nothing unsupported', async () => {
-	assert.deepEqual(parseWinState('TITLE:Some Band - Walk-In Song\r\n'), { running: true, playing: true, status: 'playing', artist: 'Some Band', track: 'Walk-In Song' })
-	assert.equal(parseWinState('TITLE:Spotify Premium').playing, false)
-	assert.equal(parseWinState('TITLE:Spotify Free').playing, false)
-	assert.equal(parseWinState('RUNNING').running, true)
-	assert.deepEqual(parseWinState('NOTRUNNING'), { running: false })
-	const { calls, exec } = fakeExec('OK\r\n')
-	const sp = new Spotify({ platform: 'win32', exec })
-	await sp.command('next')
-	assert.equal(calls[0].file, 'powershell.exe')
-	assert.equal(calls[0].args.at(-1), WIN_KEY)
-	assert.equal(calls[0].env.SP_VK, String(0xb0))
-	await assert.rejects(sp.command('shuffle', 'true'), /isn't available on Windows/)
+test("Windows: Windows' media controls through the helper, aimed at Spotify only", async () => {
+	assert.deepEqual(fromWinRead({ running: false }), { running: false })
+	assert.deepEqual(fromWinRead({ running: true, session: false, volume: 40 }), { running: true, volume: 40, muted: false, playing: false, status: 'stopped' }, 'open, nothing loaded')
+	const st = fromWinRead({ running: true, session: true, status: 'playing', playing: true, track: 'Walk-In Song', artist: 'Some Band', album: 'Live', position: 61.5, duration: 200, shuffle: true, repeat: false, volume: 70, artKey: 'Walk-In Song|Some Band|Live' })
+	assert.equal(st.status, 'playing')
+	assert.equal(st.track, 'Walk-In Song')
+	assert.equal(st.duration, 200)
+	assert.equal(st.artwork, 'win-art:Walk-In Song|Some Band|Live')
+	assert.equal(fromWinRead({ running: true, session: true, status: 'paused', playing: false, duration: 0 }).duration, null)
+
+	const sent = []
+	const replies = { read: { running: true, session: true, playing: true, status: 'playing', position: 30, duration: 100 }, command: 'OK' }
+	const helper = { request: async (cmd, data = {}) => (sent.push({ cmd, ...data }), typeof replies[cmd] === 'function' ? replies[cmd](data) : replies[cmd]) }
+	const { calls, exec } = fakeExec('')
+	const sp = new Spotify({ platform: 'win32', exec, helper })
+	await sp.read()
+	assert.equal(await sp.command('next'), 'OK')
+	await sp.command('seekby', '-5')
+	await sp.command('restart')
+	await sp.command('volume', '35')
+	assert.deepEqual(sent.slice(1), [
+		{ cmd: 'command', name: 'next', arg: '' },
+		{ cmd: 'command', name: 'seek', arg: '25' },
+		{ cmd: 'command', name: 'seek', arg: '0' },
+		{ cmd: 'command', name: 'volume', arg: '35' },
+	])
+	replies.command = 'REFUSED'
+	await assert.rejects(sp.command('shuffle', 'true'), /didn't accept that/)
+	replies.command = 'NOSOUND'
+	await assert.rejects(sp.command('volume', '50'), /press play first/)
 	await assert.rejects(sp.command('uri', 'spotify:x; calc'), /Not a Spotify link/)
 	await sp.command('uri', 'spotify:playlist:37i9dQZF1DXcBWIGoYBM5M')
 	assert.deepEqual([calls.at(-1).file, calls.at(-1).args], ['explorer.exe', ['spotify:playlist:37i9dQZF1DXcBWIGoYBM5M']])
+	// the cover: only for the track asked about
+	replies.art = { key: 'A|B|C', jpeg: Buffer.from([0xff, 0xd8, 1]).toString('base64') }
+	assert.deepEqual([...(await sp.winArt('win-art:A|B|C'))], [0xff, 0xd8, 1])
+	await assert.rejects(sp.winArt('win-art:other'), /no cover/)
+})
+
+test('Windows helper: C# 5 for Windows PowerShell 5.1, every request handled, the shared helper file the same as System Tools\'', async () => {
+	const { MEDIA_CS, MEDIA_SCRIPT } = await import('../src/win-media.js')
+	const { readFile } = await import('node:fs/promises')
+	assert.doesNotMatch(MEDIA_CS, /\$"|\?\.|nameof\(|\bout var\b/)
+	for (const r of ["'ping'", "'read'", "'art'", "'command'"]) assert.ok(MEDIA_SCRIPT.includes(r), r)
+	for (const c of ['play', 'pause', 'playpause', 'next', 'previous', 'seek', 'shuffle', 'repeat']) assert.ok(MEDIA_SCRIPT.includes(`'${c}' {`), c)
+	assert.match(MEDIA_SCRIPT, /IAsyncOperation`1/)
+	const mine = await readFile(new URL('../src/win-helper.js', import.meta.url), 'utf8')
+	const theirs = await readFile(new URL('../../system-tools/src/win-helper.js', import.meta.url), 'utf8')
+	assert.equal(mine, theirs, 'keep win-helper.js the same in every module')
 })
 
 test('links, times and permission messages', () => {

@@ -25,7 +25,8 @@ class SpotifyInstance extends InstanceBase {
 	async init(config) {
 		this.config = config
 		this.spotify = new Spotify()
-		this.art = new ArtCache({ onReady: () => this.checkFeedbacks('now_playing_art') })
+		// Windows: the cover comes from Windows' media controls through the helper, not from a web address.
+		this.art = new ArtCache({ ...(this.isMac() ? {} : { fetchBytes: (url) => this.spotify.winArt(url) }), onReady: () => this.checkFeedbacks('now_playing_art') })
 		this.cardPngs = new Map()
 		this.updateDefinitions()
 		// Our own clock for the "Clock + now playing" viewer: Companion's $(internal:time_hm) shows $NA
@@ -75,6 +76,7 @@ class SpotifyInstance extends InstanceBase {
 
 	async destroy() {
 		this.stop()
+		if (!this.isMac()) this.spotify?.helperArg?.close?.()
 		clearInterval(this.clockTimer)
 	}
 
@@ -87,7 +89,7 @@ class SpotifyInstance extends InstanceBase {
 			this.updateStatus(InstanceStatus.BadConfig, 'Spotify control works when Companion runs on a Mac or Windows PC')
 			return
 		}
-		const seconds = Number(this.config.poll ?? (this.isMac() ? 1 : 3))
+		const seconds = Number(this.config.poll ?? 1)
 		if (seconds > 0) this.timer = setInterval(() => void this.poll(), seconds * 1000)
 		void this.poll()
 		this.accountTimer = setInterval(() => void this.refreshAccounts(), 5000)
@@ -129,7 +131,7 @@ class SpotifyInstance extends InstanceBase {
 			artist: s.artist ?? '',
 			album: s.album ?? '',
 			uri: s.uri ?? '',
-			artwork_url: s.artwork ?? '',
+			artwork_url: s.artwork?.startsWith('win-art:') ? '' : s.artwork ?? '',
 			volume: s.volume ?? '–',
 			position: fmtTime(s.position),
 			duration: fmtTime(s.duration),
@@ -211,7 +213,6 @@ class SpotifyInstance extends InstanceBase {
 
 	/** Fast knob turns: keep a local target and send it, never more than one set at a time. */
 	async stepVolume(delta) {
-		if (!this.isMac()) return this.send(delta > 0 ? 'volup' : 'voldown')
 		const base = this.volTarget ?? this.state.volume ?? 50
 		this.volTarget = Math.max(0, Math.min(100, Math.round(base + delta)))
 		this.volSetAt = Date.now()
@@ -255,16 +256,8 @@ class SpotifyInstance extends InstanceBase {
 
 		const actions = {
 			playpause: { name: 'Play / pause', options: [], callback: () => this.send('playpause') },
-			play: {
-				name: 'Play',
-				options: [],
-				callback: () => (mac ? this.send('play') : this.state.playing ? undefined : this.send('playpause')),
-			},
-			pause: {
-				name: 'Pause',
-				options: [],
-				callback: () => (mac ? this.send('pause') : this.state.playing ? this.send('playpause') : undefined),
-			},
+			play: { name: 'Play', options: [], callback: () => this.send('play') },
+			pause: { name: 'Pause', options: [], callback: () => this.send('pause') },
 			next: { name: 'Next track', options: [], callback: () => this.send('next') },
 			previous: { name: 'Previous track', options: [], callback: () => this.send('previous') },
 			open: { name: 'Open Spotify', options: [], callback: () => this.send('launch') },
@@ -279,7 +272,8 @@ class SpotifyInstance extends InstanceBase {
 				},
 			},
 			volume_step: {
-				name: mac ? 'Volume: step (knob)' : 'System volume: step (Windows volume keys)',
+				name: 'Volume: step (knob)',
+				description: "Spotify's own volume (on Windows, its slider in the Volume Mixer).",
 				options: [dir(), sizeOption],
 				callback: (a) => {
 					const pct = VOLUME_STEPS[(Number(a.options.size) || 2) - 1] ?? 3
@@ -287,7 +281,7 @@ class SpotifyInstance extends InstanceBase {
 				},
 			},
 		}
-		if (mac) {
+		{
 			Object.assign(actions, {
 				volume_set: {
 					name: 'Volume: set',
@@ -303,9 +297,8 @@ class SpotifyInstance extends InstanceBase {
 				shuffle: { name: 'Shuffle', options: [mode], callback: (a) => this.send('shuffle', String(want(a.options.mode, this.state.shuffle))) },
 				repeat: { name: 'Repeat', options: [mode], callback: (a) => this.send('repeat', String(want(a.options.mode, this.state.repeat))) },
 			})
-		} else {
-			actions.mute = { name: 'System mute (Windows mute key)', options: [], callback: () => this.send('mute') }
 		}
+		if (!mac) actions.mute = { name: 'Mute Spotify (Windows)', options: [mode], callback: (a) => this.send('mute', String(want(a.options.mode, this.state.muted))) }
 		const slotOption = { type: 'dropdown', id: 'slot', label: 'Account', default: 1, choices: Array.from({ length: ACCOUNT_SLOTS }, (_, i) => ({ id: i + 1, label: `${i + 1}${this.accountState?.slots?.[i + 1] ? `: ${this.accountState.slots[i + 1].name}` : ''}` })) }
 		actions.account_switch = {
 			name: 'Accounts: switch to a saved account',
@@ -323,8 +316,8 @@ class SpotifyInstance extends InstanceBase {
 
 		this.setFeedbackDefinitions({
 			playing: { type: 'boolean', name: 'Playing', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.playing },
-			shuffle: { type: 'boolean', name: 'Shuffle on (Mac)', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.shuffle },
-			repeat: { type: 'boolean', name: 'Repeat on (Mac)', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.repeat },
+			shuffle: { type: 'boolean', name: 'Shuffle on', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.shuffle },
+			repeat: { type: 'boolean', name: 'Repeat on', defaultStyle: { bgcolor: GREEN, color: BLACK }, options: [], callback: () => !!this.state.repeat },
 			now_playing_art: {
 				type: 'advanced',
 				name: 'Now playing card (album art + progress bar)',
@@ -360,16 +353,16 @@ class SpotifyInstance extends InstanceBase {
 			{ variableId: 'status', name: 'playing / paused / stopped / closed' },
 			{ variableId: 'track', name: 'Track' },
 			{ variableId: 'artist', name: 'Artist' },
-			{ variableId: 'album', name: 'Album (Mac)' },
-			{ variableId: 'uri', name: 'Track URI (Mac)' },
+			{ variableId: 'album', name: 'Album' },
+			{ variableId: 'uri', name: 'Track URI' },
 			{ variableId: 'artwork_url', name: 'Album art URL (Mac)' },
-			{ variableId: 'volume', name: 'Spotify volume 0-100 (Mac)' },
-			{ variableId: 'position', name: 'Position (Mac)' },
-			{ variableId: 'duration', name: 'Length (Mac)' },
-			{ variableId: 'remaining', name: 'Time left (Mac)' },
-			{ variableId: 'time', name: 'Position / length (Mac)' },
-			{ variableId: 'shuffle', name: 'Shuffle ON/OFF (Mac)' },
-			{ variableId: 'repeat', name: 'Repeat ON/OFF (Mac)' },
+			{ variableId: 'volume', name: 'Spotify volume 0-100' },
+			{ variableId: 'position', name: 'Position' },
+			{ variableId: 'duration', name: 'Length' },
+			{ variableId: 'remaining', name: 'Time left' },
+			{ variableId: 'time', name: 'Position / length' },
+			{ variableId: 'shuffle', name: 'Shuffle ON/OFF' },
+			{ variableId: 'repeat', name: 'Repeat ON/OFF' },
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
 			{ variableId: 'account', name: 'Spotify account logged in now' },
 			...Array.from({ length: ACCOUNT_SLOTS }, (_, i) => ({ variableId: `account_${i + 1}_name`, name: `Saved account ${i + 1}: name` })),
@@ -406,9 +399,9 @@ class SpotifyInstance extends InstanceBase {
 			volume_knob: {
 				type: 'button',
 				category: 'Knobs',
-				name: mac ? 'Volume knob (push = play/pause)' : 'System volume knob (push = play/pause)',
+				name: 'Volume knob (push = play/pause)',
 				options: { rotaryActions: true },
-				style: { text: mac ? `VOL\\n${v('volume')}%` : 'VOLUME', size: '14', color: WHITE, bgcolor: GREY, show_topbar: false },
+				style: { text: `VOL\\n${v('volume')}%`, size: '14', color: WHITE, bgcolor: GREY, show_topbar: false },
 				steps: [
 					{
 						down: [{ actionId: 'playpause', options: {} }],
@@ -436,7 +429,7 @@ class SpotifyInstance extends InstanceBase {
 				feedbacks: playingFb,
 			},
 		}
-		if (mac) {
+		{
 			presets.time = key('Now playing', 'Time', v('time'), [], playingFb, 'auto')
 			presets.shuffle = key('Transport', 'Shuffle', 'SHUFFLE', [{ actionId: 'shuffle', options: { mode: 'toggle' } }], [{ feedbackId: 'shuffle', options: {}, style: ON }])
 			presets.repeat = key('Transport', 'Repeat', 'REPEAT', [{ actionId: 'repeat', options: { mode: 'toggle' } }], [{ feedbackId: 'repeat', options: {}, style: ON }])
@@ -477,7 +470,7 @@ class SpotifyInstance extends InstanceBase {
 				width: 12,
 				label: 'What this controls',
 				value:
-					'The Spotify app on the computer running Companion. No Spotify login needed.<br><b>Mac:</b> full control and now-playing info. The first time, macOS asks to let Companion control Spotify: click OK (or turn it on in System Settings → Privacy &amp; Security → Automation).<br><b>Windows:</b> play/pause, next and previous use the media keys, and the track comes from Spotify\'s window title. Volume keys change the system volume.',
+					'The Spotify app on the computer running Companion. No Spotify login needed.<br><b>Mac:</b> full control and now-playing info. The first time, macOS asks to let Companion control Spotify: click OK (or turn it on in System Settings → Privacy &amp; Security → Automation).<br><b>Windows:</b> through Windows\' own media controls (the panel above the volume pop-up): play, pause, next, previous, the track, album art and position, aimed at Spotify only. The volume knob sets Spotify\'s own volume (its slider in the Volume Mixer; it appears once Spotify has played something). Seeking, shuffle and repeat work if Spotify lets Windows change them. A small helper starts with this connection (the first start takes a few seconds).',
 			},
 			{
 				type: 'textinput',
@@ -495,7 +488,7 @@ class SpotifyInstance extends InstanceBase {
 				default: IDLE_DEFAULTS.idle2,
 				useVariables: true,
 			},
-			{ type: 'number', id: 'poll', label: 'Check Spotify every (seconds, 0 = off)', width: 6, default: process.platform === 'darwin' ? 1 : 3, min: 0, max: 30 },
+			{ type: 'number', id: 'poll', label: 'Check Spotify every (seconds, 0 = off)', width: 6, default: 1, min: 0, max: 30 },
 		]
 	}
 }
