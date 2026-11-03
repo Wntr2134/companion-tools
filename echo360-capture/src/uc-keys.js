@@ -1,7 +1,9 @@
 // Universal Capture (the software) has no control API, only keyboard shortcuts. This sends them with
-// osascript on the Mac running Companion. They are toggles, so we never know the real state: buttons
+// osascript on the Mac running Companion, and on Windows (Ctrl instead of Cmd) from an always-on helper
+// (win-keys.js). They are toggles, so we never know the real state: buttons
 // in this mode say NO STATUS rather than showing a made-up recording timer.
 import { execFile } from 'node:child_process'
+import { UcHelper } from './win-keys.js'
 
 export const UC_DEFAULT_APP = 'Universal Capture'
 export const UC_DEBOUNCE_MS = 1500
@@ -39,45 +41,11 @@ export function osascriptArgs(key, { activate = false, appName = UC_DEFAULT_APP,
 	return [...lines.flatMap((l) => ['-e', l]), String(appName || UC_DEFAULT_APP)]
 }
 
-/**
- * Windows: Universal Capture uses Ctrl instead of Cmd. PowerShell sends the keys with WScript.Shell.
- * Inputs come in through environment variables (UC_KEY, UC_APP, UC_ACTIVATE, UC_RETURN), never pasted
- * into the script, so an odd app name can't change what runs.
- */
-export const WINDOWS_SCRIPT = `
-$ErrorActionPreference = 'Stop'
-Add-Type -Name Win -Namespace UcKeys -MemberDefinition '[DllImport("user32.dll")] public static extern System.IntPtr GetForegroundWindow(); [DllImport("user32.dll")] public static extern bool SetForegroundWindow(System.IntPtr h);'
-$prev = [UcKeys.Win]::GetForegroundWindow()
-$sh = New-Object -ComObject WScript.Shell
-if ($env:UC_ACTIVATE -eq '1') {
-  $name = $env:UC_APP
-  $compact = $name -replace ' ', ''
-  $p = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 -and ($_.MainWindowTitle -like "*$name*" -or $_.ProcessName -like "*$compact*") } | Select-Object -First 1
-  if (-not $p) { Write-Output 'ERR:not-running'; exit 0 }
-  $null = $sh.AppActivate($p.Id)
-  Start-Sleep -Milliseconds 300
-}
-$sh.SendKeys('^' + $env:UC_KEY)
-if ($env:UC_ACTIVATE -eq '1' -and $env:UC_RETURN -eq '1') {
-  Start-Sleep -Milliseconds 150
-  $null = [UcKeys.Win]::SetForegroundWindow($prev)
-}
-Write-Output 'OK'
-`.trim()
-
-/** powershell.exe arguments and environment for one shortcut on Windows. */
-export function powershellArgs(key, { activate = false, appName = UC_DEFAULT_APP, returnFocus = true } = {}) {
-	if (!/^[0-9]$/.test(String(key))) throw new Error(`Unexpected key ${key}`)
-	return {
-		args: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', WINDOWS_SCRIPT],
-		env: { UC_KEY: String(key), UC_APP: String(appName || UC_DEFAULT_APP), UC_ACTIVATE: activate ? '1' : '0', UC_RETURN: returnFocus ? '1' : '0' },
-	}
-}
-
 export class UCKeys {
 	/** run: execFile-compatible function (injected in tests). log(level, msg). */
-	constructor({ run = execFile, platform = process.platform, log = () => {} } = {}) {
+	constructor({ run = execFile, platform = process.platform, log = () => {}, helper } = {}) {
 		this.run = run
+		this.helperArg = helper
 		this.platform = platform
 		this.log = log
 		this.lastPress = new Map()
@@ -101,19 +69,8 @@ export class UCKeys {
 
 		const win = this.platform === 'win32'
 		const label = win ? def.label.replace('Cmd+', 'Ctrl+') : def.label
-		let cmd, args, opts
-		if (win) {
-			const ps = powershellArgs(def.key, { activate, appName, returnFocus })
-			cmd = 'powershell.exe'
-			args = ps.args
-			opts = { timeout: 8000, windowsHide: true, env: { ...process.env, ...ps.env } }
-		} else {
-			cmd = 'osascript'
-			args = osascriptArgs(def.key, { activate, appName, returnFocus })
-			opts = { timeout: 5000 }
-		}
 		return new Promise((resolve) => {
-			this.run(cmd, args, opts, (err, stdout, stderr) => {
+			const done = (err, stdout, stderr) => {
 				if (!err && String(stdout ?? '').trim() === 'ERR:not-running') {
 					this.#fail(`${label} not sent: couldn't find a Universal Capture window (is it open?)`)
 					return resolve({ sent: true, ok: false })
@@ -132,8 +89,19 @@ export class UCKeys {
 					this.log('info', this.lastMessage)
 					resolve({ sent: true, ok: true })
 				}
-			})
+			}
+			if (win) {
+				this.helperArg ??= new UcHelper()
+				this.helperArg
+					.request('shortcut', { key: def.key, app: String(appName || UC_DEFAULT_APP), activate: !!activate, returnFocus: !!returnFocus })
+					.then((out) => done(null, out, ''), (e) => done(e))
+			} else this.run('osascript', osascriptArgs(def.key, { activate, appName, returnFocus }), { timeout: 5000 }, done)
 		})
+	}
+
+	/** Stops the Windows helper (the connection is being removed). */
+	close() {
+		this.helperArg?.close?.()
 	}
 
 	#fail(text, level = 'warn') {

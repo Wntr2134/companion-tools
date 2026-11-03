@@ -48,6 +48,7 @@ class Echo360Instance extends InstanceBase {
 	async destroy() {
 		clearInterval(this.ticker)
 		this.client?.stop()
+		this.uc?.close()
 	}
 
 	async configUpdated(config) {
