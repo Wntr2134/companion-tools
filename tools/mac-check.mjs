@@ -8,10 +8,11 @@ import { existsSync } from 'node:fs'
 import { mkdtemp, writeFile, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
 const exec = promisify(execFile)
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const mod = (p) => import(path.join(root, p))
 
 const spotify = await mod('spotify-local/src/spotify.js')

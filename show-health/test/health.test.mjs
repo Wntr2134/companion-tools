@@ -100,3 +100,13 @@ test('everything OK?: devices plus Companion connection states', async () => {
 	assert.equal(everything({ total: 2, down: 0, downNames: [], allOk: false }, clean).summary, 'CHECKING')
 	assert.equal(everything({ total: 0, down: 0, downNames: [], allOk: false }, clean).summary, 'ALL OK', 'connections only')
 })
+
+test("Windows ping: \"Destination host unreachable\" (which Windows counts as success) is a miss", async () => {
+	const { pingCheck } = await import('../src/monitor.js')
+	const fake = (out) => (file, args, opts, cb) => setImmediate(() => cb(null, out, ''))
+	const unreachable = 'Pinging 10.0.0.9 with 32 bytes of data:\r\nReply from 10.0.0.2: Destination host unreachable.\r\n'
+	await assert.rejects(pingCheck('10.0.0.9', 1000, 'win32', fake(unreachable)), /no reply/)
+	const up = 'Pinging 10.0.0.9 with 32 bytes of data:\r\nReply from 10.0.0.9: bytes=32 time<1ms TTL=64\r\n'
+	assert.equal(await pingCheck('10.0.0.9', 1000, 'win32', fake(up)), 1)
+	assert.equal(await pingCheck('10.0.0.9', 1000, 'win32', fake(up.replace('time<1ms', 'time=12ms'))), 12)
+})

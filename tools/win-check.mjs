@@ -161,6 +161,42 @@ await step('Spotify: volume with no Spotify sound session says so', async () => 
 	return r
 })
 sp.close()
+
+// Echo360: Universal Capture's Ctrl+number shortcuts from its helper. No Universal Capture here, so
+// "bring it to the front first" must say it isn't open (and nothing is pressed).
+const { UcHelper } = await mod('echo360-capture/src/win-keys.js')
+const uc = new UcHelper({ dir: path.join(dir, 'echo360') })
+await step('Echo360 helper starts (compiles its C#)', async () => {
+	const t = Date.now()
+	if ((await uc.request('ping')) !== 'pong') throw new Error('no pong')
+	return `${Date.now() - t} ms`
+})
+await step('Echo360: with no Universal Capture open, says so', async () => {
+	const r = await uc.request('shortcut', { key: '6', app: 'Universal Capture', activate: true, returnFocus: true })
+	if (r !== 'ERR:not-running') throw new Error(`expected ERR:not-running, got ${r}`)
+	return r
+})
+await step('Echo360: anything but one digit is refused', async () => {
+	try {
+		await uc.request('shortcut', { key: '6; x', app: '', activate: false, returnFocus: false })
+	} catch (e) {
+		return e.message
+	}
+	throw new Error('a bad key was accepted')
+})
+uc.close()
+
+// Show Health: Windows' ping counts "Destination host unreachable" as success; only a TTL reply is a device.
+const { pingCheck } = await mod('show-health/src/monitor.js')
+await step('Show Health: ping this PC (127.0.0.1) is up', async () => `${await pingCheck('127.0.0.1', 1000)} ms`)
+await step('Show Health: ping an address nobody has (192.0.2.1) is down', async () => {
+	try {
+		await pingCheck('192.0.2.1', 1000)
+	} catch {
+		return 'down, as it should be'
+	}
+	throw new Error('192.0.2.1 counted as up')
+})
 await rm(dir, { recursive: true, force: true }).catch(() => null)
 console.log(failed ? `\n${failed} check(s) failed` : '\nall Windows checks passed')
 process.exit(failed ? 1 : 0)

@@ -219,11 +219,23 @@ jobs:
       - run: node tools/mac-check.mjs
 
   windows:
-    # System Tools' Windows helper on a real PC: compiles its C# with Windows PowerShell 5.1 and runs it.
+    # On a real PC: the Windows helpers (System Tools, Spotify, Echo360) compiled with Windows
+    # PowerShell 5.1 and run, Show Health's ping, and every module loaded on Windows.
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: node tools/win-check.mjs
+      - name: Install every module
+        run: |
+          for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health spotify-local system-tools uad-console; do
+            (cd "$d" && npm install --no-save --ignore-scripts --no-audit --no-fund --legacy-peer-deps)
+          done
+          (cd digico-sd && npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps && npx tsc6 -p tsconfig.build.json)
+      - name: Every module loads on Windows, and its presets check out
+        run: node tools/preset-check.mjs

@@ -5,9 +5,9 @@ import { register } from 'node:module'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { pathToFileURL, fileURLToPath } from 'node:url'
 
-export const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
+export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const STAND_IN = `
 import { EventEmitter } from 'node:events'

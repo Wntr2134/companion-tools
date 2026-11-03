@@ -59,7 +59,7 @@ export function tcpCheck(host, port, timeoutMs) {
 }
 
 /** One ICMP ping using the system ping command (no admin rights needed on macOS/Linux/Windows). */
-export function pingCheck(host, timeoutMs, platform = process.platform) {
+export function pingCheck(host, timeoutMs, platform = process.platform, exec = execFile) {
 	const args =
 		platform === 'win32'
 			? ['-n', '1', '-w', String(timeoutMs), host]
@@ -68,8 +68,10 @@ export function pingCheck(host, timeoutMs, platform = process.platform) {
 				: ['-c', '1', '-W', String(Math.max(1, Math.ceil(timeoutMs / 1000))), host] // Linux: seconds
 	return new Promise((resolve, reject) => {
 		const started = Date.now()
-		execFile('ping', args, { timeout: timeoutMs + 1500 }, (err, stdout) => {
+		exec('ping', args, { timeout: timeoutMs + 1500 }, (err, stdout) => {
 			if (err) return reject(err)
+			// Windows' ping succeeds on "Destination host unreachable" too: only a reply with a TTL is the device.
+			if (platform === 'win32' && !/TTL=/i.test(String(stdout))) return reject(new Error('no reply'))
 			const m = /time[=<]\s*([\d.]+)\s*ms/i.exec(String(stdout))
 			resolve(m ? Number(m[1]) : Date.now() - started)
 		})
