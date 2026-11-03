@@ -1,7 +1,9 @@
 // Talks to the Spotify app on this computer. No Spotify account or web API.
 // Mac: Spotify's AppleScript dictionary (full control and now-playing info).
-// Windows: media keys, plus the track from Spotify's window title ("Artist - Title").
+// Windows: Windows' own media controls and Spotify's volume in the Volume Mixer, through one
+// always-on helper (win-media.js).
 import { execFile } from 'node:child_process'
+import { SpotifyHelper } from './win-media.js'
 
 // ---------- Mac ----------
 
@@ -103,54 +105,55 @@ export function parseMacState(out) {
 
 // ---------- Windows ----------
 
-const VK = { playpause: 0xb3, next: 0xb0, previous: 0xb1, stop: 0xb2, volup: 0xaf, voldown: 0xae, mute: 0xad }
-
-/** Presses one media key. The key code comes in through an environment variable. */
-export const WIN_KEY = `
-Add-Type -Name K -Namespace SpotifyKeys -MemberDefinition '[DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);'
-$vk = [byte][int]$env:SP_VK
-[SpotifyKeys.K]::keybd_event($vk, 0, 0, [System.UIntPtr]::Zero)
-[SpotifyKeys.K]::keybd_event($vk, 0, 2, [System.UIntPtr]::Zero)
-Write-Output 'OK'
-`.trim()
-
-/** Spotify's window title: "Artist - Title" while playing, "Spotify Premium"/"Spotify Free"/"Spotify" when paused. */
-export const WIN_READ = `
-$p = Get-Process -Name Spotify -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle } | Select-Object -First 1
-if (-not $p) { if (Get-Process -Name Spotify -ErrorAction SilentlyContinue) { Write-Output 'RUNNING' } else { Write-Output 'NOTRUNNING' } } else { Write-Output ('TITLE:' + $p.MainWindowTitle) }
-`.trim()
-
-export function parseWinState(out) {
-	const text = String(out ?? '').trim()
-	if (text === 'NOTRUNNING' || text === '') return { running: false }
-	if (text === 'RUNNING') return { running: true, playing: false, status: 'paused' }
-	const title = text.replace(/^TITLE:/, '')
-	if (/^Spotify( Premium| Free)?$/i.test(title) || /^Advertisement$/i.test(title)) return { running: true, playing: false, status: 'paused' }
-	const i = title.indexOf(' - ')
+/** The Windows helper's "read" reply as the same state the Mac gives. Cover art comes as a win-art: key. */
+export function fromWinRead(r) {
+	if (!r?.running) return { running: false }
+	const base = { running: true, volume: r.volume ?? null, muted: !!r.muted }
+	// Spotify open but nothing loaded yet (Windows has no media session for it)
+	if (!r.session) return { ...base, playing: false, status: 'stopped' }
 	return {
-		running: true,
-		playing: true,
-		status: 'playing',
-		artist: i > 0 ? title.slice(0, i) : '',
-		track: i > 0 ? title.slice(i + 3) : title,
+		...base,
+		playing: !!r.playing,
+		status: r.playing ? 'playing' : r.status === 'stopped' ? 'stopped' : 'paused',
+		track: r.track ?? '',
+		artist: r.artist ?? '',
+		album: r.album ?? '',
+		position: typeof r.position === 'number' ? r.position : null,
+		duration: r.duration > 0 ? r.duration : null,
+		shuffle: !!r.shuffle,
+		repeat: !!r.repeat,
+		artwork: r.artKey ? `win-art:${r.artKey}` : '',
+		can: r.can ?? {},
 	}
+}
+
+const WIN_REASONS = {
+	REFUSED: "Spotify didn't accept that from Windows' media controls",
+	NOSOUND: "Spotify hasn't played anything since it opened, so Windows has no volume for it yet: press play first",
 }
 
 // ---------- the client ----------
 
-// play/pause on Windows are worked out from the known state (there's only a toggle key).
-const WIN_COMMANDS = new Set(['playpause', 'next', 'previous', 'volup', 'voldown', 'mute', 'launch', 'uri'])
+const ALL = ['launch', 'play', 'pause', 'playpause', 'next', 'previous', 'restart', 'volume', 'seek', 'seekby', 'shuffle', 'repeat', 'uri']
 
 /** What each platform can do (for the UI and the log). */
 export const CAN = {
-	darwin: new Set(['launch', 'play', 'pause', 'playpause', 'next', 'previous', 'restart', 'volume', 'seek', 'seekby', 'shuffle', 'repeat', 'uri']),
-	win32: WIN_COMMANDS,
+	darwin: new Set(ALL),
+	win32: new Set([...ALL, 'mute']),
 }
 
 export class Spotify {
-	constructor({ platform = process.platform, exec = execFile } = {}) {
+	constructor({ platform = process.platform, exec = execFile, helper } = {}) {
 		this.platform = platform
 		this.exec = exec
+		this.helperArg = helper
+		this.last = { running: false }
+	}
+
+	/** Windows: the always-on helper (started on first use). */
+	get helper() {
+		this.helperArg ??= new SpotifyHelper()
+		return this.helperArg
 	}
 
 	#run(file, args, opts = {}) {
@@ -166,9 +169,17 @@ export class Spotify {
 	}
 
 	async read() {
-		if (this.platform === 'darwin') return parseMacState(await this.#run('osascript', ['-e', MAC_READ]))
-		if (this.platform === 'win32') return parseWinState(await this.#run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', WIN_READ]))
-		return { running: false }
+		if (this.platform === 'darwin') this.last = parseMacState(await this.#run('osascript', ['-e', MAC_READ]))
+		else if (this.platform === 'win32') this.last = fromWinRead(await this.helper.request('read'))
+		else this.last = { running: false }
+		return this.last
+	}
+
+	/** Windows: the cover for a win-art: key, as JPEG bytes. */
+	async winArt(url) {
+		const r = await this.helper.request('art')
+		if (!r?.jpeg || `win-art:${r.key}` !== url) throw new Error('no cover')
+		return new Uint8Array(Buffer.from(r.jpeg, 'base64'))
 	}
 
 	/** Run a command. Returns 'OK' or 'NOTRUNNING'; throws if this platform can't do it. */
@@ -185,7 +196,13 @@ export class Spotify {
 			await this.#run('explorer.exe', [String(arg)]).catch(() => null)
 			return 'OK'
 		}
-		return (await this.#run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', WIN_KEY], { env: { ...process.env, SP_VK: String(VK[cmd]) } })).trim()
+		let name = cmd
+		let value = String(arg)
+		if (cmd === 'restart') [name, value] = ['seek', '0']
+		if (cmd === 'seekby') [name, value] = ['seek', String(Math.max(0, (this.last.position ?? 0) + Number(arg)))]
+		const r = await this.helper.request('command', { name, arg: value })
+		if (WIN_REASONS[r]) throw new Error(WIN_REASONS[r])
+		return r
 	}
 }
 

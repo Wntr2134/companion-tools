@@ -134,6 +134,33 @@ if (screens.length) {
 } else console.log('skip window checks: this runner has no screens')
 
 host.close()
+
+// Spotify's helper: Windows' media controls (WinRT from Windows PowerShell 5.1) and Spotify's own volume.
+// There's no Spotify on the runner, so this proves it loads and answers cleanly without it.
+const { SpotifyHelper } = await mod('spotify-local/src/win-media.js')
+const { Spotify } = await mod('spotify-local/src/spotify.js')
+const sp = new SpotifyHelper({ dir: path.join(dir, 'spotify') })
+await step('Spotify helper starts (compiles its C#, loads Windows media controls)', async () => {
+	const t = Date.now()
+	if ((await sp.request('ping')) !== 'pong') throw new Error('no pong')
+	return `${Date.now() - t} ms`
+})
+await step('Spotify: read without Spotify open', async () => {
+	const s = await new Spotify({ platform: 'win32', helper: sp }).read()
+	if (s.running) throw new Error(`thought Spotify was open: ${JSON.stringify(s)}`)
+	return JSON.stringify(s)
+})
+await step('Spotify: media session list readable (Windows media controls answer)', async () => {
+	const r = await sp.request('command', { name: 'next', arg: '' })
+	if (r !== 'NOTRUNNING') throw new Error(`expected NOTRUNNING, got ${r}`)
+	return r
+})
+await step('Spotify: volume with no Spotify sound session says so', async () => {
+	const r = await sp.request('command', { name: 'volume', arg: '50' })
+	if (r !== 'NOSOUND') throw new Error(`expected NOSOUND, got ${r}`)
+	return r
+})
+sp.close()
 await rm(dir, { recursive: true, force: true }).catch(() => null)
 console.log(failed ? `\n${failed} check(s) failed` : '\nall Windows checks passed')
 process.exit(failed ? 1 : 0)
