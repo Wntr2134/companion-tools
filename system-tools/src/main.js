@@ -32,7 +32,7 @@ import { getViewerPresets } from './viewers.js'
 import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
-import { CompanionApi, companionRoot, planUpdates, scanInstalled } from './updater.js'
+import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
 const GREEN = combineRgb(0, 140, 60)
@@ -521,9 +521,12 @@ class SystemToolsInstance extends InstanceBase {
 			return
 		}
 		try {
-			const installed = await scanInstalled(path.join(companionRoot(), 'modules'))
+			const { dir, installed } = await findInstalled()
+			// Nothing found means it's looking in the wrong place: say so (once), rather than "all up to date".
+			if (!installed.size) throw new Error(`no imported modules found in ${dir}`)
 			const api = new CompanionApi({ port: await this.companionAdminPort(), key })
-			const plan = planUpdates(await api.connections(), installed, { onlyOurs: this.config.updateAll !== true })
+			const connections = await api.connections()
+			const plan = planUpdates(connections, installed, { onlyOurs: this.config.updateAll !== true })
 			// System Tools itself goes last: switching it restarts this module.
 			plan.sort((a, b) => (a.moduleId === 'system-tools') - (b.moduleId === 'system-tools'))
 			for (const p of plan) {
@@ -531,7 +534,11 @@ class SystemToolsInstance extends InstanceBase {
 				await api.setVersion(p.id, p.to)
 			}
 			this.setVariableValues({ last_update: plan.length ? `${plan.length} updated ${this.clock ?? ''}`.trim() : 'all up to date' })
-			if (manual && !plan.length) this.log('info', 'Every connection is already on its newest installed version')
+			if (manual && !plan.length) {
+				const ours = [...installed.entries()].filter(([, m]) => /wntr2134\/companion-tools/i.test(m.repository)).map(([id, m]) => `${id} ${[...m.versions].sort().join('/')}`)
+				this.log('info', `Nothing to update. Modules folder: ${dir}. Installed: ${ours.join(', ') || 'none of ours'}`)
+				for (const x of explainSkipped(connections, installed)) this.log('info', `${x.label}: ${x.why}`)
+			}
 			this.lastUpdateError = ''
 		} catch (e) {
 			// The same problem is logged once (and again whenever it changes), not every minute.

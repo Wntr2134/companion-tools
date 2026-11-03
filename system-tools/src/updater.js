@@ -8,6 +8,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 /** Companion's config folder, where imported modules are kept (modules/<id>-<version>/). */
 export function companionRoot(platform = process.platform, env = process.env, home = os.homedir()) {
@@ -15,6 +16,66 @@ export function companionRoot(platform = process.platform, env = process.env, ho
 	if (platform === 'darwin') return path.join(home, 'Library', 'Application Support', 'companion')
 	if (platform === 'win32') return path.join(env.APPDATA ?? path.join(home, 'AppData', 'Roaming'), 'companion')
 	return path.join(env.XDG_CONFIG_HOME ?? path.join(home, '.config'), 'companion')
+}
+
+/**
+ * The folder this module was installed into by Companion (…/modules/system-tools-2.5.0/…): the surest
+ * answer on any computer, since every imported module sits next to it. null when run from a checkout.
+ */
+export function selfModulesDir(...places) {
+	// The build may rewrite import.meta.url, so also try the started script and the working folder.
+	if (!places.length) places = [process.argv[1], process.cwd(), safeUrlPath(import.meta.url)]
+	for (const place of places) {
+		let dir = place ? path.resolve(place) : ''
+		for (let i = 0; dir && i < 6; i++) {
+			if (/^system-tools-\d/.test(path.basename(dir))) return path.dirname(dir)
+			const up = path.dirname(dir)
+			if (up === dir) break
+			dir = up
+		}
+	}
+	return null
+}
+
+const safeUrlPath = (url) => {
+	try {
+		return fileURLToPath(url)
+	} catch {
+		return ''
+	}
+}
+
+/**
+ * Folders that may hold Companion's imported modules, most likely first: the config folder, then where
+ * Windows installs sometimes keep it (Local instead of Roaming).
+ */
+export function modulesDirs(platform = process.platform, env = process.env, home = os.homedir(), self = selfModulesDir()) {
+	const dirs = [...(self ? [self] : []), path.join(companionRoot(platform, env, home), 'modules')]
+	if (platform === 'win32') dirs.push(path.join(env.LOCALAPPDATA ?? path.join(home, 'AppData', 'Local'), 'companion', 'modules'))
+	return [...new Set(dirs)]
+}
+
+/** The first folder that has any modules in it: { dir, installed }, or the first folder with nothing found. */
+export async function findInstalled(dirs = modulesDirs()) {
+	for (const dir of dirs) {
+		const installed = await scanInstalled(dir)
+		if (installed.size) return { dir, installed }
+	}
+	return { dir: dirs[0], installed: new Map() }
+}
+
+/** Why a connection of ours wasn't moved, for the log when you press UPDATE MODULES: [{ label, why }]. */
+export function explainSkipped(connections, installed) {
+	const out = []
+	for (const c of connections ?? []) {
+		const mod = installed.get(c.moduleId)
+		if (!mod || !OURS.test(mod.repository)) continue
+		const releases = mod.versions.filter((v) => !v.includes('-')).sort(compareVersions)
+		const newest = releases.at(-1)
+		if (!c.moduleVersionId || c.moduleVersionId === 'dev' || c.moduleVersionId === 'builtin') out.push({ label: c.label, why: `on "${c.moduleVersionId || 'no version'}", left alone` })
+		else if (newest && compareVersions(newest, c.moduleVersionId) <= 0) out.push({ label: c.label, why: `already on ${c.moduleVersionId} (newest installed: ${newest})` })
+	}
+	return out
 }
 
 /** Compares "1.2.10" and "1.2.9" the way semver does (numbers, then pre-releases before releases). */

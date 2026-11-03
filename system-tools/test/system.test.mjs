@@ -447,6 +447,21 @@ test('auto-update: newest installed release per module, only ours unless asked, 
 	assert.deepEqual(planUpdates(connections, installed), [{ id: 'a', label: 'Spotify__local_', moduleId: 'spotify-local', from: '1.3.0', to: '1.3.1' }], 'newest release, ours only, dev left alone')
 	assert.equal(planUpdates(connections, installed, { onlyOurs: false }).length, 2)
 
+	// Where to look: next to this module first (Companion installed it there), then the config folder
+	const { selfModulesDir, modulesDirs, findInstalled, explainSkipped } = await import('../src/updater.js')
+	const modsDir = path.resolve('/Users/will/AppData/Roaming/companion/modules')
+	assert.equal(selfModulesDir(path.join(modsDir, 'system-tools-2.5.1', 'main.js')), modsDir)
+	assert.equal(selfModulesDir('/repo/system-tools/src/updater.js', '/repo'), null, 'a checkout is not an install')
+	assert.equal(selfModulesDir('', path.join(modsDir, 'system-tools-2.5.1')), modsDir, 'or from the working folder')
+	assert.deepEqual(modulesDirs('win32', { APPDATA: 'R', LOCALAPPDATA: 'L' }, 'h', '/m'), ['/m', path.join('R', 'companion', 'modules'), path.join('L', 'companion', 'modules')])
+	const found = await findInstalled([path.join(root, 'nope'), root])
+	assert.equal(found.dir, root, 'first folder that has modules')
+	assert.equal((await findInstalled([path.join(root, 'nope')])).installed.size, 0)
+	assert.deepEqual(explainSkipped([{ label: 'System_Tools', moduleId: 'system-tools', moduleVersionId: '2.2.0' }, { label: 'dev one', moduleId: 'spotify-local', moduleVersionId: 'dev' }], installed), [
+		{ label: 'System_Tools', why: 'already on 2.2.0 (newest installed: 2.2.0)' },
+		{ label: 'dev one', why: 'on "dev", left alone' },
+	])
+
 	const calls = []
 	const fetchFn = async (url, opts) => {
 		calls.push([opts.method, url, opts.headers.Authorization, opts.body])
