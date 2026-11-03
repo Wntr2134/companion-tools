@@ -288,7 +288,11 @@ test('every on/off feedback in a preset carries a style (without one, Companion 
 
 test('restoreItems turns a saved layout into absolute placements', () => {
 	const items = restoreItems([{ app: 'Safari', bundleId: 'com.apple.Safari', windows: [{ title: 'A', index: 0, x: 1, y: 2, w: 3, h: 4 }] }], { launch: true })
-	assert.deepEqual(items, [{ app: 'Safari', bundleId: 'com.apple.Safari', title: 'A', index: 0, abs: { x: 1, y: 2, w: 3, h: 4 }, launch: true }])
+	assert.deepEqual(items, [{ app: 'Safari', bundleId: 'com.apple.Safari', exe: undefined, title: 'A', index: 0, abs: { x: 1, y: 2, w: 3, h: 4, max: false }, launch: true }])
+	// Windows saves which program and whether it was maximised
+	const [w] = restoreItems([{ app: 'Notepad', exe: 'notepad.exe', windows: [{ title: 'x', index: 1, x: 0, y: 0, w: 9, h: 9, max: true }] }])
+	assert.equal(w.exe, 'notepad.exe')
+	assert.equal(w.abs.max, true)
 })
 
 test('Your Dock: the Dock apps in order, Finder first, spacers and files left out', async () => {

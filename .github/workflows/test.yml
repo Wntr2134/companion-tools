@@ -136,7 +136,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
-      - run: node --test test/apps.test.mjs test/system.test.mjs
+      - run: npm test
 
   show-health:
     runs-on: ubuntu-latest
@@ -217,3 +217,13 @@ jobs:
             sdef /Applications/Spotify.app | grep -c '<command\|<property' || echo "Spotify's dictionary couldn't be read"
           fi
       - run: node tools/mac-check.mjs
+
+  windows:
+    # System Tools' Windows helper on a real PC: compiles its C# with Windows PowerShell 5.1 and runs it.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/win-check.mjs

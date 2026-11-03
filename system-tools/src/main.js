@@ -1,6 +1,5 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import os from 'node:os'
-import { execFile } from 'node:child_process'
 import path from 'node:path'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { scanApps, runningApps, launchCommand, quitCommand, openCommand, run } from './apps.js'
@@ -34,6 +33,7 @@ import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, companionRoot, planUpdates, scanInstalled } from './updater.js'
+import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
 const GREEN = combineRgb(0, 140, 60)
 const BLUE = combineRgb(10, 110, 230) // lit system keys (macOS accent blue)
@@ -45,16 +45,8 @@ const BLACK = combineRgb(0, 0, 0)
 const VOLUME_STEPS = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20]
 const ECHO_GUARD_MS = 1500
 const LAYOUT_SLOTS = 6
-const LAYOUT_FILE = path.join(os.homedir(), 'Library', 'Application Support', 'Companion Tools', 'window-layouts.json')
-
-/** Media keys on Windows (volume up/down/mute). The key code comes in through an environment variable. */
-const WIN_KEY = `
-Add-Type -Name K -Namespace SystemToolsKeys -MemberDefinition '[DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);'
-$vk = [byte][int]$env:ST_VK
-[SystemToolsKeys.K]::keybd_event($vk, 0, 0, [System.UIntPtr]::Zero)
-[SystemToolsKeys.K]::keybd_event($vk, 0, 2, [System.UIntPtr]::Zero)
-`.trim()
-const WIN_VK = { up: 0xaf, down: 0xae, mute: 0xad }
+const DATA_DIR = process.platform === 'win32' ? path.join(process.env.APPDATA ?? path.join(os.homedir(), 'AppData', 'Roaming'), 'Companion Tools') : path.join(os.homedir(), 'Library', 'Application Support', 'Companion Tools')
+const LAYOUT_FILE = path.join(DATA_DIR, 'window-layouts.json')
 
 /** Preset categories by first letter, so a long list stays browsable. */
 const GROUPS = [
@@ -92,10 +84,22 @@ class SystemToolsInstance extends InstanceBase {
 		return process.platform === 'darwin'
 	}
 
+	get win() {
+		return process.platform === 'win32'
+	}
+
 	async init(config, _isFirstInit, secrets) {
 		this.config = config
 		this.secrets = secrets ?? {}
-		this.keepAwake = new KeepAwake()
+		if (this.win && !this.host) {
+			this.host = new WinHost()
+			this.host.onFail = (e) => {
+				this.log('error', `Windows helper: ${e.message}. Window, sound and key features need Windows PowerShell; apps still work.`)
+				this.updateStatus(InstanceStatus.UnknownWarning, 'Windows helper not running: see log')
+			}
+		}
+		this.keepAwake = this.win ? new WinKeepAwake(this.host) : new KeepAwake()
+		if (this.win) this.keepAwake.onError = (e) => this.fail('Keep awake', e)
 		this.keepAwake.onChange = () => {
 			this.setVariableValues({ keep_awake: this.keepAwake.on ? 'ON' : 'OFF' })
 			this.checkFeedbacks('keep_awake')
@@ -103,10 +107,8 @@ class SystemToolsInstance extends InstanceBase {
 		await this.loadLayouts()
 		this.updateDefinitions()
 		await this.rescan()
-		if (this.mac) {
-			void this.refreshScreens()
-			void this.refreshShortcuts()
-		}
+		if (this.mac || this.win) void this.refreshScreens()
+		if (this.mac) void this.refreshShortcuts()
 	}
 
 	async configUpdated(config, secrets) {
@@ -119,6 +121,7 @@ class SystemToolsInstance extends InstanceBase {
 	async destroy() {
 		this.stopPolls()
 		this.keepAwake?.stop(true)
+		this.host?.close()
 	}
 
 	byId(id) {
@@ -192,13 +195,13 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	get showIcons() {
-		return this.mac && this.config.icons !== false
+		return (this.mac || this.win) && this.config.icons !== false
 	}
 
 	/** Draws (or loads from the cache) the icon of every listed app and Dock app, then shows them. */
 	async refreshIcons() {
 		if (!this.showIcons) return
-		this.icons ??= new IconCache()
+		this.icons ??= new IconCache(this.win ? { draw: (items, size) => this.host.request('icons', { items, size }, { timeout: 120000 }) } : {})
 		try {
 			const n = await this.icons.ensure([...this.dock.map((d) => d.path), ...this.apps.map((a) => a.path)])
 			this.log('debug', `${n} app icons ready`)
@@ -216,9 +219,12 @@ class SystemToolsInstance extends InstanceBase {
 
 	/** The apps in the Mac's Dock, for the "Your Dock" keys. Redraws the presets only when the Dock changed. */
 	async refreshDock(redefine = true) {
-		if (!this.mac) return
+		if (!this.mac && !this.win) return
 		try {
-			const dock = await readDock()
+			// Windows: the apps pinned to the taskbar, in order.
+			const dock = this.win
+				? ((await this.host.request('taskbar')) ?? []).map((t) => ({ name: t.name, path: t.path, exe: /\.exe$/i.test(t.target ?? '') ? path.win32.basename(t.target) : '' }))
+				: await readDock()
 			const changed = dock.map((d) => d.path).join('\n') !== this.dock.map((d) => d.path).join('\n')
 			this.dock = dock
 			const values = { dock_count: dock.length }
@@ -240,8 +246,8 @@ class SystemToolsInstance extends InstanceBase {
 		this.timers.push(setInterval(() => void this.pollSystem(), 2000))
 		this.timers.push(setInterval(() => void this.pollInfo(), 5000))
 		this.timers.push(setInterval(() => this.tickClock(), 1000))
-		if (this.mac) this.timers.push(setInterval(() => void this.refreshScreens(), 30000))
-		if (this.mac) this.timers.push(setInterval(() => void this.refreshDock(), 60000))
+		if (this.mac || this.win) this.timers.push(setInterval(() => void this.refreshScreens(), 30000))
+		if (this.mac || this.win) this.timers.push(setInterval(() => void this.refreshDock(), 60000))
 		this.timers.push(setInterval(() => void this.autoUpdate(), 60000))
 		setTimeout(() => void this.autoUpdate(), 5000)
 		if (this.mac) this.timers.push(setInterval(() => void this.refreshBluetooth(), 10000))
@@ -268,7 +274,7 @@ class SystemToolsInstance extends InstanceBase {
 				this.setVariableValues({ running_count: now.size })
 			}
 			if (this.dock.length) {
-				const dockNow = await runningApps(this.dock.map((d, i) => ({ id: String(i + 1), path: d.path })))
+				const dockNow = await runningApps(this.dock.map((d, i) => ({ id: String(i + 1), path: d.path, exe: d.exe })))
 				const dockChanged = dockNow.size !== this.dockRunning.size || [...dockNow].some((id) => !this.dockRunning.has(id))
 				this.dockRunning = dockNow
 				if (dockChanged) this.checkFeedbacks('dock_running')
@@ -327,11 +333,40 @@ class SystemToolsInstance extends InstanceBase {
 		return true
 	}
 
+	/** Mac and Windows. */
+	desktopOnly(what) {
+		if (this.mac || this.win) return false
+		this.log('warn', `${what} works on a Mac or Windows only`)
+		return true
+	}
+
+	/** Window requests: the Mac's JXA script, or the Windows helper (same requests, same replies). */
+	windows(request) {
+		return this.win ? this.host.request(request.cmd, request, { timeout: 60000 }) : windowRequest(request)
+	}
+
+	/** Windows: brings an app's window to the front before keys go to it ('' = leave whatever is in front). */
+	async winFront(app) {
+		if (!app) return
+		const ok = await this.host.request('focus', { item: { app } }).catch(() => false)
+		if (!ok) this.log('warn', `Couldn't find a window of "${app}": sending to whatever is in front`)
+		else await new Promise((r) => setTimeout(r, 200))
+	}
+
+	/** Runs something in the Windows helper, logging (not throwing) when it fails. */
+	async winDo(cmd, data, what) {
+		try {
+			return await this.host.request(cmd, data)
+		} catch (e) {
+			this.fail(what, e)
+		}
+	}
+
 	// ---------- windows ----------
 
 	async refreshScreens() {
 		try {
-			const list = await windowRequest({ cmd: 'screens' })
+			const list = await this.windows({ cmd: 'screens' })
 			const names = list.map((s, i) => `${i + 1}: ${s.name}`).join(', ')
 			const changed = list.length !== this.screens.length || list.some((s, i) => s.name !== this.screens[i]?.name)
 			this.screens = list
@@ -343,9 +378,9 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	async placeWindows(items, what) {
-		if (this.macOnly('Moving windows')) return
+		if (this.desktopOnly('Moving windows')) return
 		try {
-			const results = await windowRequest({ cmd: 'place', items })
+			const results = await this.windows({ cmd: 'place', items })
 			const { good, bad, text } = summarise(results)
 			if (bad.length) this.log('warn', `${what}: ${text}`)
 			else this.log('debug', `${what}: ${good} window(s) placed`)
@@ -363,9 +398,9 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	async saveLayout(slot) {
-		if (this.macOnly('Saving a window layout')) return
+		if (this.desktopOnly('Saving a window layout')) return
 		try {
-			const windows = await windowRequest({ cmd: 'capture' })
+			const windows = await this.windows({ cmd: 'capture' })
 			this.layouts[slot] = { savedAt: new Date().toISOString(), apps: windows }
 			await mkdir(path.dirname(LAYOUT_FILE), { recursive: true })
 			await writeFile(LAYOUT_FILE, JSON.stringify(this.layouts, null, 1))
@@ -385,13 +420,22 @@ class SystemToolsInstance extends InstanceBase {
 	// ---------- sound, dark mode, info ----------
 
 	async pollSystem() {
-		if (!this.mac || this.sysPolling) return
+		if ((!this.mac && !this.win) || this.sysPolling) return
 		this.sysPolling = true
 		try {
-			const s = parseSound(await run('osascript', ['-e', SOUND_READ]))
+			let s
+			let dark
+			if (this.win) {
+				const [snd, st] = await Promise.all([this.host.request('sound'), this.host.request('state')])
+				s = { output: snd.output ?? null, input: snd.input ?? null, muted: !!snd.muted }
+				dark = !!st.dark
+				this.winBattery = st.battery === undefined ? null : st
+			} else {
+				s = parseSound(await run('osascript', ['-e', SOUND_READ]))
+				dark = await isDarkMode()
+			}
 			if (this.volTarget !== null && Date.now() - this.volSetAt < ECHO_GUARD_MS) s.output = this.volTarget
 			else this.volTarget = null
-			const dark = await isDarkMode()
 			const soundChanged = s.output !== this.sound.output || s.input !== this.sound.input || s.muted !== this.sound.muted
 			this.sound = s
 			if (soundChanged) {
@@ -434,6 +478,7 @@ class SystemToolsInstance extends InstanceBase {
 			values.disk_free = ''
 		}
 		values.battery = ''
+		if (this.win && this.winBattery) values.battery = `${this.winBattery.battery}%${this.winBattery.charging ? ' ⚡' : ''}`
 		if (this.mac) {
 			try {
 				const b = parsePmset(await run('pmset', ['-g', 'batt']))
@@ -508,7 +553,8 @@ class SystemToolsInstance extends InstanceBase {
 
 	async setSound(what, value) {
 		try {
-			await run('osascript', ['-e', SOUND_SET, what, String(value)])
+			if (this.win) await this.host.request('sound_set', { what, value: what === 'mute' ? (value ? 1 : 0) : Number(value) })
+			else await run('osascript', ['-e', SOUND_SET, what, String(value)])
 		} catch (e) {
 			this.fail('Sound', e)
 		}
@@ -517,7 +563,7 @@ class SystemToolsInstance extends InstanceBase {
 
 	/** Fast knob turns: keep a local target and send it, never more than one set at a time. */
 	async stepVolume(delta) {
-		if (!this.mac) return this.winKey(delta > 0 ? 'up' : 'down')
+		if (!this.mac && !this.win) return
 		const base = this.volTarget ?? this.sound.output ?? 50
 		this.volTarget = Math.max(0, Math.min(100, Math.round(base + delta)))
 		this.volSetAt = Date.now()
@@ -529,22 +575,12 @@ class SystemToolsInstance extends InstanceBase {
 			let sent
 			while (sent !== this.volTarget) {
 				sent = this.volTarget
-				await run('osascript', ['-e', SOUND_SET, 'output', String(sent)]).catch((e) => this.fail('Volume', e))
+				if (this.win) await this.host.request('sound_set', { what: 'output', value: sent }).catch((e) => this.fail('Volume', e))
+				else await run('osascript', ['-e', SOUND_SET, 'output', String(sent)]).catch((e) => this.fail('Volume', e))
 				this.volSetAt = Date.now()
 			}
 		} finally {
 			this.volSending = false
-		}
-	}
-
-	async winKey(which) {
-		try {
-			await new Promise((resolve, reject) => {
-				const env = { ...process.env, ST_VK: String(WIN_VK[which]) }
-				execFile('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', WIN_KEY], { env, windowsHide: true, timeout: 8000 }, (err) => (err ? reject(err) : resolve()))
-			})
-		} catch (e) {
-			this.fail('Volume key', e)
 		}
 	}
 
@@ -603,7 +639,7 @@ class SystemToolsInstance extends InstanceBase {
 		const dockSlotOption = {
 			type: 'dropdown',
 			id: 'slot',
-			label: 'Dock position',
+			label: this.win ? 'Taskbar position' : 'Dock position',
 			default: '2',
 			choices: Array.from({ length: DOCK_SLOTS }, (_, i) => ({ id: String(i + 1), label: `${i + 1}${this.dock[i] ? `: ${this.dock[i].name}` : ''}` })),
 		}
@@ -670,13 +706,13 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			dock_launch: {
-				name: 'App: open the app in a Dock position (Mac)',
-				description: '1 = Finder (always first in the Dock), 2 = the next app along, and so on. Follows your Dock: rearrange the Dock and the keys follow.',
+				name: this.win ? 'App: open the app pinned in a taskbar position' : 'App: open the app in a Dock position (Mac)',
+				description: this.win ? '1 = the first app pinned to the taskbar, 2 = the next, and so on. Rearrange the taskbar and the keys follow.' : '1 = Finder (always first in the Dock), 2 = the next app along, and so on. Follows your Dock: rearrange the Dock and the keys follow.',
 				options: [dockSlotOption],
 				callback: async (a) => {
-					if (this.macOnly('Dock apps')) return
+					if (this.desktopOnly('Dock apps')) return
 					const app = this.dock[Number(a.options.slot) - 1]
-					if (!app) return this.log('warn', `There is no app in Dock position ${a.options.slot}`)
+					if (!app) return this.log('warn', `There is no app in ${this.win ? 'taskbar' : 'Dock'} position ${a.options.slot}`)
 					await this.launch(app)
 				},
 			},
@@ -693,39 +729,39 @@ class SystemToolsInstance extends InstanceBase {
 				options: [],
 				callback: () => this.autoUpdate(true),
 			},
-			refresh_dock: { name: 'App: re-read the Dock (Mac)', options: [], callback: () => this.refreshDock() },
+			refresh_dock: { name: this.win ? 'App: re-read the taskbar' : 'App: re-read the Dock', options: [], callback: () => this.refreshDock() },
 			rescan: { name: 'App: rescan for apps', description: 'Run after installing or removing apps.', options: [], callback: async () => this.rescan() },
 			hide_app: {
-				name: 'App: hide (Mac)',
+				name: this.win ? 'App: minimise all its windows' : 'App: hide',
 				options: [windowAppOption, customOption],
 				callback: async (a, ctx) => {
-					if (this.macOnly('Hiding apps')) return
+					if (this.desktopOnly('Hiding apps')) return
 					const app = await pickWindowApp(a.options, ctx)
-					await windowRequest({ cmd: 'hide', item: { app: app?.name ?? '', path: app?.path ?? '' } }).catch((e) => this.fail('Hide', e))
+					await this.windows({ cmd: 'hide', item: { app: app?.name ?? '', path: app?.path ?? '', exe: app?.exe ?? '' } }).catch((e) => this.fail('Hide', e))
 				},
 			},
 			hide_others: {
-				name: 'App: hide all the others (Mac)',
+				name: this.win ? 'App: minimise all the others' : 'App: hide all the others',
 				options: [windowAppOption, customOption],
 				callback: async (a, ctx) => {
-					if (this.macOnly('Hiding apps')) return
+					if (this.desktopOnly('Hiding apps')) return
 					const app = await pickWindowApp(a.options, ctx)
-					await windowRequest({ cmd: 'hide_others', item: { app: app?.name ?? '', path: app?.path ?? '' } }).catch((e) => this.fail('Hide others', e))
+					await this.windows({ cmd: 'hide_others', item: { app: app?.name ?? '', path: app?.path ?? '', exe: app?.exe ?? '' } }).catch((e) => this.fail('Hide others', e))
 				},
 			},
 			show_all: {
-				name: 'App: show all hidden apps (Mac)',
+				name: this.win ? 'App: bring back the windows "minimise all the others" put away' : 'App: show all hidden apps',
 				options: [],
 				callback: async () => {
-					if (this.macOnly('Showing apps')) return
-					await windowRequest({ cmd: 'show_all' }).catch((e) => this.fail('Show all', e))
+					if (this.desktopOnly('Showing apps')) return
+					await this.windows({ cmd: 'show_all' }).catch((e) => this.fail('Show all', e))
 				},
 			},
 
 			// windows
 			window_place: {
-				name: 'Window: move / resize (Mac)',
-				description: 'Puts a window on a screen, in a position. Needs Companion allowed under Privacy & Security → Accessibility.',
+				name: 'Window: move / resize',
+				description: 'Puts a window on a screen, in a position. Mac: needs Companion allowed under Privacy & Security → Accessibility. Windows: "fill" maximises.',
 				options: [
 					windowAppOption,
 					customOption,
@@ -740,16 +776,16 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			window_minimise: {
-				name: 'Window: minimise (Mac)',
+				name: 'Window: minimise',
 				options: [windowAppOption, customOption],
 				callback: async (a, ctx) => {
-					if (this.macOnly('Minimising')) return
+					if (this.desktopOnly('Minimising')) return
 					const app = await pickWindowApp(a.options, ctx)
-					await windowRequest({ cmd: 'minimise', item: { app: app?.name ?? '', path: app?.path ?? '' } }).catch((e) => this.fail('Minimise', e))
+					await this.windows({ cmd: 'minimise', item: { app: app?.name ?? '', path: app?.path ?? '', exe: app?.exe ?? '' } }).catch((e) => this.fail('Minimise', e))
 				},
 			},
 			layout_apply: {
-				name: 'Window layout: arrange apps (written list, Mac)',
+				name: 'Window layout: arrange apps (written list)',
 				description: 'One line per app: "App name, screen, position". Positions: fill, left, right, top, bottom, left third, centre third, right third, left two thirds, right two thirds, top left, top right, bottom left, bottom right, centre large, centre.',
 				options: [
 					{ type: 'textinput', id: 'layout', label: 'Layout', default: 'Safari, 1, left\nFinder, 1, right', multiline: true, useVariables: true },
@@ -765,13 +801,13 @@ class SystemToolsInstance extends InstanceBase {
 					if (placed.length) await this.placeWindows(placed, 'Layout')
 				},
 			},
-			layout_save: { name: 'Window layout: save where the windows are now (Mac)', options: [slotOption], callback: (a) => this.saveLayout(String(a.options.slot)) },
+			layout_save: { name: 'Window layout: save where the windows are now', options: [slotOption], callback: (a) => this.saveLayout(String(a.options.slot)) },
 			layout_restore: {
-				name: 'Window layout: put windows back to a saved layout (Mac)',
+				name: 'Window layout: put windows back to a saved layout',
 				options: [slotOption, { type: 'checkbox', id: 'launch', label: 'Open apps that are closed', default: false }],
 				callback: (a) => this.restoreLayout(String(a.options.slot), a.options.launch === true),
 			},
-			screens_refresh: { name: 'Window: refresh the screen list (Mac)', options: [], callback: () => this.refreshScreens() },
+			screens_refresh: { name: 'Window: refresh the screen list', options: [], callback: () => this.refreshScreens() },
 			magnet: {
 				name: 'Magnet: send its shortcut (needs Magnet with its default shortcuts)',
 				options: [{ type: 'dropdown', id: 'move', label: 'Magnet', default: 'left', choices: Object.entries(MAGNET).map(([id, m]) => ({ id, label: `${m.label} (${shortcutLabel(m.key, m.mods)})` })) }],
@@ -783,11 +819,11 @@ class SystemToolsInstance extends InstanceBase {
 
 			// show machine
 			keep_awake: {
-				name: 'Keep awake (stop the Mac sleeping)',
-				description: 'Uses macOS\'s own caffeinate. Stops when you switch it off or Companion closes.',
+				name: 'Keep awake (stop the computer sleeping)',
+				description: 'Uses the system\'s own keep-awake (caffeinate on a Mac). Stops when you switch it off or Companion closes.',
 				options: [mode, { type: 'checkbox', id: 'displays', label: 'Keep the displays on too', default: true }],
 				callback: (a) => {
-					if (this.macOnly('Keep awake')) return
+					if (this.desktopOnly('Keep awake')) return
 					if (want(a.options.mode, this.keepAwake.on)) this.keepAwake.start(a.options.displays !== false)
 					else this.keepAwake.stop()
 				},
@@ -796,7 +832,8 @@ class SystemToolsInstance extends InstanceBase {
 				name: 'Sleep the displays now',
 				options: [],
 				callback: async () => {
-					if (this.macOnly('Sleeping the displays')) return
+					if (this.desktopOnly('Sleeping the displays')) return
+					if (this.win) return this.winDo('display_sleep', {}, 'Display sleep')
 					await run('pmset', ['displaysleepnow']).catch((e) => this.fail('Display sleep', e))
 				},
 			},
@@ -809,19 +846,25 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			screen_saver: {
-				name: 'Start the screen saver (Mac)',
+				name: 'Start the screen saver',
 				options: [],
 				callback: async () => {
-					if (this.macOnly('Screen saver')) return
+					if (this.desktopOnly('Screen saver')) return
+					if (this.win) return this.winDo('screen_saver', {}, 'Screen saver')
 					await run('open', ['-a', 'ScreenSaverEngine']).catch((e) => this.fail('Screen saver', e))
 				},
 			},
 			eject_disks: {
-				name: 'Eject all disks (Mac)',
+				name: this.win ? 'Eject all USB sticks and SD cards' : 'Eject all disks',
 				description: 'USB sticks, SD cards, external drives and disk images. A disk that is in use stays (see the log).',
 				options: [],
 				callback: async () => {
-					if (this.macOnly('Ejecting disks')) return
+					if (this.desktopOnly('Ejecting disks')) return
+					if (this.win) {
+						const r = await this.winDo('eject', {}, 'Eject')
+						if (r) this.log(r.left?.length ? 'warn' : 'info', `Ejected ${r.ejected} drive(s)${r.left?.length ? `; still in use: ${r.left.join(' ')}` : ''}`)
+						return
+					}
 					try {
 						const n = (await run('osascript', ['-e', EJECT_ALL], { timeout: 60000 })).trim()
 						this.log('info', `Ejected ${n} disk(s)`)
@@ -831,10 +874,11 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			dark_mode: {
-				name: 'Dark mode (Mac)',
+				name: 'Dark mode',
 				options: [mode],
 				callback: async (a) => {
-					await this.osa(DARK_MODE_SET, [a.options.mode], 'Dark mode')
+					if (this.win) await this.winDo('dark_mode', { mode: a.options.mode }, 'Dark mode')
+					else await this.osa(DARK_MODE_SET, [a.options.mode], 'Dark mode')
 					setTimeout(() => void this.pollSystem(), 500)
 				},
 			},
@@ -893,7 +937,7 @@ class SystemToolsInstance extends InstanceBase {
 			// sound
 			volume_step: {
 				name: 'Sound: volume step (knob)',
-				description: 'Mac: the output volume. Windows: the volume keys.',
+				description: 'The volume of the sound output (speakers, headphones, interface).',
 				options: [dir, sizeOption],
 				callback: (a) => {
 					const pct = VOLUME_STEPS[(Number(a.options.size) || 2) - 1] ?? 3
@@ -901,23 +945,23 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			volume_set: {
-				name: 'Sound: set the volume (Mac)',
+				name: 'Sound: set the volume',
 				options: [{ type: 'number', id: 'volume', label: 'Volume (0-100)', default: 50, min: 0, max: 100 }],
-				callback: (a) => !this.macOnly('Setting the volume') && this.setSound('output', a.options.volume),
+				callback: (a) => !this.desktopOnly('Setting the volume') && this.setSound('output', a.options.volume),
 			},
 			mute: {
 				name: 'Sound: mute',
 				options: [mode],
 				callback: (a) => {
-					if (!this.mac) return this.winKey('mute')
+					if (this.desktopOnly('Mute')) return
 					return this.setSound('mute', want(a.options.mode, this.sound.muted))
 				},
 			},
 			input_step: {
-				name: 'Sound: microphone level step (knob, Mac)',
+				name: 'Sound: microphone level step (knob)',
 				options: [dir, sizeOption],
 				callback: (a) => {
-					if (this.macOnly('Microphone level')) return
+					if (this.desktopOnly('Microphone level')) return
 					const pct = VOLUME_STEPS[(Number(a.options.size) || 2) - 1] ?? 3
 					const next = Math.max(0, Math.min(100, (this.sound.input ?? 50) + (a.options.direction === 'down' ? -pct : pct)))
 					this.sound.input = next
@@ -928,7 +972,7 @@ class SystemToolsInstance extends InstanceBase {
 
 			// desktop
 			mission_control: {
-				name: 'Desktop: Mission Control / show desktop / app windows (Mac)',
+				name: this.win ? 'Desktop: Task View / show desktop' : 'Desktop: Mission Control / show desktop / app windows',
 				options: [
 					{
 						type: 'dropdown',
@@ -943,7 +987,9 @@ class SystemToolsInstance extends InstanceBase {
 					},
 				],
 				callback: async (a) => {
-					if (this.macOnly('Mission Control')) return
+					if (this.desktopOnly('Mission Control')) return
+					// Windows: Task View (Win+Tab) and show desktop (Win+D)
+					if (this.win) return this.winDo('keys', a.options.view === 'desktop' ? WIN_SHORTCUTS.show_desktop : WIN_SHORTCUTS.task_view, 'Task View')
 					const arg = { mission: [], desktop: ['1'], app: ['2'] }[a.options.view] ?? []
 					for (const p of MISSION_CONTROL_PATHS) {
 						try {
@@ -956,33 +1002,48 @@ class SystemToolsInstance extends InstanceBase {
 				},
 			},
 			space: {
-				name: 'Desktop: switch to the desktop on the left / right (Mac)',
+				name: 'Desktop: switch to the desktop on the left / right',
 				options: [{ type: 'dropdown', id: 'direction', label: 'Direction', default: 'right', choices: [{ id: 'left', label: 'Left' }, { id: 'right', label: 'Right' }] }],
-				callback: (a) => this.osa(SPACE_SWITCH, [a.options.direction], 'Switch desktop', 'JavaScript'),
+				callback: (a) => {
+					if (this.win) return this.winDo('keys', a.options.direction === 'left' ? WIN_SHORTCUTS.desktop_left : WIN_SHORTCUTS.desktop_right, 'Switch desktop')
+					return this.osa(SPACE_SWITCH, [a.options.direction], 'Switch desktop', 'JavaScript')
+				},
 			},
 
 			// keys and text
 			send_keys: {
-				name: 'Keys: press a keyboard shortcut (Mac)',
-				options: [{ type: 'dropdown', id: 'key', label: 'Key', default: 'space', choices: keyChoices }, ...MODIFIERS.map((m) => ({ type: 'checkbox', id: m, label: m[0].toUpperCase() + m.slice(1), default: m === 'command', width: 3 })), sendToOption],
+				name: 'Keys: press a keyboard shortcut',
+				options: [{ type: 'dropdown', id: 'key', label: 'Key', default: 'space', choices: keyChoices }, ...MODIFIERS.map((m) => ({ type: 'checkbox', id: m, label: this.win ? WIN_MOD_LABELS[m] : m[0].toUpperCase() + m.slice(1), default: m === 'command', width: 3 })), sendToOption],
 				callback: async (a, ctx) => {
 					const target = (await ctx.parseVariablesInString(String(a.options.target ?? ''))).trim()
-					await this.osa(SEND_KEYS, [a.options.key, MODIFIERS.filter((m) => a.options[m]).join(','), target], 'Keyboard shortcut', 'JavaScript')
+					const mods = MODIFIERS.filter((m) => a.options[m])
+					if (this.win) {
+						try {
+							await this.winFront(target)
+							await this.host.request('keys', keyRequest(a.options.key, mods))
+						} catch (e) {
+							this.fail('Keyboard shortcut', e)
+						}
+						return
+					}
+					await this.osa(SEND_KEYS, [a.options.key, mods.join(','), target], 'Keyboard shortcut', 'JavaScript')
 				},
 			},
 			type_text: {
-				name: 'Keys: type text (Mac)',
+				name: 'Keys: type text',
 				description: 'Types it like a keyboard. For long text use "paste text", which is instant.',
 				options: [{ type: 'textinput', id: 'text', label: 'Text (variables allowed)', default: '', useVariables: true }, sendToOption],
 				callback: async (a, ctx) => {
 					const text = await ctx.parseVariablesInString(String(a.options.text ?? ''))
 					const target = (await ctx.parseVariablesInString(String(a.options.target ?? ''))).trim()
-					if (text) await this.osa(TYPE_TEXT, [text, target], 'Type text', 'JavaScript')
+					if (!text) return
+					if (this.win) return this.winFront(target).then(() => this.winDo('type', { text }, 'Type text'))
+					await this.osa(TYPE_TEXT, [text, target], 'Type text', 'JavaScript')
 				},
 			},
 			paste_text: {
-				name: 'Keys: paste text (Mac)',
-				description: 'Puts the text on the clipboard and presses ⌘V.',
+				name: 'Keys: paste text',
+				description: 'Puts the text on the clipboard and presses ⌘V (Ctrl+V on Windows).',
 				options: [
 					{ type: 'textinput', id: 'text', label: 'Text (variables allowed)', default: '', useVariables: true, multiline: true },
 					sendToOption,
@@ -991,7 +1052,9 @@ class SystemToolsInstance extends InstanceBase {
 				callback: async (a, ctx) => {
 					const text = await ctx.parseVariablesInString(String(a.options.text ?? ''))
 					const target = (await ctx.parseVariablesInString(String(a.options.target ?? ''))).trim()
-					if (text) await this.osa(PASTE_TEXT, [text, target, a.options.restore ? 'true' : 'false'], 'Paste text', 'JavaScript')
+					if (!text) return
+					if (this.win) return this.winFront(target).then(() => this.winDo('paste', { text, restore: a.options.restore === true }, 'Paste text'))
+					await this.osa(PASTE_TEXT, [text, target, a.options.restore ? 'true' : 'false'], 'Paste text', 'JavaScript')
 				},
 			},
 
@@ -1033,27 +1096,27 @@ class SystemToolsInstance extends InstanceBase {
 			},
 			app_icon: {
 				type: 'advanced',
-				name: "App's icon on the key (Mac)",
+				name: "App's icon on the key",
 				description: 'Draws the app icon in the top of the key, with room for the name underneath (text aligned to the bottom).',
 				options: [appOption],
 				callback: (fb) => this.iconStyle(this.byId(fb.options.app)?.path),
 			},
 			dock_icon: {
 				type: 'advanced',
-				name: "Dock app's icon on the key (Mac)",
+				name: this.win ? "Taskbar app's icon on the key" : "Dock app's icon on the key",
 				options: [dockSlotOption],
 				callback: (fb) => this.iconStyle(this.dock[Number(fb.options.slot) - 1]?.path),
 			},
 			dock_running: {
 				type: 'boolean',
-				name: 'The app in a Dock position is running (Mac)',
+				name: this.win ? 'The app in a taskbar position is running' : 'The app in a Dock position is running',
 				defaultStyle: { bgcolor: GREEN, color: WHITE },
 				options: [dockSlotOption],
 				callback: (fb) => this.dockRunning.has(String(fb.options.slot)),
 			},
 			keep_awake: { type: 'boolean', name: 'Keep awake is on', defaultStyle: { bgcolor: AMBER, color: BLACK }, options: [], callback: () => this.keepAwake.on },
-			muted: { type: 'boolean', name: 'Sound is muted (Mac)', defaultStyle: { bgcolor: combineRgb(200, 30, 30), color: WHITE }, options: [], callback: () => !!this.sound.muted },
-			dark_mode: { type: 'boolean', name: 'Dark mode is on (Mac)', defaultStyle: { bgcolor: BLUE, color: WHITE }, options: [], callback: () => this.dark },
+			muted: { type: 'boolean', name: 'Sound is muted', defaultStyle: { bgcolor: combineRgb(200, 30, 30), color: WHITE }, options: [], callback: () => !!this.sound.muted },
+			dark_mode: { type: 'boolean', name: 'Dark mode is on', defaultStyle: { bgcolor: BLUE, color: WHITE }, options: [], callback: () => this.dark },
 			layout_saved: { type: 'boolean', name: 'A window layout is saved in this slot', defaultStyle: { color: WHITE }, options: [slotOption], callback: (fb) => !!this.layouts[String(fb.options.slot)] },
 		})
 
@@ -1061,10 +1124,10 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'app_count', name: 'Number of apps found' },
 			{ variableId: 'running_count', name: 'Number of listed apps running' },
 			{ variableId: 'last_launched', name: 'Last app launched' },
-			{ variableId: 'dock_count', name: 'Number of apps in the Dock (Mac)' },
+			{ variableId: 'dock_count', name: this.win ? 'Number of apps pinned to the taskbar' : 'Number of apps in the Dock' },
 			{ variableId: 'bt_connected', name: 'Bluetooth devices connected now (Mac)' },
-			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}`, name: `Dock app ${i + 1} (Mac)` })),
-			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}_short`, name: `Dock app ${i + 1}, short name for under its icon (Mac)` })),
+			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}`, name: this.win ? `Taskbar app ${i + 1}` : `Dock app ${i + 1}` })),
+			...Array.from({ length: DOCK_SLOTS }, (_, i) => ({ variableId: `dock_${i + 1}_short`, name: this.win ? `Taskbar app ${i + 1}, short name for under its icon` : `Dock app ${i + 1}, short name for under its icon` })),
 			{ variableId: 'clock', name: 'Time now (HH:MM)' },
 			{ variableId: 'date', name: 'Date (Wednesday 22 October)' },
 			{ variableId: 'date_short', name: 'Date (Wed 22 Oct)' },
@@ -1079,13 +1142,13 @@ class SystemToolsInstance extends InstanceBase {
 			{ variableId: 'last_update', name: 'Auto-update: what it last did' },
 			{ variableId: 'companion_url', name: "Companion's address for other devices (http://IP:port)" },
 			{ variableId: 'uptime', name: 'Time since the computer started' },
-			{ variableId: 'volume', name: 'Output volume (Mac; – when the device has no volume)' },
-			{ variableId: 'input_volume', name: 'Microphone level (Mac)' },
-			{ variableId: 'muted', name: '"MUTED" when muted (Mac)' },
+			{ variableId: 'volume', name: 'Output volume (– when the device has no volume)' },
+			{ variableId: 'input_volume', name: 'Microphone level' },
+			{ variableId: 'muted', name: '"MUTED" when muted' },
 			{ variableId: 'keep_awake', name: 'Keep awake ON/OFF' },
-			{ variableId: 'dark_mode', name: 'Dark mode ON/OFF (Mac)' },
-			{ variableId: 'screen_count', name: 'Number of screens (Mac)' },
-			{ variableId: 'screens', name: 'Screen numbers and names (Mac)' },
+			{ variableId: 'dark_mode', name: 'Dark mode ON/OFF' },
+			{ variableId: 'screen_count', name: 'Number of screens' },
+			{ variableId: 'screens', name: 'Screen numbers and names' },
 		])
 		this.setVariableValues({ app_count: this.apps.length, running_count: this.running.size, keep_awake: this.keepAwake?.on ? 'ON' : 'OFF' })
 
@@ -1130,7 +1193,7 @@ class SystemToolsInstance extends InstanceBase {
 			presets[`layout_${i}`] = key('Window layouts', `Layout ${i}: put windows back`, `LAYOUT\\n${i}`, act('layout_restore', { slot: String(i), launch: false }), saved, '18')
 			presets[`layout_${i}_save`] = key('Window layouts', `Layout ${i}: save where windows are now`, `SAVE\\nLAYOUT ${i}`, act('layout_save', { slot: String(i) }), saved)
 		}
-		presets.layout_written = key('Window layouts', 'Arrange apps from a written list (edit the action)', 'ARRANGE\\nAPPS', act('layout_apply', { layout: 'Safari, 1, left\nFinder, 1, right', launch: true }))
+		presets.layout_written = key('Window layouts', 'Arrange apps from a written list (edit the action)', 'ARRANGE\\nAPPS', act('layout_apply', { layout: this.win ? 'Microsoft Edge, 1, left\nNotepad, 1, right' : 'Safari, 1, left\nFinder, 1, right', launch: true }))
 
 		// Show machine
 		presets.keep_awake = key('Show machine', 'Keep awake (toggle)', 'KEEP\\nAWAKE', act('keep_awake', { mode: 'toggle', displays: true }), [{ feedbackId: 'keep_awake', options: {}, style: { bgcolor: AMBER, color: BLACK } }])
@@ -1165,26 +1228,34 @@ class SystemToolsInstance extends InstanceBase {
 		presets.mute = key('Sound', 'Mute (toggle)', 'MUTE', act('mute', { mode: 'toggle' }), mutedFb, '18')
 
 		// Desktop
-		presets.mission = key('Desktop', 'Mission Control', 'MISSION\\nCONTROL', act('mission_control', { view: 'mission' }))
+		presets.mission = this.win
+			? key('Desktop', 'Task View (Win+Tab)', 'TASK\\nVIEW', act('mission_control', { view: 'mission' }))
+			: key('Desktop', 'Mission Control', 'MISSION\\nCONTROL', act('mission_control', { view: 'mission' }))
 		presets.show_desktop = key('Desktop', 'Show desktop', 'SHOW\\nDESKTOP', act('mission_control', { view: 'desktop' }))
-		presets.app_windows = key('Desktop', "Front app's windows", 'APP\\nWINDOWS', act('mission_control', { view: 'app' }))
+		if (!this.win) presets.app_windows = key('Desktop', "Front app's windows", 'APP\\nWINDOWS', act('mission_control', { view: 'app' }))
 		presets.space_left = key('Desktop', 'Desktop to the left', '◀\\nDESKTOP', act('space', { direction: 'left' }))
 		presets.space_right = key('Desktop', 'Desktop to the right', 'DESKTOP\\n▶', act('space', { direction: 'right' }))
-		presets.hide_others = key('Desktop', 'Hide all apps but the front one', 'HIDE\\nOTHERS', act('hide_others', { app: 'front', custom: '' }))
-		presets.show_all = key('Desktop', 'Show all hidden apps', 'SHOW\\nALL', act('show_all'))
+		presets.hide_others = key('Desktop', this.win ? 'Minimise all apps but the front one' : 'Hide all apps but the front one', 'HIDE\\nOTHERS', act('hide_others', { app: 'front', custom: '' }))
+		presets.show_all = key('Desktop', this.win ? 'Bring back what HIDE OTHERS minimised' : 'Show all hidden apps', 'SHOW\\nALL', act('show_all'))
 
 		// Keys and text
 		const keys = (k, mods) => Object.fromEntries([['key', k], ...['command', 'option', 'control', 'shift'].map((m) => [m, mods.includes(m)]), ['target', '']])
-		presets.key_screenshot = key('Keys and text', 'Screenshot of an area (⇧⌘4)', 'SCREEN-\\nSHOT', act('send_keys', keys('4', ['command', 'shift'])))
-		presets.key_spotlight = key('Keys and text', 'Spotlight (⌘Space)', 'SPOT-\\nLIGHT', act('send_keys', keys('space', ['command'])))
-		presets.key_copy = key('Keys and text', 'Copy (⌘C)', 'COPY', act('send_keys', keys('c', ['command'])), [], '18')
-		presets.key_paste = key('Keys and text', 'Paste (⌘V)', 'PASTE', act('send_keys', keys('v', ['command'])), [], '18')
-		presets.key_undo = key('Keys and text', 'Undo (⌘Z)', 'UNDO', act('send_keys', keys('z', ['command'])), [], '18')
+		// On Windows ⌘ is sent as Ctrl and ⌃ as the Windows key (see keyRequest), so copy / paste / undo are the same keys.
+		presets.key_screenshot = this.win
+			? key('Keys and text', 'Screenshot of an area (Win+Shift+S)', 'SCREEN-\\nSHOT', act('send_keys', keys('s', ['control', 'shift'])))
+			: key('Keys and text', 'Screenshot of an area (⇧⌘4)', 'SCREEN-\\nSHOT', act('send_keys', keys('4', ['command', 'shift'])))
+		presets.key_spotlight = this.win
+			? key('Keys and text', 'Search (Win+S)', 'SEARCH', act('send_keys', keys('s', ['control'])), [], '18')
+			: key('Keys and text', 'Spotlight (⌘Space)', 'SPOT-\\nLIGHT', act('send_keys', keys('space', ['command'])))
+		const m = this.win ? 'Ctrl+' : '⌘'
+		presets.key_copy = key('Keys and text', `Copy (${m}C)`, 'COPY', act('send_keys', keys('c', ['command'])), [], '18')
+		presets.key_paste = key('Keys and text', `Paste (${m}V)`, 'PASTE', act('send_keys', keys('v', ['command'])), [], '18')
+		presets.key_undo = key('Keys and text', `Undo (${m}Z)`, 'UNDO', act('send_keys', keys('z', ['command'])), [], '18')
 		presets.key_custom = key('Keys and text', 'Any shortcut (edit the action)', 'SHORT-\\nCUT', act('send_keys', keys('space', ['command'])))
 		presets.paste_text = key('Keys and text', 'Paste saved text (edit the action)', 'PASTE\\nTEXT', act('paste_text', { text: 'Hello from Companion', target: '', restore: false }))
 
-		// Magnet
-		for (const [id, m] of Object.entries(MAGNET)) {
+		// Magnet (a Mac app)
+		for (const [id, m] of Object.entries(this.win ? {} : MAGNET)) {
 			presets[`magnet_${id}`] = key('Magnet (needs Magnet)', `Magnet: ${m.label}`, `MAGNET\\n${short(m.label.toUpperCase(), 12)}`, act('magnet', { move: id }), [], 'auto')
 		}
 
@@ -1192,14 +1263,16 @@ class SystemToolsInstance extends InstanceBase {
 		this.shortcuts.slice(0, 48).forEach((name, i) => {
 			presets[`shortcut_${i}`] = key('Shortcuts app', name, short(name, 18), act('run_shortcut', { name }), [], 'auto')
 		})
-		presets.shortcuts_refresh = key('Shortcuts app', 'Refresh the shortcut list', 'REFRESH\\nSHORTCUTS', act('refresh_shortcuts'))
+		if (!this.win) presets.shortcuts_refresh = key('Shortcuts app', 'Refresh the shortcut list', 'REFRESH\\nSHORTCUTS', act('refresh_shortcuts'))
 
-		// Your Dock: one key per Dock position, showing that app's name, green while it runs
+		// Your Dock (Windows: your taskbar): one key per position, showing that app's name, green while it runs
+		const dockCategory = this.win ? 'Your taskbar' : 'Your Dock'
+		const dockWord = this.win ? 'Taskbar' : 'Dock'
 		for (let i = 1; i <= DOCK_SLOTS; i++) {
 			presets[`dock_${i}`] = {
 				type: 'button',
-				category: 'Your Dock',
-				name: this.dock[i - 1] ? `Dock ${i}: ${this.dock[i - 1].name}` : `Dock app ${i}`,
+				category: dockCategory,
+				name: this.dock[i - 1] ? `${dockWord} ${i}: ${this.dock[i - 1].name}` : `${dockWord} app ${i}`,
 				style: icons
 					? { text: v(`dock_${i}_short`), size: '14', alignment: 'center:bottom', color: WHITE, bgcolor: GREY, show_topbar: false }
 					: { text: v(`dock_${i}`), size: 'auto', color: WHITE, bgcolor: GREY, show_topbar: false },
@@ -1216,9 +1289,9 @@ class SystemToolsInstance extends InstanceBase {
 				{ feedbackId: 'bt_connected', options: { device: d.address }, style: { bgcolor: BLUE, color: WHITE } },
 			], 'auto')
 		})
-		presets.refresh_bluetooth = key('Bluetooth', 'Re-read the paired devices', 'RE-READ\\nBLUETOOTH', act('refresh_bluetooth'))
+		if (!this.win) presets.refresh_bluetooth = key('Bluetooth', 'Re-read the paired devices', 'RE-READ\\nBLUETOOTH', act('refresh_bluetooth'))
 
-		presets.refresh_dock = key('Your Dock', 'Re-read the Dock', 'RE-READ\\nDOCK', act('refresh_dock'))
+		presets.refresh_dock = this.win ? key(dockCategory, 'Re-read the taskbar', 'RE-READ\\nTASKBAR', act('refresh_dock')) : key(dockCategory, 'Re-read the Dock', 'RE-READ\\nDOCK', act('refresh_dock'))
 
 		// Apps
 		presets.rescan = key('Apps: tools', 'Rescan apps', 'RESCAN\\nAPPS', act('rescan'))
@@ -1248,10 +1321,10 @@ class SystemToolsInstance extends InstanceBase {
 				width: 12,
 				label: 'What this does',
 				value:
-					'Apps (Mac and Windows): one key per installed app, green while running. Mac: move and resize windows across screens and save window layouts, keep awake, sound, dark mode, lock, eject, Mission Control, keyboard shortcuts, saved text and your Shortcuts. Window moving and keyboard shortcuts need Companion allowed under System Settings → Privacy &amp; Security → <b>Accessibility</b>.',
+					'Mac and Windows: one key per installed app (green while running), your Dock or taskbar apps, moving and resizing windows across screens and saved window layouts, keep awake, sound, dark mode, lock, eject, Mission Control / Task View, keyboard shortcuts and saved text. Mac only: Bluetooth and your Shortcuts. On a Mac, window moving and keyboard shortcuts need Companion allowed under System Settings → Privacy &amp; Security → <b>Accessibility</b>. On Windows, a small helper starts with this connection (the first start takes a few seconds).',
 			},
 			{ type: 'checkbox', id: 'includeSystem', label: 'Mac: include built-in apps (Safari, Notes, System Settings…)', width: 6, default: false },
-			{ type: 'checkbox', id: 'icons', label: 'Mac: show app icons on app keys', width: 6, default: true },
+			{ type: 'checkbox', id: 'icons', label: 'Show app icons on app keys', width: 6, default: true },
 			{
 				type: 'static-text',
 				id: 'update_info',

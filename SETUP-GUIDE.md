@@ -480,7 +480,15 @@ Step size works like the other modules: **1** = tiny, **2** = default, **10** = 
 
 ## Part I: System Tools (apps, windows, keep awake…)
 
-Your computer from Companion keys, on the computer Companion runs on. It used to be called **App Launcher**: it does everything that did, plus a lot more. App keys work on Mac and Windows; the rest is Mac (volume, mute and lock also work on Windows).
+Your computer from Companion keys, on the computer Companion runs on, **Mac or Windows**: the same connection, keys and pages work on both. It used to be called **App Launcher**: it does everything that did, plus a lot more. Mac only: Bluetooth, the Shortcuts app and Magnet keys.
+
+**On Windows**, System Tools starts a small helper in the background (Windows PowerShell, already on every PC: nothing to install). The very first start takes a few seconds while it gets ready; after that keys answer straight away. What's different on a PC:
+- **Your Dock** keys are the apps **pinned to your taskbar**, in order.
+- **Mission Control** is **Task View** (Win+Tab); desktops left / right are Win+Ctrl+← / →.
+- **Fill** maximises the window. **Hide others** minimises the other apps' windows and **Show all** brings those back.
+- In keyboard shortcuts **⌘ is Ctrl** (so ⌘C copies on both), ⌥ is Alt and ⌃ is the Windows key.
+- **Eject** ejects USB sticks and SD cards.
+- An app running *as administrator* can't be moved or typed into from Companion (Windows protects it) unless Companion also runs as administrator.
 
 ### I.1 Add the connection (or upgrade App Launcher)
 - **Already have App Launcher?** Import the new bundle, then on the App Launcher connection click the pencil ✏️ next to its version and pick **System Tools**. Your app keys keep working.
@@ -498,7 +506,7 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 ### I.2 Apps
 **Presets → System Tools → Apps A–C**, **Apps D–F** and so on. On a Mac each key shows the app's icon with its name underneath. Press = open it, or bring it to the front. ✅ The key goes **green while the app is running**. Installed something new? Press **Rescan apps**.
 
-### I.3 Windows and screens (Mac)
+### I.3 Windows and screens
 - **Windows: front window**: put whatever window is in front into the left half, right half, thirds, quarters, fill, centre, or onto the **next screen**.
 - **Windows: screens**: fill screen 1, screen 2… Screen 1 is the one with the menu bar; the others are numbered left to right.
 - **One app, one spot:** drag any of those, then edit the action **Window: move / resize** and pick the app in *Window of* (it can open the app first). Several of these actions on one key arrange several apps at once.
@@ -521,7 +529,7 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 - **Shortcuts app**: one key per shortcut you've made in Apple's Shortcuts app. That's the way to do Focus / Do Not Disturb, wallpapers and anything else Shortcuts can do. Made a new one? Press **Refresh shortcuts**.
 
 ### I.6 Ready-made D200X pages
-Eight pages that work straight away. On the seven Mac pages, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. Page 8 is for a Panasonic PTZ camera. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock, in order.
+Nine pages that work straight away, on a Mac or a PC. On every page but the camera one, **Spotify keeps the same spots**: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays). Everything else is System Tools. Page 9 is for a Panasonic PTZ camera. The **Dock** pages need no setting up: their app keys are the apps in your Mac's Dock (on a PC, your taskbar), in order. **Mac Desk** has Mac shortcuts (⇧⌘4, Spotlight): on a PC use **PC Desk** instead.
 
 1. **Dock Apps**: Your Dock as keys: Finder then your Dock apps in order (11 keys), each named after its app and green while it runs. Rearrange the Dock and the keys follow. Knob 1 = Mac volume (push = mute), knob 2 = move the front window to the previous / next screen (push = fill).
 2. **Dock Apps 2**: Dock apps 12 to 16 (for a long Dock) on the top row, then front window left / fill / right and next screen, and Open Companion. Knob 1 = Mac volume, knob 2 = left / right half (push = centre).
@@ -530,7 +538,8 @@ Eight pages that work straight away. On the seven Mac pages, **Spotify keeps the
 5. **Windows**: Window layouts for the window in front: thirds, two-thirds, quarters, centre, minimise. Knob 1 = move it to the previous / next screen (push = fill the screen), knob 2 = left / right half (push = centre).
 6. **Show Machine**: Window layouts 1–4 (arrange your windows, press SAVE, then the LAYOUT key puts them back), keep awake, sleep screens, eject disks, dark mode. Knob 1 = Mac volume (push = mute), knob 2 = microphone level.
 7. **Show Apps**: Open your show apps (green while running), arrange them across screens in one press (edit ARRANGE SHOW to suit), hide everything else, and push the front window to screen 1 or 2. Knob 1 = Mac volume (push = mute), knob 2 = desktops.
-8. **PTZ Camera**: Panasonic PTZ: camera presets 1–5 on the top row (press = recall, hold 5 s = save over it; red SAVED when done, green for the last one recalled). The wide key flips the camera between Desktop and Hanging (amber while hanging). Knob 1 = pan (push = home), knob 2 = tilt, knob 3 = zoom. The second and third rows are left free for you.
+8. **PC Desk**: Everyday Windows (the Mac Desk page for a PC): Task View, show desktop, screenshot (Win+Shift+S), search (Win+S), lock; front window left / maximise / right and onto the other screen; keep awake. Knob 1 = volume (push = mute), knob 2 = virtual desktops (push = Task View). The Dock pages work on a PC too: their keys are your taskbar apps.
+9. **PTZ Camera**: Panasonic PTZ: camera presets 1–5 on the top row (press = recall, hold 5 s = save over it; red SAVED when done, green for the last one recalled). The wide key flips the camera between Desktop and Hanging (amber while hanging). Knob 1 = pan (push = home), knob 2 = tilt, knob 3 = zoom. The second and third rows are left free for you.
 
 **To import them (one file, all pages):**
 1. Download **[D200X-pages.companionconfig](https://github.com/Wntr2134/companion-tools/releases/download/latest/D200X-pages.companionconfig)**.

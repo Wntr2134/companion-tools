@@ -10,7 +10,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - Echo360 module: `node --test test/echo.test.mjs` in `echo360-capture/`.
 - MagicQ module: `node --test test/knobs.test.mjs` in `magicq/` (npm install rewrites yarn.lock: restore it before committing).
 - Show Health module: `node --test test/health.test.mjs` in `show-health/`.
-- System Tools module (was App Launcher; manifest `legacyIds` keeps old connections): `node --test test/apps.test.mjs test/system.test.mjs` in `system-tools/`. Keep the App Launcher action ids (`launch`, `quit`, `toggle`, `rescan`, `app_running`).
+- System Tools module (was App Launcher; manifest `legacyIds` keeps old connections): `npm test` in `system-tools/`. Windows features go through one long-running PowerShell helper (`src/win-host.js`, its C# in `src/win-host-cs.js`: C# 5 only, Windows PowerShell 5.1 compiles it); `node tools/win-check.mjs` on a PC (CI runs it on Windows) compiles it and runs the safe requests. Keep the App Launcher action ids (`launch`, `quit`, `toggle`, `rescan`, `app_running`).
 - NDI Router module: `node --test test/ndi.test.mjs test/virtual-input.test.mjs` in `ndi-router/` (builds a fake NDI library with `cc`).
 - NDI Studio Monitor module: `node --test test/monitor.test.mjs` in `ndi-studio-monitor/`.
 - grandMA2 module: `node --test test/ma2.test.mjs` in `grandma2/`.
