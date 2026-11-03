@@ -9,7 +9,10 @@ import { mkdir, readFile, stat } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-export const ICON_DIR = path.join(os.homedir(), 'Library', 'Application Support', 'Companion Tools', 'icons')
+export const ICON_DIR =
+	process.platform === 'win32'
+		? path.join(process.env.APPDATA ?? path.join(os.homedir(), 'AppData', 'Roaming'), 'Companion Tools', 'icons')
+		: path.join(os.homedir(), 'Library', 'Application Support', 'Companion Tools', 'icons')
 export const ICON_SIZE = 192 // px; the D200X keys are 196 px
 
 /**
@@ -73,8 +76,15 @@ export function shortName(name, max = 9) {
 }
 
 export class IconCache {
-	constructor({ exec = execFile, dir = ICON_DIR, size = ICON_SIZE } = {}) {
+	/** draw(items, size): makes the PNGs ([{ path, out }]). Default: the Mac script; Windows passes its helper. */
+	constructor({ exec = execFile, dir = ICON_DIR, size = ICON_SIZE, draw } = {}) {
 		this.exec = exec
+		this.draw =
+			draw ??
+			((items, size) =>
+				new Promise((resolve) => {
+					this.exec('osascript', ['-l', 'JavaScript', '-e', ICON_SCRIPT, JSON.stringify({ size, items })], { timeout: 120000 }, () => resolve())
+				}))
 		this.dir = dir
 		this.size = size
 		this.png64 = new Map() // app path -> base64 PNG
@@ -105,9 +115,7 @@ export class IconCache {
 		// One script run for all the new ones, in batches so a huge Applications folder can't time out.
 		for (let i = 0; i < missing.length; i += 60) {
 			const batch = missing.slice(i, i + 60)
-			await new Promise((resolve) => {
-				this.exec('osascript', ['-l', 'JavaScript', '-e', ICON_SCRIPT, JSON.stringify({ size: this.size, items: batch })], { timeout: 120000 }, () => resolve())
-			})
+			await this.draw(batch, this.size).catch(() => null)
 			for (const m of batch) {
 				try {
 					this.png64.set(m.path, (await readFile(m.out)).toString('base64'))

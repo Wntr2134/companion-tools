@@ -1,10 +1,10 @@
 {
 	"name": "system-tools",
-	"version": "2.4.1",
+	"version": "2.5.0",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"test": "node --test test/apps.test.mjs test/system.test.mjs"
+		"test": "node --test test/apps.test.mjs test/system.test.mjs test/win.test.mjs"
 	},
 	"license": "MIT",
 	"engines": {

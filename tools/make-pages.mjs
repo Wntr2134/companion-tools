@@ -3,7 +3,8 @@
 //
 // On every Mac page, Spotify keeps the same spots: KEY 9 / KEY 10 = ⏮ / ⏭, knob 3 = Spotify volume
 // (push = play/pause), and the wide key shows now playing (a clock and the date when nothing plays).
-// Everything else is System Tools. The PTZ Camera page is Panasonic PTZ only.
+// Everything else is System Tools. The PTZ Camera page is Panasonic PTZ only. PC Desk is for Windows
+// (⌃ on a key is the Windows key there, ⌘ is Ctrl).
 //
 // Run from the repo root (after `npm install` in system-tools/, spotify-local/ and panasonic-ptz/):
 //   node tools/make-pages.mjs          writes the pages
@@ -187,6 +188,24 @@ const PAGES = {
 			'2/1': preset('sys', 'win_screen_2'),
 			'2/2': preset('sys', 'keep_awake'),
 			...knobs(systemVolume(), desktopKnob()),
+		},
+	},
+	'PC Desk': {
+		about: 'Everyday Windows (the Mac Desk page for a PC): Task View, show desktop, screenshot (Win+Shift+S), search (Win+S), lock; front window left / maximise / right and onto the other screen; keep awake. Knob 1 = volume (push = mute), knob 2 = virtual desktops (push = Task View). The Dock pages work on a PC too: their keys are your taskbar apps.',
+		keys: {
+			...spotify(),
+			'0/0': key('sys', 'TASK\\nVIEW', [act('mission_control', { view: 'mission' })]),
+			'0/1': preset('sys', 'show_desktop'),
+			'0/2': key('sys', 'SCREEN-\\nSHOT', [keys('s', ['control', 'shift'])]),
+			'0/3': key('sys', 'SEARCH', [keys('s', ['control'])], { size: '18' }),
+			'0/4': preset('sys', 'lock'),
+			'1/0': preset('sys', 'win_left'),
+			'1/1': preset('sys', 'win_full'),
+			'1/2': preset('sys', 'win_right'),
+			'2/0': preset('sys', 'win_prev'),
+			'2/1': preset('sys', 'win_next'),
+			'2/2': preset('sys', 'keep_awake'),
+			...knobs(systemVolume(), { turn: key('sys', 'DESKTOP\\n◀ ▶', [], { left: [act('space', { direction: 'left' })], right: [act('space', { direction: 'right' })] }), push: key('sys', 'TASK\\nVIEW', [act('mission_control', { view: 'mission' })]) }),
 		},
 	},
 	'PTZ Camera': {

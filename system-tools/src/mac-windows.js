@@ -349,6 +349,7 @@ export function placeItem(app, screen, position, { launch = false } = {}) {
 	return {
 		app: app?.name ?? '',
 		path: app?.path ?? '',
+		exe: app?.exe ?? '', // Windows: the program file, to find its windows
 		screen: screen === 'same' ? 'same' : screen,
 		rect: pos.rect,
 		launch,
@@ -361,7 +362,7 @@ export function restoreItems(saved, { launch = false } = {}) {
 	const items = []
 	for (const a of saved ?? []) {
 		for (const w of a.windows ?? []) {
-			items.push({ app: a.app, bundleId: a.bundleId, title: w.title, index: w.index, abs: { x: w.x, y: w.y, w: w.w, h: w.h }, launch })
+			items.push({ app: a.app, bundleId: a.bundleId, exe: a.exe, title: w.title, index: w.index, abs: { x: w.x, y: w.y, w: w.w, h: w.h, max: w.max === true }, launch })
 		}
 	}
 	return items
