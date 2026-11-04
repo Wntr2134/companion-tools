@@ -33,6 +33,7 @@ import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
+import { THEMES, SIZES, PLACES, keyStyle, stylePresets } from './styles.js'
 import { TAB_SCRIPT, browserFor, cleanUrl, defaultMatch, installedBrowsers } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
@@ -1146,6 +1147,28 @@ class SystemToolsInstance extends InstanceBase {
 		this.setActionDefinitions(actions)
 
 		this.setFeedbackDefinitions({
+			key_style: {
+				type: 'advanced',
+				name: 'Key style: colour and text size (keeps the key as it is)',
+				description: "Add this to any key you've made to colour it and size its text, without the style editor. Its actions and text stay. Put it at the top of the list so other feedbacks (e.g. green while running) still show over it.",
+				options: [
+					{ type: 'dropdown', id: 'theme', label: 'Colour', default: 'blue', choices: Object.entries(THEMES).map(([id, t]) => ({ id, label: t.label })) },
+					{ type: 'dropdown', id: 'size', label: 'Text size', default: 'keep', choices: Object.entries(SIZES).map(([id, t]) => ({ id, label: t.label })) },
+					{ type: 'dropdown', id: 'place', label: 'Text sits at', default: 'keep', choices: Object.entries(PLACES).map(([id, t]) => ({ id, label: t.label })) },
+					{
+						type: 'dropdown',
+						id: 'textColour',
+						label: 'Text colour',
+						default: 'auto',
+						choices: [
+							{ id: 'auto', label: 'Best for the colour' },
+							{ id: 'white', label: 'White' },
+							{ id: 'black', label: 'Black' },
+						],
+					},
+				],
+				callback: (fb) => keyStyle(fb.options),
+			},
 			app_running: {
 				type: 'boolean',
 				name: 'App is running',
@@ -1218,7 +1241,7 @@ class SystemToolsInstance extends InstanceBase {
 		])
 		this.setVariableValues({ app_count: this.apps.length, running_count: this.running.size, keep_awake: this.keepAwake?.on ? 'ON' : 'OFF' })
 
-		this.setPresetDefinitions(withSurfaceExtras({ ...this.buildPresets(screenCount), ...getViewerPresets(this) }))
+		this.setPresetDefinitions(withSurfaceExtras({ ...this.buildPresets(screenCount), ...getViewerPresets(this), ...stylePresets() }))
 	}
 
 	buildPresets(screenCount) {
