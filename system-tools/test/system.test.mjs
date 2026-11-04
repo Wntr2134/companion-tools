@@ -566,3 +566,15 @@ test('Key Styler: pictures dragged in from a web page are fetched only if they a
 	assert.match(js, /addEventListener\('drop'/)
 	assert.match(js, /addEventListener\('paste'/)
 })
+
+test("Key Styler: reads the page's request however Companion hands it over", async () => {
+	const { readBody } = await import('../src/styler-page.js')
+	const want = { page: 1, keys: ['0/0'], look: { theme: 'teal' } }
+	assert.deepEqual(readBody(JSON.stringify(want)), want, 'the text the page sent')
+	assert.deepEqual(readBody(want), want, 'already unpacked by Companion')
+	assert.deepEqual(readBody(Buffer.from(JSON.stringify(want))), want, 'as bytes')
+	assert.deepEqual(readBody(JSON.parse(JSON.stringify(Buffer.from(JSON.stringify(want))))), want, 'bytes that went through JSON ({ type: Buffer, data })')
+	assert.deepEqual(readBody(undefined), {})
+	assert.equal(readBody('not json'), null)
+	assert.equal(readBody('"a string"'), null)
+})
