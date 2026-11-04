@@ -503,3 +503,18 @@ test("browser tabs: addresses cleaned, the site found by its address on a Mac, p
 	assert.match(TAB_SCRIPT, /argv\[0\]/, 'browser, address and match come in as arguments')
 	assert.doesNotMatch(TAB_SCRIPT, /\$\{/)
 })
+
+test('key styles: a feedback that colours and sizes any key, and ready-styled blank keys', async () => {
+	const { keyStyle, stylePresets, THEMES } = await import('../src/styles.js')
+	assert.deepEqual(keyStyle({ theme: 'red' }), { bgcolor: THEMES.red.bg, color: 0xffffff }, 'only colours: the size and place stay as the key has them')
+	assert.deepEqual(keyStyle({ theme: 'amber', size: 'two', place: 'bottom' }), { bgcolor: THEMES.amber.bg, color: 0, size: '18', alignment: 'center:bottom' }, 'black text on amber')
+	assert.equal(keyStyle({ theme: 'amber', textColour: 'white' }).color, 0xffffff)
+	assert.equal(keyStyle({ theme: 'nope' }).bgcolor, THEMES.dark.bg)
+	const p = stylePresets()
+	assert.ok(Object.keys(p).length >= Object.keys(THEMES).length)
+	for (const [id, k] of Object.entries(p)) {
+		assert.ok(k.style.text, `${id} has text`)
+		assert.ok(k.style.text.split('\\n').length <= 3, `${id}: three lines at most`)
+		assert.deepEqual(k.steps[0], { down: [], up: [] }, `${id}: no actions, so you add your own`)
+	}
+})

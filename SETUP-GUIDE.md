@@ -523,6 +523,10 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 - **Sound**: volume knob (push = mute) and microphone level knob, with − / + keys for Stream Decks. Volume shows – for outputs macOS can't set (e.g. some interfaces and HDMI).
 - **Desktop**: Mission Control, show desktop, the front app's windows, desktop left / right, hide others, show all.
 
+### I.4b Key styles (colours without the style editor)
+- **Restyle a key you've already made** (its actions stay): open the key → **Feedbacks → + → System Tools: Key style** → pick a colour, a text size (one word, two lines, three lines) and where the text sits. Keep it at the **top** of the feedback list, so feedbacks like *green while running* still show over it. To undo, delete the feedback.
+- **Start a new key already styled**: drag one from the **Key styles** presets onto an *empty* key, then type your text and add actions. (Dragging a preset onto a key you've made replaces that key, actions and all.)
+
 ### I.5 Keys, text and Shortcuts
 - **Your Dock**: one key per app in your Dock (Finder first, then in Dock order), named after the app and green while it runs. Rearrange the Dock and the keys follow.
 - **Bluetooth**: one key per paired device (headphones, speakers, keyboards): press to connect or disconnect, blue while connected. Pair it once in System Settings → Bluetooth. If macOS won't let Companion use Bluetooth, install the free *blueutil* (`brew install blueutil`) and the keys use that instead.
