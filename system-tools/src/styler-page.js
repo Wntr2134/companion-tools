@@ -22,6 +22,29 @@ export function styleQuery({ theme, size, place, textColour, text } = {}) {
 	return q.toString()
 }
 
+const MAX_IMAGE = 5 * 1024 * 1024
+
+/**
+ * A picture from the web, for an image dragged in from another site: http(s) only, an image type, at
+ * most 5 MB, 10 s. Returns { base64, type }.
+ */
+export async function fetchImage(url, { fetchFn = fetch } = {}) {
+	let u
+	try {
+		u = new URL(url)
+	} catch {
+		throw new Error("that isn't a web address")
+	}
+	if (!/^https?:$/.test(u.protocol)) throw new Error('only http and https pictures')
+	const res = await fetchFn(u.href, { signal: AbortSignal.timeout(10000), redirect: 'follow' })
+	if (!res.ok) throw new Error(`the site said ${res.status}`)
+	const type = String(res.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase()
+	if (!/^image\/(png|jpeg|gif|webp|svg\+xml|bmp|x-icon|vnd\.microsoft\.icon|avif)$/.test(type)) throw new Error(`that's not a picture (${type || 'unknown type'})`)
+	const buf = Buffer.from(await res.arrayBuffer())
+	if (buf.length > MAX_IMAGE) throw new Error('that picture is over 5 MB')
+	return { base64: buf.toString('base64'), type }
+}
+
 /** The D200X's keys as Companion's grid positions (row/column), named as on the device. */
 export const D200X_KEYS = [
 	...[0, 1, 2, 3, 4].map((c) => ({ row: 0, col: c, label: `KEY ${c + 1}` })),
@@ -67,6 +90,7 @@ legend { color: var(--dim); padding: 0 6px; font-size: 13px; }
 .ic img { width: 32px; height: 32px; }
 .ic.on { border-color: var(--accent); }
 #preview { width: 72px; height: 72px; border-radius: 10px; border: 1px solid var(--line); background: #24262c; }
+body.drag::after { content: 'Drop the picture to use it as the icon'; position: fixed; inset: 12px; border: 3px dashed var(--accent); border-radius: 16px; background: rgba(21,22,26,.85); color: var(--text); font-size: 22px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 #log { margin-top: 12px; color: var(--dim); white-space: pre-wrap; font-size: 13px; }
 .ok { color: var(--ok); } .bad { color: #ff6b6b; }
 </style></head><body><main>
@@ -91,6 +115,7 @@ legend { color: var(--dim); padding: 0 6px; font-size: 13px; }
 	<div class="bar">
 		<input id="q" placeholder="Search icons: microphone, camera, lights…" size="30"><button id="search">Search</button>
 		<label>or <input id="upload" type="file" accept="image/*"></label>
+		<span class="legend">…or drag a picture onto this page from anywhere (a file, or an image on a web page), or paste one (⌘V / Ctrl+V).</span>
 		<label>Icon <select id="iconAt"><option value="top">At the top, text underneath</option><option value="middle">Big in the middle</option></select></label>
 		<label>Colour <select id="iconColour"><option value="white">White</option><option value="black">Black</option><option value="original">As it comes</option></select></label>
 		<button id="noicon">No icon</button>
@@ -225,6 +250,45 @@ async function search() {
 		}
 	} catch (e) { $('icons').textContent = 'Icon search needs this computer to be online.' }
 }
+// Drag and drop from anywhere: a file, or an image dragged from a web page (fetched by System Tools,
+// because the browser won't let this page read another site's picture itself). Paste works too.
+async function useUrl(url) {
+	if (!/^https?:\\/\\//i.test(url)) return
+	try {
+		const res = await fetch('fetch-image?url=' + encodeURIComponent(url))
+		const text = await res.text()
+		if (!res.ok) throw new Error(text)
+		useImage(text, url)
+	} catch (e) { $('log').innerHTML = '<span class="bad">Couldn\\'t get that picture: ' + e.message + '</span>' }
+}
+function urlFrom(dt) {
+	const html = dt.getData('text/html')
+	const m = html && /<img[^>]+src=["']([^"']+)["']/i.exec(html)
+	if (m) return m[1].replace(/&amp;/g, '&')
+	const uri = (dt.getData('text/uri-list') || dt.getData('text/plain') || '').split(/\\r?\\n/).find((l) => /^https?:/i.test(l))
+	return uri || ''
+}
+let dragDepth = 0
+document.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; document.body.classList.add('drag') })
+document.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; document.body.classList.remove('drag') } })
+document.addEventListener('dragover', (e) => e.preventDefault())
+document.addEventListener('drop', (e) => {
+	e.preventDefault()
+	dragDepth = 0
+	document.body.classList.remove('drag')
+	const f = [...(e.dataTransfer.files || [])].find((x) => x.type.startsWith('image/'))
+	if (f) return useImage(URL.createObjectURL(f), f.name)
+	const url = urlFrom(e.dataTransfer)
+	if (url.startsWith('data:image/')) return useImage(url, 'dropped picture')
+	if (url) return useUrl(url)
+	$('log').innerHTML = '<span class="bad">That wasn\\'t a picture.</span>'
+})
+document.addEventListener('paste', (e) => {
+	const item = [...(e.clipboardData?.items || [])].find((x) => x.type.startsWith('image/'))
+	if (item) { e.preventDefault(); return useImage(URL.createObjectURL(item.getAsFile()), 'pasted picture') }
+	const text = e.clipboardData?.getData('text') || ''
+	if (/^https?:\\/\\/\\S+\\.(png|jpe?g|gif|webp|svg)(\\?\\S*)?$/i.test(text.trim()) && document.activeElement?.tagName !== 'INPUT') useUrl(text.trim())
+})
 $('search').onclick = search
 $('q').onkeydown = (e) => { if (e.key === 'Enter') search() }
 $('upload').onchange = () => { const f = $('upload').files[0]; if (f) useImage(URL.createObjectURL(f), f.name) }

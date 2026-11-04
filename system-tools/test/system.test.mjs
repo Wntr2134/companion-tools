@@ -553,3 +553,16 @@ test('Key Styler: the style query Companion takes, the D200X map, and a page wit
 	assert.equal(clearLook(store, 2, ['0/0', '4/4']), 1)
 	assert.equal(store['2/0/0'], undefined)
 })
+
+test('Key Styler: pictures dragged in from a web page are fetched only if they are pictures', async () => {
+	const { fetchImage } = await import('../src/styler-page.js')
+	const reply = (type, bytes = [1, 2, 3], ok = true) => async () => ({ ok, status: ok ? 200 : 404, headers: new Map([['content-type', type]]), arrayBuffer: async () => new Uint8Array(bytes).buffer })
+	assert.deepEqual(await fetchImage('https://example.com/logo.png', { fetchFn: reply('image/png') }), { base64: 'AQID', type: 'image/png' })
+	await assert.rejects(fetchImage('file:///etc/passwd', { fetchFn: reply('image/png') }), /only http and https/)
+	await assert.rejects(fetchImage('https://example.com/', { fetchFn: reply('text/html; charset=utf-8') }), /not a picture \(text\/html\)/)
+	await assert.rejects(fetchImage('https://example.com/x.png', { fetchFn: reply('image/png', [], false) }), /said 404/)
+	await assert.rejects(fetchImage('nonsense', { fetchFn: reply('image/png') }), /web address/)
+	const js = (await import('../src/styler-page.js')).stylerJs()
+	assert.match(js, /addEventListener\('drop'/)
+	assert.match(js, /addEventListener\('paste'/)
+})

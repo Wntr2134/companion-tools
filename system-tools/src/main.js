@@ -34,7 +34,7 @@ import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
 import { THEMES, SIZES, PLACES, keyStyle, stylePresets, applyLook, clearLook } from './styles.js'
-import { stylerHtml, stylerJs, styleQuery } from './styler-page.js'
+import { stylerHtml, stylerJs, styleQuery, fetchImage } from './styler-page.js'
 import { TAB_SCRIPT, browserFor, cleanUrl, defaultMatch, installedBrowsers } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
@@ -422,6 +422,16 @@ class SystemToolsInstance extends InstanceBase {
 		if (p === '' || p === 'styler') return { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: stylerHtml() }
 		if (p === 'styler.js') return { status: 200, headers: { 'Content-Type': 'text/javascript; charset=utf-8' }, body: stylerJs() }
 		if (p === 'style-query') return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: styleQuery(request.query ?? {}) }
+		if (p === 'fetch-image') {
+			// A picture dragged in from a web page: fetched here, since the page can't read other sites' images
+			try {
+				// Companion passes text bodies only: the picture goes back as a data: URL
+				const { base64, type } = await fetchImage(String(request.query?.url ?? ''))
+				return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: `data:${type};base64,${base64}` }
+			} catch (e) {
+				return { status: 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: e.message }
+			}
+		}
 		if (p === 'linked') {
 			// Keys whose Key style feedback takes its look from here (seen in the last 10 minutes)
 			const page = Number(request.query?.page) || 1
