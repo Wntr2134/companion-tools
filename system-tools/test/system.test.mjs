@@ -518,3 +518,16 @@ test('key styles: a feedback that colours and sizes any key, and ready-styled bl
 		assert.deepEqual(k.steps[0], { down: [], up: [] }, `${id}: no actions, so you add your own`)
 	}
 })
+
+test('Key Styler: the style query Companion takes, the D200X map, and a page with no outside scripts', async () => {
+	const { styleQuery, D200X_KEYS, stylerHtml } = await import('../src/styler-page.js')
+	assert.equal(styleQuery({ theme: 'red' }), 'bgcolor=%23c81e1e&color=%23ffffff')
+	assert.equal(styleQuery({ theme: 'amber', size: 'two', place: 'bottom', textColour: 'auto' }), 'bgcolor=%23e69600&color=%23000000&size=18&alignment=center%3Abottom')
+	assert.equal(styleQuery({ theme: '', size: 'keep', place: 'keep', textColour: 'auto', text: '' }), '', 'nothing picked: nothing sent')
+	assert.equal(styleQuery({ text: 'HOUSE\\nLIGHTS' }), 'text=HOUSE%5CnLIGHTS')
+	assert.equal(D200X_KEYS.length, 13 + 1 + 6, '13 keys, the wide key, 3 knob turns and 3 pushes')
+	assert.deepEqual(D200X_KEYS.find((k) => k.wide), { row: 2, col: 3, label: 'WIDE KEY', wide: true })
+	const html = stylerHtml()
+	assert.match(html, /\/api\/location\/' \+ page/)
+	assert.doesNotMatch(html, /<script src=|https?:\/\//, 'everything inline, nothing loaded from elsewhere')
+})

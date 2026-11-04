@@ -525,6 +525,7 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 
 ### I.4b Key styles (colours without the style editor)
 - **Restyle a key you've already made** (its actions stay): open the key → **Feedbacks → + → System Tools: Key style** → pick a colour, a text size (one word, two lines, three lines) and where the text sits. Keep it at the **top** of the feedback list, so feedbacks like *green while running* still show over it. To undo, delete the feedback.
+- **Restyle lots of keys at once** (Key Styler): press a **KEY STYLER** key (System Tools → Show machine presets). A page opens in your browser: type the page number, click the keys (laid out like the D200X, or a plain grid for Stream Decks), pick a colour, text size, where the text sits and, if you like, new text, then **Apply**. Only how the keys look changes: their actions stay. It works on keys that already have something on them (an empty spot stays empty).
 - **Start a new key already styled**: drag one from the **Key styles** presets onto an *empty* key, then type your text and add actions. (Dragging a preset onto a key you've made replaces that key, actions and all.)
 
 ### I.5 Keys, text and Shortcuts

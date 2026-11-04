@@ -34,6 +34,7 @@ import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
 import { THEMES, SIZES, PLACES, keyStyle, stylePresets } from './styles.js'
+import { stylerHtml, styleQuery } from './styler-page.js'
 import { TAB_SCRIPT, browserFor, cleanUrl, defaultMatch, installedBrowsers } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
@@ -384,6 +385,14 @@ class SystemToolsInstance extends InstanceBase {
 		} catch (e) {
 			this.fail(`Browser tab (${b.label})`, e)
 		}
+	}
+
+	/** The Key Styler page and its helper (Companion serves these at /instance/<this connection>/…). */
+	handleHttpRequest(request) {
+		const p = String(request.path ?? '').replace(/^\/+/, '')
+		if (p === '' || p === 'styler') return { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: stylerHtml() }
+		if (p === 'style-query') return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: styleQuery(request.query ?? {}) }
+		return { status: 404, body: 'Not found' }
 	}
 
 	/** Runs something in the Windows helper, logging (not throwing) when it fails. */
@@ -980,6 +989,16 @@ class SystemToolsInstance extends InstanceBase {
 				callback: async (a, ctx) =>
 					this.browserTab(a.options.browser, await ctx.parseVariablesInString(String(a.options.url ?? '')), await ctx.parseVariablesInString(String(a.options.match ?? ''))),
 			},
+			open_styler: {
+				name: 'Open the Key Styler (restyle many keys at once)',
+				description: 'A page in your browser: pick keys, pick a colour and text size, Apply. Only how they look changes; their actions stay.',
+				options: [],
+				callback: async () => {
+					const url = `http://127.0.0.1:${await this.companionAdminPort()}/instance/${encodeURIComponent(this.label)}/styler`
+					const [file, args] = openCommand(url, '')
+					await run(file, args).catch((e) => (process.platform === 'win32' ? null : this.fail('Key Styler', e)))
+				},
+			},
 			open_target: {
 				name: 'Open a file, folder or web link',
 				options: [
@@ -1290,6 +1309,7 @@ class SystemToolsInstance extends InstanceBase {
 		presets.lock = key('Show machine', 'Lock the screen', 'LOCK', act('lock_screen'), [], '18')
 		presets.update_modules = key('Show machine', 'Put connections on their newest module versions', 'UPDATE\\nMODULES', act('update_modules'))
 		presets.browser_tab = key('Show machine', "Go to a site's tab in the browser (edit the action)", 'GO TO\\nTAB', act('browser_tab', { browser: installedBrowsers(this.apps)[0]?.id ?? 'chrome', url: 'https://', match: '' }))
+		presets.open_styler = key('Show machine', 'Key Styler: restyle many keys at once', 'KEY\\nSTYLER', act('open_styler'))
 		presets.open_companion = key('Show machine', "Open Companion's admin page", 'OPEN\\nCOMPANION', act('open_companion', { page: '' }))
 		presets.screen_saver = key('Show machine', 'Screen saver', 'SCREEN\\nSAVER', act('screen_saver'))
 		presets.eject = key('Show machine', 'Eject all disks', 'EJECT\\nDISKS ⏏', act('eject_disks'))
