@@ -34,7 +34,7 @@ import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
 import { THEMES, SIZES, PLACES, keyStyle, stylePresets, applyLook, clearLook } from './styles.js'
-import { stylerHtml, stylerJs, styleQuery, fetchImage } from './styler-page.js'
+import { stylerHtml, stylerJs, styleQuery, fetchImage, readBody } from './styler-page.js'
 import { TAB_SCRIPT, browserFor, cleanUrl, defaultMatch, installedBrowsers } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
@@ -440,11 +440,10 @@ class SystemToolsInstance extends InstanceBase {
 			return json({ linked })
 		}
 		if ((p === 'apply' || p === 'clear') && request.method === 'POST') {
-			let req
-			try {
-				req = JSON.parse(request.body || '{}')
-			} catch {
-				return json({ error: 'not JSON' }, 400)
+			const req = readBody(request.body)
+			if (!req) {
+				this.log('warn', `Key Styler: couldn't read the page's request (${typeof request.body}: ${String(request.body).slice(0, 80)})`)
+				return json({ error: `couldn't read the request (${typeof request.body})` }, 400)
 			}
 			const page = Number(req.page) || 1
 			const n = p === 'apply' ? applyLook(this.keyStyles, page, req.keys, req.look).length : clearLook(this.keyStyles, page, req.keys)

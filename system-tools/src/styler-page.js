@@ -22,6 +22,25 @@ export function styleQuery({ theme, size, place, textColour, text } = {}) {
 	return q.toString()
 }
 
+/**
+ * The Styler's request as Companion hands it over: the text the page sent, or already read (an object,
+ * or bytes) when Companion's web server unpacked it first. null if it isn't JSON.
+ */
+export function readBody(body) {
+	if (body && typeof body === 'object' && !ArrayBuffer.isView(body) && !(body instanceof ArrayBuffer)) {
+		if (body.type === 'Buffer' && Array.isArray(body.data)) return readBody(Buffer.from(body.data).toString('utf8'))
+		return body
+	}
+	const text = ArrayBuffer.isView(body) || body instanceof ArrayBuffer ? Buffer.from(body).toString('utf8') : String(body ?? '')
+	if (!text.trim()) return {}
+	try {
+		const v = JSON.parse(text)
+		return v && typeof v === 'object' ? v : null
+	} catch {
+		return null
+	}
+}
+
 const MAX_IMAGE = 5 * 1024 * 1024
 
 /**
@@ -301,8 +320,9 @@ $('page').onchange = () => { sel.clear(); loadReady() }
 $('all').onclick = () => { keys().forEach((k) => sel.add(k.row + '/' + k.col)); draw() }
 $('none').onclick = () => { sel.clear(); draw() }
 async function post(path, body) {
-	const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-	if (!res.ok) throw new Error('System Tools said ' + res.status)
+	// Plain text, so Companion passes it on as it is
+	const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(body) })
+	if (!res.ok) throw new Error('System Tools said ' + res.status + ': ' + (await res.text()).slice(0, 200))
 	return res.json()
 }
 $('apply').onclick = async () => {
