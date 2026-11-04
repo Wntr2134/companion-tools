@@ -123,7 +123,7 @@ test('keep awake on Windows: through the helper, and switched back on when the h
 test('the C# stays C# 5 (Windows PowerShell 5.1 compiles it) and covers every request the module sends', () => {
 	assert.doesNotMatch(HOST_CS, /\$"|\?\.|nameof\(|=> \{?[^}]*;\s*$\n\s*public/m)
 	assert.doesNotMatch(HOST_CS, /\bout var\b/)
-	for (const cmd of ['screens', 'place', 'capture', 'minimise', 'hide', 'hide_others', 'show_all', 'focus', 'sound', 'sound_set', 'keys', 'type', 'paste', 'keep_awake', 'display_sleep', 'screen_saver', 'dark_mode', 'state', 'eject', 'taskbar', 'icons']) {
+	for (const cmd of ['screens', 'place', 'capture', 'minimise', 'hide', 'hide_others', 'show_all', 'focus', 'sound', 'sound_set', 'keys', 'type', 'paste', 'keep_awake', 'display_sleep', 'screen_saver', 'dark_mode', 'state', 'eject', 'taskbar', 'icons', 'tab_select', 'browser_open']) {
 		assert.ok(HOST_CS.includes(`case "${cmd}":`), `the helper handles "${cmd}"`)
 	}
 })

@@ -518,6 +518,7 @@ The D200X plugin (a surface, not a connection) still needs the pencil ✏️ und
 ### I.4 Show machine, sound and desktop
 - **Keep awake**: stops the Mac sleeping or dimming mid-show. Amber while on. It switches off with the key, or when Companion closes.
 - **Sleep screens, lock, screen saver, eject disks, dark mode.**
+- **Go to a site's tab** (GO TO TAB): one key per website you keep going back to. It brings the browser (Chrome, Brave, Vivaldi, Edge, or Safari on a Mac) forward on the tab that has that site, whichever page of it you're on (`ballroom.riderly.com.au/tasks` counts), and opens it in a new tab if none has it. Edit the key's action: pick the browser and type the address. On a **PC**, browsers only show their tabs' titles to other apps, so also fill in **Find the tab by** with a word from the tab's title (e.g. *Riderly*).
 - **Open Companion**: opens the admin page on this Mac (127.0.0.1, so a changed IP on the road doesn't matter). The **Companion address** viewer shows the address to type on a phone or iPad.
 - **Sound**: volume knob (push = mute) and microphone level knob, with − / + keys for Stream Decks. Volume shows – for outputs macOS can't set (e.g. some interfaces and HDMI).
 - **Desktop**: Mission Control, show desktop, the front app's windows, desktop left / right, hide others, show all.

@@ -23,6 +23,7 @@ const info = await mod('system-tools/src/sysinfo.js')
 const dock = await mod('system-tools/src/dock.js')
 const bt = await mod('system-tools/src/bluetooth.js')
 const icons = await mod('system-tools/src/icons.js')
+const browser = await mod('system-tools/src/browser.js')
 const uc = await mod('echo360-capture/src/uc-keys.js')
 const ndi = await mod('ndi-router/src/virtual-input-mac.js')
 
@@ -58,6 +59,7 @@ const scripts = [
 	['System Tools: windows', JS, [win.WINDOW_SCRIPT]],
 	['System Tools: Bluetooth', JS, [bt.BT_SCRIPT]],
 	['System Tools: app icons', JS, [icons.ICON_SCRIPT]],
+	['System Tools: browser tabs', JS, [browser.TAB_SCRIPT]],
 	['Echo360: shortcut', AS, uc.osascriptArgs('1').filter((a) => a !== '-e')],
 	['Echo360: shortcut, bring app forward', AS, uc.osascriptArgs('2', { activate: true }).filter((a) => a !== '-e').slice(0, -1)],
 	['NDI Router: Virtual Input menu', JS, [ndi.MENU_SCRIPT]],

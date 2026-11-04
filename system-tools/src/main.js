@@ -33,6 +33,7 @@ import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
+import { BROWSERS, TAB_SCRIPT, cleanUrl, defaultMatch } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
 const GREEN = combineRgb(0, 140, 60)
@@ -351,6 +352,30 @@ class SystemToolsInstance extends InstanceBase {
 		const ok = await this.host.request('focus', { item: { app } }).catch(() => false)
 		if (!ok) this.log('warn', `Couldn't find a window of "${app}": sending to whatever is in front`)
 		else await new Promise((r) => setTimeout(r, 200))
+	}
+
+	/** The browser on that site's tab: found by address (Mac) or title (Windows), else opened in a new tab. */
+	async browserTab(id, urlText, matchText) {
+		if (this.desktopOnly('Browser tabs')) return
+		const b = BROWSERS[id] ?? BROWSERS.chrome
+		const url = cleanUrl(urlText)
+		if (!url) return this.log('warn', `Browser tab: "${urlText}" isn't a web address`)
+		const typed = String(matchText ?? '').trim()
+		const match = typed || defaultMatch(url)
+		try {
+			if (this.mac) {
+				const r = (await run('osascript', ['-l', 'JavaScript', '-e', TAB_SCRIPT, b.mac, url, match], { timeout: 30000 })).trim()
+				this.log('debug', `${b.label}: ${r === 'FOUND' ? 'went to the tab with' : 'opened'} ${match}`)
+				return
+			}
+			if (!b.exe) return this.log('warn', `${b.label} is a Mac browser: pick another for this PC`)
+			const found = await this.host.request('tab_select', { exe: b.exe, match }, { timeout: 15000 })
+			if (found?.found) return this.log('debug', `${b.label}: went to "${found.title}"`)
+			if (!typed) this.log('info', `${b.label}: no tab's title has "${match}" in it. On Windows tabs are found by their title: put a word from the tab's title in "Find the tab by", or each press opens another tab`)
+			await this.host.request('browser_open', { exe: b.exe, url })
+		} catch (e) {
+			this.fail(`Browser tab (${b.label})`, e)
+		}
 	}
 
 	/** Runs something in the Windows helper, logging (not throwing) when it fails. */
@@ -920,6 +945,25 @@ class SystemToolsInstance extends InstanceBase {
 					await run(file, args).catch((e) => (process.platform === 'win32' ? null : this.fail('Open Companion', e)))
 				},
 			},
+			browser_tab: {
+				name: "Browser: go to a site's tab (opens it if it isn't open)",
+				description:
+					'Brings the browser forward on the tab with that site, in whichever window it is. If no tab has it, it opens in a new tab (and the browser starts if it is closed). Mac: found by the web address. Windows: browsers only show other apps their tabs\' titles, so it is found by a word in the title.',
+				options: [
+					{ type: 'dropdown', id: 'browser', label: 'Browser', default: 'chrome', choices: Object.entries(BROWSERS).map(([id, b]) => ({ id, label: b.label })) },
+					{ type: 'textinput', id: 'url', label: 'Web address (variables allowed)', default: 'https://', useVariables: true },
+					{
+						type: 'textinput',
+						id: 'match',
+						label: this.win ? "Find the tab by: a word in the tab's title" : 'Find the tab by: part of its address (blank = the site)',
+						tooltip: 'Mac: part of the tab\'s web address (blank = the site, e.g. ballroom.riderly.com.au). Windows: a word from the tab\'s title, e.g. Riderly.',
+						default: '',
+						useVariables: true,
+					},
+				],
+				callback: async (a, ctx) =>
+					this.browserTab(a.options.browser, await ctx.parseVariablesInString(String(a.options.url ?? '')), await ctx.parseVariablesInString(String(a.options.match ?? ''))),
+			},
 			open_target: {
 				name: 'Open a file, folder or web link',
 				options: [
@@ -1207,6 +1251,7 @@ class SystemToolsInstance extends InstanceBase {
 		presets.display_sleep = key('Show machine', 'Sleep the displays', 'SLEEP\\nSCREENS', act('display_sleep'))
 		presets.lock = key('Show machine', 'Lock the screen', 'LOCK', act('lock_screen'), [], '18')
 		presets.update_modules = key('Show machine', 'Put connections on their newest module versions', 'UPDATE\\nMODULES', act('update_modules'))
+		presets.browser_tab = key('Show machine', "Go to a site's tab in the browser (edit the action)", 'GO TO\\nTAB', act('browser_tab', { browser: 'chrome', url: 'https://ballroom.riderly.com.au', match: '' }))
 		presets.open_companion = key('Show machine', "Open Companion's admin page", 'OPEN\\nCOMPANION', act('open_companion', { page: '' }))
 		presets.screen_saver = key('Show machine', 'Screen saver', 'SCREEN\\nSAVER', act('screen_saver'))
 		presets.eject = key('Show machine', 'Eject all disks', 'EJECT\\nDISKS ⏏', act('eject_disks'))
