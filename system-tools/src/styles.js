@@ -40,13 +40,80 @@ export const PLACES = {
 	bottom: { label: 'Bottom', alignment: 'center:bottom' },
 }
 
-/** The style the "Key style" feedback puts on a key (only what was picked; the rest of the key stays). */
-export function keyStyle({ theme = 'dark', size = 'keep', place = 'keep', textColour = 'auto' } = {}) {
-	const t = THEMES[theme] ?? THEMES.dark
-	const out = { bgcolor: t.bg, color: textColour === 'white' ? WHITE : textColour === 'black' ? BLACK : t.fg }
+/**
+ * The style the "Key style" feedback puts on a key (only what was picked; the rest of the key stays).
+ * theme '' keeps the key's colours; text and icon (a PNG, base64) come from the Key Styler.
+ */
+export function keyStyle({ theme = 'dark', size = 'keep', place = 'keep', textColour = 'auto', text, icon } = {}) {
+	const out = {}
+	if (theme !== '') {
+		const t = THEMES[theme] ?? THEMES.dark
+		out.bgcolor = t.bg
+		out.color = textColour === 'white' ? WHITE : textColour === 'black' ? BLACK : t.fg
+	} else if (textColour === 'white' || textColour === 'black') out.color = textColour === 'white' ? WHITE : BLACK
 	if (SIZES[size]?.size) out.size = SIZES[size].size
 	if (PLACES[place]?.alignment) out.alignment = PLACES[place].alignment
+	if (typeof text === 'string' && text !== '') out.text = text
+	if (typeof icon === 'string' && icon !== '') {
+		out.png64 = icon
+		out.pngalignment = 'center:center'
+	}
 	return out
+}
+
+// ---------- the Key Styler's saved looks ----------
+
+const PICKED = ['theme', 'size', 'place', 'textColour', 'text', 'icon']
+const MAX_ICON = 200 * 1024 // base64 characters: a key's picture is small
+
+/** Keys as "page/row/column". */
+export const keyAt = (page, row, col) => `${Number(page)}/${Number(row)}/${Number(col)}`
+
+/**
+ * Saves a look for keys in the Styler's store: { "page/row/col": { theme, size, … } }. Only what was
+ * picked changes ('keep' and blank leave the saved value); icon: 'none' takes the icon off.
+ * Returns the keys changed.
+ */
+export function applyLook(store, page, keys, look = {}) {
+	const changed = []
+	for (const k of keys ?? []) {
+		const [row, col] = String(k).split('/').map(Number)
+		if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 || row > 99 || col > 99) continue
+		const at = keyAt(page, row, col)
+		const cur = { ...(store[at] ?? {}) }
+		for (const f of PICKED) {
+			const v = look[f]
+			if (v === undefined || v === null || v === '' || v === 'keep') continue
+			if (f === 'icon') {
+				if (v === 'none') delete cur.icon
+				else if (typeof v === 'string' && v.length <= MAX_ICON && /^[A-Za-z0-9+/=]+$/.test(v)) cur.icon = v
+				continue
+			}
+			if (f === 'text' && v === 'none') {
+				delete cur.text
+				continue
+			}
+			cur[f] = String(v).slice(0, 200)
+		}
+		if (cur.theme === undefined) cur.theme = '' // nothing picked: keep the key's own colours
+		store[at] = cur
+		changed.push(at)
+	}
+	return changed
+}
+
+/** Takes the Styler's look off keys. */
+export function clearLook(store, page, keys) {
+	let n = 0
+	for (const k of keys ?? []) {
+		const [row, col] = String(k).split('/').map(Number)
+		const at = keyAt(page, row, col)
+		if (at in store) {
+			delete store[at]
+			n++
+		}
+	}
+	return n
 }
 
 /** Ready-styled blank keys: every colour as a two-line key, and a few labels for naming rows. */
