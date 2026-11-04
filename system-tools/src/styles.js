@@ -44,7 +44,7 @@ export const PLACES = {
  * The style the "Key style" feedback puts on a key (only what was picked; the rest of the key stays).
  * theme '' keeps the key's colours; text and icon (a PNG, base64) come from the Key Styler.
  */
-export function keyStyle({ theme = 'dark', size = 'keep', place = 'keep', textColour = 'auto', text, icon } = {}) {
+export function keyStyle({ theme = 'dark', size = 'keep', place = 'keep', textColour = 'auto', text, icon, hideText } = {}) {
 	const out = {}
 	if (theme !== '') {
 		const t = THEMES[theme] ?? THEMES.dark
@@ -54,6 +54,7 @@ export function keyStyle({ theme = 'dark', size = 'keep', place = 'keep', textCo
 	if (SIZES[size]?.size) out.size = SIZES[size].size
 	if (PLACES[place]?.alignment) out.alignment = PLACES[place].alignment
 	if (typeof text === 'string' && text !== '') out.text = text
+	if (hideText === true || hideText === 'true') out.text = ' ' // a logo key: no name under it
 	if (typeof icon === 'string' && icon !== '') {
 		out.png64 = icon
 		out.pngalignment = 'center:center'
@@ -90,10 +91,17 @@ export function applyLook(store, page, keys, look = {}) {
 				continue
 			}
 			if (f === 'text' && v === 'none') {
+				// the key's own text back
 				delete cur.text
+				delete cur.hideText
 				continue
 			}
+			if (f === 'text') delete cur.hideText
 			cur[f] = String(v).slice(0, 200)
+		}
+		if (look.hideText === 'yes') {
+			cur.hideText = true
+			delete cur.text
 		}
 		if (cur.theme === undefined) cur.theme = '' // nothing picked: keep the key's own colours
 		store[at] = cur
