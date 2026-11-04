@@ -748,6 +748,57 @@ namespace CompanionSystemTools
 		}
 	}
 
+	// ---------- browser tabs ----------
+
+	public static class Tabs
+	{
+		/**
+		 * Brings forward the first tab whose title contains the match text, in any window of the browser's program.
+		 * Browsers don't show other apps their tabs' addresses on Windows, so the title is what there is.
+		 */
+		public static object Select(string exe, string match)
+		{
+			exe = exe.ToLowerInvariant();
+			var m = match.ToLowerInvariant();
+			var isTab = new System.Windows.Automation.PropertyCondition(System.Windows.Automation.AutomationElement.ControlTypeProperty, System.Windows.Automation.ControlType.TabItem);
+			foreach (var h in Win.TopWindows())
+			{
+				if (Win.ProcOf(h).Exe != exe) continue;
+				System.Windows.Automation.AutomationElementCollection tabs;
+				try { tabs = System.Windows.Automation.AutomationElement.FromHandle(h).FindAll(System.Windows.Automation.TreeScope.Descendants, isTab); }
+				catch (Exception) { continue; }
+				foreach (System.Windows.Automation.AutomationElement t in tabs)
+				{
+					string name;
+					try { name = t.Current.Name ?? ""; } catch (Exception) { continue; }
+					if (m == "" || name.ToLowerInvariant().IndexOf(m, StringComparison.Ordinal) < 0) continue;
+					Win.Raise(h);
+					object p;
+					if (t.TryGetCurrentPattern(System.Windows.Automation.SelectionItemPattern.Pattern, out p)) ((System.Windows.Automation.SelectionItemPattern)p).Select();
+					else if (t.TryGetCurrentPattern(System.Windows.Automation.InvokePattern.Pattern, out p)) ((System.Windows.Automation.InvokePattern)p).Invoke();
+					return new Dictionary<string, object> { { "found", true }, { "title", name } };
+				}
+			}
+			return new Dictionary<string, object> { { "found", false } };
+		}
+
+		/** Opens the address in that browser (a new tab if it's running), or the default browser if it isn't installed. */
+		public static object Open(string exe, string url)
+		{
+			if (!string.IsNullOrEmpty(exe))
+			{
+				try
+				{
+					Process.Start(new ProcessStartInfo(exe, "\"" + url + "\"") { UseShellExecute = true });
+					return exe;
+				}
+				catch (Exception) { }
+			}
+			Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			return "default browser";
+		}
+	}
+
 	// ---------- taskbar ----------
 
 	public static class Taskbar
@@ -939,6 +990,8 @@ namespace CompanionSystemTools
 				case "state": return Sys.State();
 				case "eject": return Sys.Eject();
 				case "taskbar": return Taskbar.Pinned();
+				case "tab_select": return Tabs.Select(Str(r, "exe"), Str(r, "match"));
+				case "browser_open": return Tabs.Open(Str(r, "exe"), Str(r, "url"));
 				case "icons": return Icons.Draw((IList)r["items"], Int(r, "size"));
 				default: throw new Exception("unknown command " + Str(r, "cmd"));
 			}

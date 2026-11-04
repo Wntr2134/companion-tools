@@ -19,8 +19,11 @@ $ErrorActionPreference = 'Stop'
 try {
   if ($env:CT_HELPER_CS) {
     $dll = $env:CT_HELPER_DLL
+    # UI Automation (finding browser tabs) lives in WPF's assemblies: load them to reference them by path.
+    Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase
+    $uia = @([System.Windows.Automation.AutomationElement].Assembly.Location, [System.Windows.Automation.ControlType].Assembly.Location, [System.Windows.Threading.Dispatcher].Assembly.Location)
     function Build {
-      Add-Type -Path $env:CT_HELPER_CS -ReferencedAssemblies System.Windows.Forms, System.Drawing, System.Web.Extensions, System.Core -OutputAssembly $dll -OutputType Library
+      Add-Type -Path $env:CT_HELPER_CS -ReferencedAssemblies (@('System.Windows.Forms', 'System.Drawing', 'System.Web.Extensions', 'System.Core') + $uia) -OutputAssembly $dll -OutputType Library
     }
     if (-not (Test-Path $dll)) { Build }
     try { Add-Type -Path $dll } catch { Remove-Item $dll -Force -ErrorAction SilentlyContinue; Build; Add-Type -Path $dll }

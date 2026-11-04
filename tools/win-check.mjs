@@ -131,6 +131,21 @@ if (screens.length) {
 		return 'ok'
 	})
 	await exec('taskkill', ['/IM', 'notepad.exe', '/F']).catch(() => null)
+
+	// Browser tabs: Edge is on every Windows. Open a page, then find its tab by title.
+	await step('browser: open example.com in Edge, then find its tab by title', async () => {
+		const opened = await host.request('browser_open', { exe: 'msedge.exe', url: 'https://example.com/' })
+		let found = { found: false }
+		for (let i = 0; i < 30 && !found.found; i++) {
+			await sleep(1000)
+			found = await host.request('tab_select', { exe: 'msedge.exe', match: 'Example Domain' }, { timeout: 15000 })
+		}
+		if (!found.found) throw new Error(`opened with ${opened}, but no Edge tab titled "Example Domain"`)
+		const none = await host.request('tab_select', { exe: 'msedge.exe', match: 'no tab is called this' })
+		if (none.found) throw new Error('found a tab that is not there')
+		return `found "${found.title}"`
+	})
+	await exec('taskkill', ['/IM', 'msedge.exe', '/F']).catch(() => null)
 } else console.log('skip window checks: this runner has no screens')
 
 host.close()
