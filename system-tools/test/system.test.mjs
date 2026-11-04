@@ -501,6 +501,8 @@ test("browser tabs: addresses cleaned, the site found by its address on a Mac, p
 	const custom = browserFor('Floorp', [])
 	assert.deepEqual([custom.mac, custom.exe], ['Floorp', 'floorp.exe'], 'any other browser by name')
 	assert.match(TAB_SCRIPT, /argv\[0\]/, 'browser, address and match come in as arguments')
+	assert.match(TAB_SCRIPT, /split\('\|'\)/, 'several addresses: Companion at 127.0.0.1, localhost or its IP')
+	assert.match(TAB_SCRIPT, /findOnly && !b\.running\(\)\) return 'NOTRUNNING'/, 'looking only never starts a browser')
 	assert.doesNotMatch(TAB_SCRIPT, /\$\{/)
 })
 

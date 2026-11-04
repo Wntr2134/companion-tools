@@ -73,14 +73,17 @@ export function defaultMatch(url) {
 }
 
 /**
- * JXA. argv: [app name, url, text to find in a tab's address]. Prints FOUND or OPENED.
+ * JXA. argv: [app name, url, text(s) to find in a tab's address ("a|b" = either), "find" to only look].
+ * Prints FOUND or OPENED; with "find", NOTRUNNING or NOTFOUND instead of starting or opening anything.
  * Chrome-family windows have "active tab index" and "minimized"; Safari has "current tab" and "miniaturized".
  */
 export const TAB_SCRIPT = String.raw`
 function run(argv) {
-	const name = argv[0], url = argv[1], match = String(argv[2] || '').toLowerCase()
+	const name = argv[0], url = argv[1], findOnly = argv[3] === 'find'
+	const matches = String(argv[2] || '').toLowerCase().split('|').filter(function (m) { return m })
 	const b = Application(name)
 	const safari = name === 'Safari'
+	if (findOnly && !b.running()) return 'NOTRUNNING'
 	if (!b.running()) {
 		b.activate()
 		for (let i = 0; i < 40 && b.windows.length === 0; i++) delay(0.25)
@@ -93,7 +96,8 @@ function run(argv) {
 		for (let i = 0; i < tabs.length; i++) {
 			let u = ''
 			try { u = String(tabs[i].url() || '') } catch (e) {}
-			if (!match || u.toLowerCase().indexOf(match) < 0) continue
+			const low = u.toLowerCase()
+			if (!matches.some(function (m) { return low.indexOf(m) >= 0 })) continue
 			if (safari) w.currentTab = tabs[i]
 			else {
 				try { w.activeTabIndex = i + 1 } catch (e) { tabs[i].select() } // Arc: tabs have "select"
@@ -104,6 +108,7 @@ function run(argv) {
 			return 'FOUND'
 		}
 	}
+	if (findOnly) return 'NOTFOUND'
 	if (b.windows.length === 0) {
 		try { safari ? b.Document().make() : b.Window().make() } catch (e) {}
 		for (let i = 0; i < 20 && b.windows.length === 0; i++) delay(0.1)

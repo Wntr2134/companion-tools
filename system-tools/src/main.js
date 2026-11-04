@@ -387,6 +387,30 @@ class SystemToolsInstance extends InstanceBase {
 		}
 	}
 
+	/**
+	 * Brings forward a browser tab already on Companion's admin pages, at any of its addresses (127.0.0.1,
+	 * localhost or this computer's IP on whatever network it's on). True if one was found.
+	 */
+	async findCompanionTab(port, browserName) {
+		const hosts = ['127.0.0.1', 'localhost', ...Object.values(os.networkInterfaces()).flat().filter((i) => i && i.family === 'IPv4' && !i.internal).map((i) => i.address)]
+		const name = String(browserName ?? '').trim()
+		const browsers = name ? [browserFor(name, this.apps)] : installedBrowsers(this.apps).map((b) => browserFor(b.id, this.apps))
+		for (const b of browsers) {
+			try {
+				if (this.mac) {
+					const r = (await run('osascript', ['-l', 'JavaScript', '-e', TAB_SCRIPT, b.mac, '', hosts.map((h) => `${h}:${port}/`).join('|'), 'find'], { timeout: 15000 })).trim()
+					if (r === 'FOUND') return true
+				} else if (this.win && b.exe) {
+					// Windows only shows tab titles: Companion's admin pages are titled "… Companion …"
+					if ((await this.host.request('tab_select', { exe: b.exe, match: 'Companion' }, { timeout: 15000 }))?.found) return true
+				}
+			} catch {
+				// this browser can't be asked (Firefox on a Mac) or said no: try the next
+			}
+		}
+		return false
+	}
+
 	/** The Key Styler page and its helper (Companion serves these at /instance/<this connection>/…). */
 	handleHttpRequest(request) {
 		const p = String(request.path ?? '').replace(/^\/+/, '')
@@ -956,9 +980,17 @@ class SystemToolsInstance extends InstanceBase {
 						tooltip: 'An app name such as Safari, Google Chrome, Firefox or Arc. Naming one skips link pickers like OpenIn.',
 						default: '',
 					},
+					{
+						type: 'checkbox',
+						id: 'reuse',
+						label: "Go to Companion's tab if one is open already (at any of this computer's addresses)",
+						default: true,
+					},
 				],
 				callback: async (a) => {
-					const url = `http://127.0.0.1:${await this.companionAdminPort()}/${a.options.page ?? ''}`
+					const port = await this.companionAdminPort()
+					if (a.options.reuse !== false && (this.mac || this.win) && (await this.findCompanionTab(port, a.options.browser))) return
+					const url = `http://127.0.0.1:${port}/${a.options.page ?? ''}`
 					const [file, args] = openCommand(url, a.options.browser)
 					await run(file, args).catch((e) => (process.platform === 'win32' ? null : this.fail('Open Companion', e)))
 				},
