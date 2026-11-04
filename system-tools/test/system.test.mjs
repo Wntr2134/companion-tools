@@ -578,3 +578,18 @@ test("Key Styler: reads the page's request however Companion hands it over", asy
 	assert.equal(readBody('not json'), null)
 	assert.equal(readBody('"a string"'), null)
 })
+
+test('Key Styler: no text for a logo key, and the key\'s own text back again', async () => {
+	const { applyLook, keyStyle } = await import('../src/styles.js')
+	const store = {}
+	applyLook(store, 1, ['0/0'], { theme: 'teal', text: 'OLD' })
+	applyLook(store, 1, ['0/0'], { hideText: 'yes', icon: 'AAAA' })
+	assert.equal(keyStyle(store['1/0/0']).text, ' ', 'no name under the logo')
+	assert.equal(store['1/0/0'].text, undefined)
+	applyLook(store, 1, ['0/0'], { text: 'NEW' })
+	assert.equal(keyStyle(store['1/0/0']).text, 'NEW', 'new text takes over')
+	applyLook(store, 1, ['0/0'], { hideText: 'yes' })
+	applyLook(store, 1, ['0/0'], { text: 'none' })
+	assert.equal(keyStyle(store['1/0/0']).text, undefined, "the key's own text shows again")
+	assert.equal(keyStyle(store['1/0/0']).png64, 'AAAA', 'the logo stays')
+})

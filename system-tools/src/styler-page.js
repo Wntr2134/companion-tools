@@ -128,7 +128,8 @@ body.drag::after { content: 'Drop the picture to use it as the icon'; position: 
 	<label>Size <select id="size"></select></label>
 	<label>Sits at <select id="place"></select></label>
 	<label>Colour <select id="textColour"><option value="auto">Best for the colour</option><option value="white">White</option><option value="black">Black</option></select></label>
-	<label>New text (blank = keep) <input id="text" placeholder="e.g. HOUSE\\nLIGHTS"></label>
+	<label>Text on the key <select id="textMode"><option value="keep">Keep it</option><option value="new">Use the text here →</option><option value="hide">No text (icon only)</option><option value="restore">Put the key's own text back</option></select></label>
+	<input id="text" placeholder="e.g. HOUSE\\nLIGHTS">
 </div></fieldset>
 <fieldset><legend>Icon</legend>
 	<div class="bar">
@@ -311,7 +312,8 @@ document.addEventListener('paste', (e) => {
 $('search').onclick = search
 $('q').onkeydown = (e) => { if (e.key === 'Enter') search() }
 $('upload').onchange = () => { const f = $('upload').files[0]; if (f) useImage(URL.createObjectURL(f), f.name) }
-$('iconAt').onchange = () => { if (iconImg) { icon = pngOfIcon(); drawIcon() } }
+$('iconAt').onchange = () => { if (iconImg) { icon = pngOfIcon(); drawIcon() } if ($('iconAt').value === 'middle' && $('textMode').value === 'keep') $('textMode').value = 'hide' }
+$('text').oninput = () => { if ($('text').value) $('textMode').value = 'new' }
 $('iconColour').onchange = () => { const on = document.querySelector('.ic.on'); if (on) pickIconify(on.title, on) }
 $('noicon').onclick = () => { iconImg = null; icon = 'none'; iconName = ''; document.querySelectorAll('.ic').forEach((x) => x.classList.remove('on')); drawIcon() }
 
@@ -329,13 +331,16 @@ $('apply').onclick = async () => {
 	if (!sel.size) return ($('log').innerHTML = '<span class="bad">Pick some keys first.</span>')
 	const page = +$('page').value || 1
 	let place = $('place').value
-	if (icon && icon !== 'none' && $('iconAt').value === 'top' && place === 'keep') place = 'bottom' // text under the icon
-	const look = { theme, size: $('size').value, place, textColour: $('textColour').value, text: $('text').value, icon }
+	if (icon && icon !== 'none' && $('iconAt').value === 'top' && place === 'keep' && $('textMode').value !== 'hide') place = 'bottom' // text under the icon
+	const mode = $('textMode').value
+	const text = mode === 'new' ? $('text').value : mode === 'restore' ? 'none' : ''
+	if (mode === 'new' && !text) return ($('log').innerHTML = '<span class="bad">Type the new text, or pick another "Text on the key".</span>')
+	const look = { theme, size: $('size').value, place, textColour: $('textColour').value, text, hideText: mode === 'hide' ? 'yes' : '', icon }
 	try {
 		await post('apply', { page, keys: [...sel], look })
 	} catch (e) { return ($('log').innerHTML = '<span class="bad">' + e.message + '</span>') }
 	// Keys without the linked feedback: Companion's own style call (older keys take it; it can't set an icon)
-	const style = await (await fetch('style-query?' + new URLSearchParams({ theme, size: $('size').value, place, textColour: $('textColour').value, text: $('text').value }))).text()
+	const style = await (await fetch('style-query?' + new URLSearchParams({ theme, size: $('size').value, place, textColour: $('textColour').value, text: mode === 'new' ? text : mode === 'hide' ? ' ' : '' }))).text()
 	const others = [...sel].filter((id) => !ready.has(id))
 	if (style) for (const id of others) { const [r, c] = id.split('/'); await fetch('/api/location/' + page + '/' + r + '/' + c + '/style?' + style, { method: 'POST' }).catch(() => null) }
 	const readyN = [...sel].filter((id) => ready.has(id)).length
