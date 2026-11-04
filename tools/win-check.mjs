@@ -212,6 +212,18 @@ await step('Show Health: ping an address nobody has (192.0.2.1) is down', async 
 	}
 	throw new Error('192.0.2.1 counted as up')
 })
+// Key Styler: Iconify, where its icon search comes from, answers the way the page expects
+await step('Key Styler: Iconify icon search and an icon as SVG (what the browser page asks for)', async () => {
+	const r = await (await fetch('https://api.iconify.design/search?limit=5&query=microphone', { signal: AbortSignal.timeout(15000) })).json()
+	if (!Array.isArray(r.icons) || !r.icons.length || !/^[a-z0-9-]+:[a-z0-9-]+$/.test(r.icons[0])) throw new Error(`unexpected search reply: ${JSON.stringify(r).slice(0, 200)}`)
+	const [set, id] = r.icons[0].split(':')
+	const res = await fetch(`https://api.iconify.design/${set}/${id}.svg?height=128&color=%23ffffff`, { signal: AbortSignal.timeout(15000) })
+	const svg = await res.text()
+	if (!svg.startsWith('<svg') || !/height="128"/.test(svg)) throw new Error(`unexpected SVG: ${svg.slice(0, 120)}`)
+	if (res.headers.get('access-control-allow-origin') !== '*') throw new Error('Iconify no longer lets web pages fetch its icons (CORS)')
+	return `${r.icons.slice(0, 3).join(', ')}; SVG ${svg.length} bytes`
+})
+
 await rm(dir, { recursive: true, force: true }).catch(() => null)
 console.log(failed ? `\n${failed} check(s) failed` : '\nall Windows checks passed')
 process.exit(failed ? 1 : 0)

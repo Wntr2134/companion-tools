@@ -33,8 +33,8 @@ import { readDock, DOCK_SLOTS } from './dock.js'
 import { Bluetooth } from './bluetooth.js'
 import { IconCache, shortName } from './icons.js'
 import { CompanionApi, explainSkipped, findInstalled, planUpdates } from './updater.js'
-import { THEMES, SIZES, PLACES, keyStyle, stylePresets } from './styles.js'
-import { stylerHtml, styleQuery } from './styler-page.js'
+import { THEMES, SIZES, PLACES, keyStyle, stylePresets, applyLook, clearLook } from './styles.js'
+import { stylerHtml, stylerJs, styleQuery, fetchImage } from './styler-page.js'
 import { TAB_SCRIPT, browserFor, cleanUrl, defaultMatch, installedBrowsers } from './browser.js'
 import { WinHost, WinKeepAwake, keyRequest, WIN_MOD_LABELS, WIN_SHORTCUTS } from './win-host.js'
 
@@ -50,6 +50,9 @@ const ECHO_GUARD_MS = 1500
 const LAYOUT_SLOTS = 6
 const DATA_DIR = process.platform === 'win32' ? path.join(process.env.APPDATA ?? path.join(os.homedir(), 'AppData', 'Roaming'), 'Companion Tools') : path.join(os.homedir(), 'Library', 'Application Support', 'Companion Tools')
 const LAYOUT_FILE = path.join(DATA_DIR, 'window-layouts.json')
+const KEY_STYLES_FILE = path.join(DATA_DIR, 'key-styles.json')
+/** On every System Tools preset: the Key style feedback that takes its look from the Key Styler. */
+const STYLER_LINK = { feedbackId: 'key_style', options: { theme: 'styler', size: 'keep', place: 'keep', textColour: 'auto' } }
 
 /** Preset categories by first letter, so a long list stays browsable. */
 const GROUPS = [
@@ -108,6 +111,7 @@ class SystemToolsInstance extends InstanceBase {
 			this.checkFeedbacks('keep_awake')
 		}
 		await this.loadLayouts()
+		await this.loadKeyStyles()
 		this.updateDefinitions()
 		await this.rescan()
 		if (this.mac || this.win) void this.refreshScreens()
@@ -412,10 +416,42 @@ class SystemToolsInstance extends InstanceBase {
 	}
 
 	/** The Key Styler page and its helper (Companion serves these at /instance/<this connection>/…). */
-	handleHttpRequest(request) {
+	async handleHttpRequest(request) {
 		const p = String(request.path ?? '').replace(/^\/+/, '')
+		const json = (body, status = 200) => ({ status, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 		if (p === '' || p === 'styler') return { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: stylerHtml() }
+		if (p === 'styler.js') return { status: 200, headers: { 'Content-Type': 'text/javascript; charset=utf-8' }, body: stylerJs() }
 		if (p === 'style-query') return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: styleQuery(request.query ?? {}) }
+		if (p === 'fetch-image') {
+			// A picture dragged in from a web page: fetched here, since the page can't read other sites' images
+			try {
+				// Companion passes text bodies only: the picture goes back as a data: URL
+				const { base64, type } = await fetchImage(String(request.query?.url ?? ''))
+				return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: `data:${type};base64,${base64}` }
+			} catch (e) {
+				return { status: 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: e.message }
+			}
+		}
+		if (p === 'linked') {
+			// Keys whose Key style feedback takes its look from here (seen in the last 10 minutes)
+			const page = Number(request.query?.page) || 1
+			const recent = Date.now() - 10 * 60 * 1000
+			const linked = [...this.linked].filter(([at, t]) => t > recent && at.startsWith(`${page}/`)).map(([at]) => at.split('/').slice(1).join('/'))
+			return json({ linked })
+		}
+		if ((p === 'apply' || p === 'clear') && request.method === 'POST') {
+			let req
+			try {
+				req = JSON.parse(request.body || '{}')
+			} catch {
+				return json({ error: 'not JSON' }, 400)
+			}
+			const page = Number(req.page) || 1
+			const n = p === 'apply' ? applyLook(this.keyStyles, page, req.keys, req.look).length : clearLook(this.keyStyles, page, req.keys)
+			await this.saveKeyStyles().catch((e) => this.log('warn', `Key Styler: couldn't save: ${e.message}`))
+			this.checkFeedbacks('key_style')
+			return json({ saved: n })
+		}
 		return { status: 404, body: 'Not found' }
 	}
 
@@ -461,6 +497,20 @@ class SystemToolsInstance extends InstanceBase {
 		} catch {
 			this.layouts = {}
 		}
+	}
+
+	async loadKeyStyles() {
+		this.linked = new Map() // "page/row/col" of keys with a Styler-linked Key style -> last seen
+		try {
+			this.keyStyles = JSON.parse(await readFile(KEY_STYLES_FILE, 'utf8')) ?? {}
+		} catch {
+			this.keyStyles = {}
+		}
+	}
+
+	async saveKeyStyles() {
+		await mkdir(path.dirname(KEY_STYLES_FILE), { recursive: true })
+		await writeFile(KEY_STYLES_FILE, JSON.stringify(this.keyStyles))
 	}
 
 	async saveLayout(slot) {
@@ -1201,9 +1251,15 @@ class SystemToolsInstance extends InstanceBase {
 			key_style: {
 				type: 'advanced',
 				name: 'Key style: colour and text size (keeps the key as it is)',
-				description: "Add this to any key you've made to colour it and size its text, without the style editor. Its actions and text stay. Put it at the top of the list so other feedbacks (e.g. green while running) still show over it.",
+				description: "Add this to any key you've made, leave it on \"From the Key Styler\", and the Key Styler page can restyle it (colour, text, size, icon) with many others at once. Or pick a colour here for just this key. Its actions stay. Keep it at the top of the list so other feedbacks (e.g. green while running) still show over it.",
 				options: [
-					{ type: 'dropdown', id: 'theme', label: 'Colour', default: 'blue', choices: Object.entries(THEMES).map(([id, t]) => ({ id, label: t.label })) },
+					{
+						type: 'dropdown',
+						id: 'theme',
+						label: 'Colour',
+						default: 'styler',
+						choices: [{ id: 'styler', label: 'From the Key Styler (set it there, for many keys at once)' }, ...Object.entries(THEMES).map(([id, t]) => ({ id, label: t.label }))],
+					},
 					{ type: 'dropdown', id: 'size', label: 'Text size', default: 'keep', choices: Object.entries(SIZES).map(([id, t]) => ({ id, label: t.label })) },
 					{ type: 'dropdown', id: 'place', label: 'Text sits at', default: 'keep', choices: Object.entries(PLACES).map(([id, t]) => ({ id, label: t.label })) },
 					{
@@ -1218,7 +1274,15 @@ class SystemToolsInstance extends InstanceBase {
 						],
 					},
 				],
-				callback: (fb) => keyStyle(fb.options),
+				callback: async (fb, ctx) => {
+					if (fb.options.theme !== 'styler') return keyStyle(fb.options)
+					// The key's own place, so the Styler knows it's linked and which look is its
+					const at = (await ctx.parseVariablesInString('$(this:page)/$(this:row)/$(this:column)')).trim()
+					if (!/^\d+\/\d+\/\d+$/.test(at)) return {}
+					this.linked.set(at, Date.now())
+					const look = this.keyStyles?.[at]
+					return look ? keyStyle(look) : {}
+				},
 			},
 			app_running: {
 				type: 'boolean',
@@ -1292,7 +1356,11 @@ class SystemToolsInstance extends InstanceBase {
 		])
 		this.setVariableValues({ app_count: this.apps.length, running_count: this.running.size, keep_awake: this.keepAwake?.on ? 'ON' : 'OFF' })
 
-		this.setPresetDefinitions(withSurfaceExtras({ ...this.buildPresets(screenCount), ...getViewerPresets(this), ...stylePresets() }))
+		// Every System Tools preset comes Styler-ready: its Key style feedback (first, so the preset's own
+		// feedbacks still show over it) takes its look from the Key Styler, and does nothing until then.
+		const presets = withSurfaceExtras({ ...this.buildPresets(screenCount), ...getViewerPresets(this), ...stylePresets() })
+		for (const pr of Object.values(presets)) if (pr.type === 'button') pr.feedbacks = [STYLER_LINK, ...(pr.feedbacks ?? [])]
+		this.setPresetDefinitions(presets)
 	}
 
 	buildPresets(screenCount) {

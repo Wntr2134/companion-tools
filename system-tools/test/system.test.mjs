@@ -281,7 +281,7 @@ test('every on/off feedback in a preset carries a style (without one, Companion 
 	const { readFile } = await import('node:fs/promises')
 	const src = await readFile(new URL('../src/main.js', import.meta.url), 'utf8')
 	for (const m of src.matchAll(/\{ feedbackId: '(\w+)', options: \{[^}]*\}( \})?/g)) {
-		if (['app_icon', 'dock_icon'].includes(m[1])) continue // advanced: draw their own picture
+		if (['app_icon', 'dock_icon', 'key_style'].includes(m[1])) continue // advanced: return their own style
 		assert.ok(!m[2], `preset feedback "${m[1]}" has no style`)
 	}
 })
@@ -529,7 +529,40 @@ test('Key Styler: the style query Companion takes, the D200X map, and a page wit
 	assert.equal(styleQuery({ text: 'HOUSE\\nLIGHTS' }), 'text=HOUSE%5CnLIGHTS')
 	assert.equal(D200X_KEYS.length, 13 + 1 + 6, '13 keys, the wide key, 3 knob turns and 3 pushes')
 	assert.deepEqual(D200X_KEYS.find((k) => k.wide), { row: 2, col: 3, label: 'WIDE KEY', wide: true })
+	const { stylerJs } = await import('../src/styler-page.js')
 	const html = stylerHtml()
-	assert.match(html, /\/api\/location\/' \+ page/)
-	assert.doesNotMatch(html, /<script src=|https?:\/\//, 'everything inline, nothing loaded from elsewhere')
+	assert.match(html, /<script src="styler.js"><\/script>/, 'the script is its own file')
+	assert.doesNotMatch(html, /https?:\/\//, 'the page loads nothing from elsewhere')
+	const js = stylerJs()
+	new Function(js) // parses
+	assert.match(js, /post\('apply'/, 'the look is saved in System Tools')
+	assert.match(js, /api\.iconify\.design/, 'icons from Iconify')
+
+	// the saved looks: only what was picked changes; icons checked; keys out of range ignored
+	const { applyLook, clearLook, keyStyle } = await import('../src/styles.js')
+	const store = {}
+	assert.deepEqual(applyLook(store, 2, ['0/0', '1/3', 'x/y', '200/1'], { theme: 'teal', size: 'keep', place: 'keep', textColour: 'auto', text: 'MICS', icon: 'iVBORw0K' }), ['2/0/0', '2/1/3'])
+	assert.deepEqual(store['2/0/0'], { theme: 'teal', textColour: 'auto', text: 'MICS', icon: 'iVBORw0K' })
+	applyLook(store, 2, ['0/0'], { theme: '', size: 'two', icon: 'none' })
+	assert.deepEqual(store['2/0/0'], { theme: 'teal', textColour: 'auto', text: 'MICS', size: 'two' }, 'colour kept, size set, icon off')
+	applyLook(store, 2, ['0/1'], { icon: 'not base64 <script>' })
+	assert.equal(store['2/0/1'].icon, undefined)
+	assert.deepEqual(keyStyle(store['2/0/1']), {}, 'nothing picked: the key stays as it is')
+	assert.equal(keyStyle(store['2/0/0']).text, 'MICS')
+	assert.equal(keyStyle({ theme: '', icon: 'AAAA' }).png64, 'AAAA')
+	assert.equal(clearLook(store, 2, ['0/0', '4/4']), 1)
+	assert.equal(store['2/0/0'], undefined)
+})
+
+test('Key Styler: pictures dragged in from a web page are fetched only if they are pictures', async () => {
+	const { fetchImage } = await import('../src/styler-page.js')
+	const reply = (type, bytes = [1, 2, 3], ok = true) => async () => ({ ok, status: ok ? 200 : 404, headers: new Map([['content-type', type]]), arrayBuffer: async () => new Uint8Array(bytes).buffer })
+	assert.deepEqual(await fetchImage('https://example.com/logo.png', { fetchFn: reply('image/png') }), { base64: 'AQID', type: 'image/png' })
+	await assert.rejects(fetchImage('file:///etc/passwd', { fetchFn: reply('image/png') }), /only http and https/)
+	await assert.rejects(fetchImage('https://example.com/', { fetchFn: reply('text/html; charset=utf-8') }), /not a picture \(text\/html\)/)
+	await assert.rejects(fetchImage('https://example.com/x.png', { fetchFn: reply('image/png', [], false) }), /said 404/)
+	await assert.rejects(fetchImage('nonsense', { fetchFn: reply('image/png') }), /web address/)
+	const js = (await import('../src/styler-page.js')).stylerJs()
+	assert.match(js, /addEventListener\('drop'/)
+	assert.match(js, /addEventListener\('paste'/)
 })
