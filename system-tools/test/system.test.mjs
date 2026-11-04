@@ -491,6 +491,15 @@ test("browser tabs: addresses cleaned, the site found by its address on a Mac, p
 	assert.equal(defaultMatch('https://ballroom.riderly.com.au/'), 'ballroom.riderly.com.au')
 	assert.equal(BROWSERS.vivaldi.mac, 'Vivaldi')
 	assert.equal(BROWSERS.brave.exe, 'brave.exe')
+	const { installedBrowsers, browserFor } = await import('../src/browser.js')
+	const macApps = [{ name: 'Brave Browser' }, { name: 'Firefox' }, { name: 'Notes' }, { name: 'Arc' }]
+	assert.deepEqual(installedBrowsers(macApps, 'darwin').map((b) => b.id), ['brave', 'arc', 'firefox', 'safari'], 'found ones, plus Safari on every Mac')
+	const winApps = [{ name: 'Google Chrome', exe: 'chrome.exe' }, { name: 'Opera Browser', exe: 'launcher.exe' }, { name: 'Mozilla Firefox', exe: 'firefox.exe' }]
+	assert.deepEqual(installedBrowsers(winApps, 'win32').map((b) => b.id), ['chrome', 'opera', 'firefox'], 'no Safari on Windows')
+	assert.equal(browserFor('opera', winApps).exe, 'launcher.exe', "the installed copy's program file")
+	assert.equal(browserFor('Google Chrome', winApps).mac, 'Google Chrome', 'a typed name that is known')
+	const custom = browserFor('Floorp', [])
+	assert.deepEqual([custom.mac, custom.exe], ['Floorp', 'floorp.exe'], 'any other browser by name')
 	assert.match(TAB_SCRIPT, /argv\[0\]/, 'browser, address and match come in as arguments')
 	assert.doesNotMatch(TAB_SCRIPT, /\$\{/)
 })

@@ -1,17 +1,51 @@
 // "Go to this site's tab": brings the browser to the front on the tab that has the site open, opens it
 // in a new tab if no tab has it, and starts the browser if it's closed.
-// Mac: the browsers' own scripting (Chrome, Brave, Vivaldi and Edge share Chrome's; Safari has its own),
-// which can see every tab's address. Windows: browsers don't tell other apps their tabs' addresses, so
+// Mac: the browsers' own scripting (Chrome, Brave, Vivaldi, Edge and other Chromium browsers share
+// Chrome's; Safari and Arc have their own), which can see every tab's address. A browser without
+// scripting (Firefox) just gets the address opened. Windows: browsers don't tell other apps their tabs' addresses, so
 // the Windows helper finds the tab by its title (UI Automation) and otherwise opens the address.
 // No Companion dependency, so it can be tested on its own.
 
-/** The browsers on offer: the Mac app name and the Windows program. */
+/**
+ * Browsers System Tools knows, and how to reach their tabs. The list shown is the ones found on this
+ * computer (installedBrowsers); any other app name can be typed in.
+ * names: how the app is called on a Mac (/Applications) or in the Windows Start Menu.
+ */
 export const BROWSERS = {
-	chrome: { label: 'Google Chrome', mac: 'Google Chrome', exe: 'chrome.exe' },
-	brave: { label: 'Brave', mac: 'Brave Browser', exe: 'brave.exe' },
-	vivaldi: { label: 'Vivaldi', mac: 'Vivaldi', exe: 'vivaldi.exe' },
-	edge: { label: 'Microsoft Edge', mac: 'Microsoft Edge', exe: 'msedge.exe' },
-	safari: { label: 'Safari (Mac)', mac: 'Safari', exe: '' },
+	chrome: { label: 'Google Chrome', mac: 'Google Chrome', exe: 'chrome.exe', names: /^google chrome$/i },
+	brave: { label: 'Brave', mac: 'Brave Browser', exe: 'brave.exe', names: /^brave( browser)?$/i },
+	vivaldi: { label: 'Vivaldi', mac: 'Vivaldi', exe: 'vivaldi.exe', names: /^vivaldi$/i },
+	edge: { label: 'Microsoft Edge', mac: 'Microsoft Edge', exe: 'msedge.exe', names: /^microsoft edge$/i },
+	arc: { label: 'Arc', mac: 'Arc', exe: 'arc.exe', names: /^arc$/i },
+	opera: { label: 'Opera', mac: 'Opera', exe: 'opera.exe', names: /^opera( browser)?$/i },
+	opera_gx: { label: 'Opera GX', mac: 'Opera GX', exe: 'opera.exe', names: /^opera gx( browser)?$/i },
+	chromium: { label: 'Chromium', mac: 'Chromium', exe: 'chrome.exe', names: /^chromium$/i },
+	firefox: { label: 'Firefox', mac: 'Firefox', exe: 'firefox.exe', names: /^(mozilla )?firefox$/i },
+	zen: { label: 'Zen', mac: 'Zen', exe: 'zen.exe', names: /^zen( browser)?$/i },
+	safari: { label: 'Safari', mac: 'Safari', exe: '', names: /^safari$/i },
+}
+
+/** The known browsers among these apps ([{ name, exe }]), in BROWSERS order: [{ id, label, app }]. */
+export function installedBrowsers(apps, platform = process.platform) {
+	const out = []
+	for (const [id, b] of Object.entries(BROWSERS)) {
+		if (platform === 'win32' && !b.exe) continue
+		const app = (apps ?? []).find((a) => b.names.test(String(a.name ?? '').trim()))
+		if (app) out.push({ id, label: b.label, app })
+		// Every Mac has Safari (it isn't always in the app list, which leaves out built-in apps by default)
+		else if (id === 'safari' && platform === 'darwin') out.push({ id, label: b.label, app: { name: 'Safari', path: '/Applications/Safari.app' } })
+	}
+	return out
+}
+
+/** A browser by id, or one typed in by app name (anything else people use). */
+export function browserFor(id, apps = []) {
+	const known = BROWSERS[id] ?? Object.values(BROWSERS).find((b) => b.names.test(String(id ?? '').trim()))
+	const name = String(id ?? '').trim()
+	const b = known ?? { label: name, mac: name.replace(/\.app$/i, ''), exe: /\.exe$/i.test(name) ? name : `${name.toLowerCase().replace(/\s+/g, '')}.exe`, names: null }
+	// Windows: the program file of the copy actually installed (Opera's is opera.exe, a portable one may differ)
+	const app = b.names ? apps.find((a) => b.names.test(String(a.name ?? '').trim())) : apps.find((a) => String(a.name ?? '').toLowerCase() === name.toLowerCase())
+	return { ...b, exe: app?.exe || b.exe }
 }
 
 /** A web address to open, or null: http(s) only, no spaces or quotes (it's handed to a browser). A bare "site.com" gets https://. */
@@ -29,7 +63,7 @@ export function cleanUrl(text) {
 	return parsed.href
 }
 
-/** What to look for when "find" is blank: the site's address without www. (ballroom.riderly.com.au). */
+/** What to look for when "find" is blank: the site's address without www. (example.com). */
 export function defaultMatch(url) {
 	try {
 		return new URL(url).host.replace(/^www\./, '')
@@ -61,7 +95,9 @@ function run(argv) {
 			try { u = String(tabs[i].url() || '') } catch (e) {}
 			if (!match || u.toLowerCase().indexOf(match) < 0) continue
 			if (safari) w.currentTab = tabs[i]
-			else w.activeTabIndex = i + 1
+			else {
+				try { w.activeTabIndex = i + 1 } catch (e) { tabs[i].select() } // Arc: tabs have "select"
+			}
 			try { if (safari ? w.miniaturized() : w.minimized()) { if (safari) w.miniaturized = false; else w.minimized = false } } catch (e) {}
 			try { w.index = 1 } catch (e) {}
 			b.activate()
