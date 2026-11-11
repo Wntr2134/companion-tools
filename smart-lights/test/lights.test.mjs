@@ -2,7 +2,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { HueBridge, hueState, toPct, toBri, toMired, toWarmCold } from '../src/hue.js'
+import { HueBridge, parseSsdpHue, hueState, toPct, toBri, toMired, toWarmCold } from '../src/hue.js'
 import { parseTuyaDevices, tuyaSchema, tuyaState, tuyaChange, TuyaDevice } from '../src/tuya.js'
 
 const KEY_TOOL_OUTPUT = `Lounge Lamp  (online)
@@ -233,6 +233,27 @@ test('Grid Connect sign-in: finds the right data centre, the password goes encry
 	}
 	fakeGridConnect.deps = { crypto, ...gc }
 	const { fetchFn, seen } = fakeGridConnect({ home: 'us', password: 'right' })
-	await assert.rejects(gc.signIn('me@example.com', 'wrong', { fetchFn }), (e) => !/wrong/.test(e.message) && /USER_PASSWD_WRONG/.test(e.message), 'says so without echoing the password')
-	assert.equal(seen.filter(([, a]) => a.endsWith('password.login')).length, 1, 'a wrong password stops there: no other data centres')
+	await assert.rejects(gc.signIn('me@example.com', 'wrong', { fetchFn }), (e) => !/wrong'/.test(e.message) && /us: .*USER_PASSWD_WRONG/.test(e.message), 'says so without echoing the password')
+	assert.equal(seen.filter(([, a]) => a.endsWith('token.create')).length, 6, 'every data centre asked')
+	// a data centre without the account says "wrong password" too: keep going until the one that has it
+	const { fetchFn: f2 } = fakeGridConnect({ home: 'eu' })
+	const passwdEverywhereElse = async (url, opts) => (url.includes('tuyaus.com') ? { ok: true, status: 200, json: async () => ({ success: false, errorCode: 'USER_PASSWD_WRONG', errorMsg: 'incorrect account or password' }) } : f2(url, opts))
+	assert.equal((await gc.signIn('me@example.com', 'pw', { fetchFn: passwdEverywhereElse })).region, 'eu')
+	const allWrong = async () => ({ ok: true, status: 200, json: async () => ({ success: false, errorCode: 'USER_PASSWD_WRONG', errorMsg: 'x' }) })
+	await assert.rejects(gc.signIn('me@example.com', 'pw', { fetchFn: allWrong }), /every data centre/)
 })
+
+test('Hue bridge found on the local network first (SSDP), the online finder only as a fallback', async () => {
+	const answer = 'HTTP/1.1 200 OK\r\nLOCATION: http://192.168.1.20:80/description.xml\r\nhue-bridgeid: 001788FFFE123456\r\n\r\n'
+	assert.deepEqual(parseSsdpHue(answer, '192.168.1.20'), { ip: '192.168.1.20', id: '001788fffe123456' })
+	assert.equal(parseSsdpHue('HTTP/1.1 200 OK\r\nSERVER: a printer\r\n', '192.168.1.9'), null)
+	let asked = 0
+	const fetchFn = async () => {
+		asked++
+		return { ok: false, status: 429 }
+	}
+	assert.deepEqual(await HueBridge.discover({ fetchFn, local: async () => [{ ip: '192.168.1.20', id: 'x' }] }), [{ ip: '192.168.1.20', id: 'x' }])
+	assert.equal(asked, 0, 'found locally: the online finder isn\'t asked')
+	await assert.rejects(HueBridge.discover({ fetchFn, local: async () => [] }), /no bridge answered on the network, and Philips' bridge finder said 429/)
+})
+

@@ -132,7 +132,7 @@ class SmartLightsInstance extends InstanceBase {
 						this.saveConfig(this.config, this.secrets)
 					}
 				} catch (e) {
-					this.log('warn', `Couldn't look for a Hue Bridge (${e.message}): type its address in the settings`)
+					this.log('warn', `Couldn't find the Hue Bridge (${e.message}): type its address in the settings (Hue app: Settings → My Hue system → the bridge → IP address)`)
 				}
 			}
 			if (ip) this.hue = new HueBridge({ ip, key: String(this.secrets.hueKey ?? '') })
