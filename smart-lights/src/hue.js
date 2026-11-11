@@ -2,6 +2,7 @@
 // no cloud). Pairing: press the round button on the bridge, then pair within 30 seconds; the bridge
 // hands back a key that's kept in this connection's settings.
 // No Companion dependency, so it can be tested on its own.
+import dgram from 'node:dgram'
 
 /** Hue brightness is 1-254; the module works in 0-100 %. */
 export const toPct = (bri) => Math.max(1, Math.round((Number(bri) / 254) * 100))
@@ -21,11 +22,43 @@ export class HueBridge {
 	}
 
 	/** Bridges on this network, from Philips' discovery service (needs the internet): [{ ip, id }]. */
-	static async discover({ fetchFn = fetch } = {}) {
+	/**
+	 * Finds bridges: first by asking on the local network (SSDP, which every Hue Bridge answers), then
+	 * through Philips' online bridge finder, which limits how often it can be asked (429).
+	 */
+	static async discover({ fetchFn = fetch, local = HueBridge.discoverLocal } = {}) {
+		const near = await local().catch(() => [])
+		if (near.length) return near
 		const res = await fetchFn('https://discovery.meethue.com/', { signal: AbortSignal.timeout(8000) })
-		if (!res.ok) throw new Error(`Philips' bridge finder said ${res.status}`)
+		if (!res.ok) throw new Error(`no bridge answered on the network, and Philips' bridge finder said ${res.status}`)
 		const list = await res.json()
 		return (Array.isArray(list) ? list : []).filter((b) => b?.internalipaddress).map((b) => ({ ip: b.internalipaddress, id: b.id ?? '' }))
+	}
+
+	/** Asks the local network for Hue Bridges (SSDP M-SEARCH) and collects the answers for a few seconds. */
+	static discoverLocal(ms = 3000) {
+		return new Promise((resolve) => {
+			const found = new Map()
+			const sock = dgram.createSocket({ type: 'udp4', reuseAddr: true })
+			const done = () => {
+				try {
+					sock.close()
+				} catch {
+					// already closed
+				}
+				resolve([...found.values()])
+			}
+			sock.on('error', done)
+			sock.on('message', (msg, rinfo) => {
+				const b = parseSsdpHue(msg.toString(), rinfo.address)
+				if (b) found.set(b.ip, b)
+			})
+			sock.bind(() => {
+				const ask = Buffer.from('M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: "ssdp:discover"\r\nMX: 2\r\nST: ssdp:all\r\n\r\n')
+				sock.send(ask, 1900, '239.255.255.250', () => {})
+			})
+			setTimeout(done, ms)
+		})
 	}
 
 	async #call(method, path, body) {
@@ -111,4 +144,12 @@ export function hueState({ on, brightness, warmCold, transition } = {}) {
 	if (warmCold !== undefined && warmCold !== null) s.ct = toMired(warmCold)
 	if (transition !== undefined) s.transitiontime = Math.max(0, Math.round(Number(transition) * 10))
 	return s
+}
+
+/** An SSDP answer from a Hue Bridge (it carries a hue-bridgeid header), or null for anything else. */
+export function parseSsdpHue(text, from) {
+	const id = /^hue-bridgeid:\s*(\S+)/im.exec(text)?.[1]
+	if (!id) return null
+	const ip = /^location:\s*https?:\/\/([\d.]+)/im.exec(text)?.[1] ?? from
+	return { ip, id: id.toLowerCase() }
 }

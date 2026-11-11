@@ -178,12 +178,15 @@ export async function signIn(email, password, { country = '61', fetchFn = fetch,
 			await c.login(email, password)
 			return c
 		} catch (e) {
-			why.push(`${region}: ${e.message}`)
-			// a wrong password is the same everywhere: no point trying other data centres
-			if (/PASSWD|PASSWORD/i.test(e.code ?? '')) break
+			// Keep going: a data centre that doesn't have the account says "incorrect account or password"
+			// too, so only the one that has it can say the password is right.
+			why.push({ region, code: e.code ?? '', message: e.message })
 		}
 	}
-	throw new Error(`Grid Connect sign-in failed (${why.join('; ')})`)
+	if (why.length && why.every((w) => /PASSWD/i.test(w.code))) {
+		throw new Error(`Grid Connect sign-in failed: every data centre (${why.map((w) => w.region).join(', ')}) said "incorrect account or password". Check the email and password by signing out of the Grid Connect app and back in.`)
+	}
+	throw new Error(`Grid Connect sign-in failed (${why.map((w) => `${w.region}: ${w.message}`).join('; ')})`)
 }
 
 /**
