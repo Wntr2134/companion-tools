@@ -70,18 +70,22 @@ class SmartLightsInstance extends InstanceBase {
 			return false
 		}
 		const email = String(this.config.gcEmail).trim()
+		this.gcError = null
 		try {
 			this.updateStatus(InstanceStatus.Connecting, 'Signing in to Grid Connect…')
+			this.log('info', 'Grid Connect: signing in…')
 			const cloud = await signIn(email, String(this.secrets.gcPassword), { country: String(this.config.gcCountry ?? '61').replace(/\D/g, '') || '61' })
 			const found = await cloud.devices()
 			const ips = Object.fromEntries(parseTuyaDevices(this.config.tuyaDevices).filter((d) => d.ip).map((d) => [d.id, d.ip]))
 			this.config = { ...this.config, tuyaDevices: devicesText(found, ips) }
 			this.saveConfig(this.config, this.secrets)
 			this.log('info', `Grid Connect: found ${found.length} device${found.length === 1 ? '' : 's'} (${cloud.region} data centre)`)
+			if (!found.length) this.gcError = `signed in (${cloud.region}), but the account has no devices with keys`
 			if (restart) await this.start()
 			return true
 		} catch (e) {
 			this.log('error', e.message)
+			this.gcError = 'sign-in failed (see the log)'
 			this.updateStatus(InstanceStatus.ConnectionFailure, 'Grid Connect sign-in failed: see the log')
 			return false
 		}
@@ -147,9 +151,11 @@ class SmartLightsInstance extends InstanceBase {
 		if (this.hue && !this.hue.key) parts.push('Hue: press the bridge button, then PAIR HUE')
 		if (!this.hue && this.config.hue !== false) parts.push('Hue: no bridge found')
 		if (this.hueError) parts.push(`Hue: ${this.hueError}`)
+		if (this.gcError) parts.push(`Grid Connect: ${this.gcError}`)
 		const off = this.tuya.filter((d) => !d.online).length
 		if (off) parts.push(`${off} Grid Connect device(s) not connected yet`)
-		if (parts.length) this.updateStatus(InstanceStatus.UnknownWarning, parts.join('; '))
+		if (this.gcError) this.updateStatus(InstanceStatus.ConnectionFailure, parts.join('; '))
+		else if (parts.length) this.updateStatus(InstanceStatus.UnknownWarning, parts.join('; '))
 		else this.updateStatus(InstanceStatus.Ok, `${this.targets.size} lights and rooms`)
 	}
 
