@@ -723,3 +723,47 @@ If you said no to one by mistake: turn it on in the place above, then press the 
 | grandMA2 connection stuck on Connecting | Check the IP, **Telnet = Login Enabled** in Setup → Console → Global Settings, and the Windows firewall (F.1). |
 | UAD connection is red | Open UAD Console once, then check the IP is `127.0.0.1` on the same Mac. Then run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs`. It should list your devices. |
 | Anything else | Copy the connection's or surface's **Logs** and send them over. |
+
+## Part N: Smart Lights (Philips Hue and Grid Connect)
+
+Your Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs, from Companion keys, over your own network: no Google Home, no cloud, nothing to re-pair. Keys light up while a light is on.
+
+### N.1 Add the connection
+**Connections → + Add connection** → search **Smart Lights** → add it. It looks for your Hue Bridge by itself (or type the bridge's address in the settings).
+
+### N.2 Pair the Hue Bridge (once)
+1. Press the **round button** on top of the Hue Bridge.
+2. Within 30 seconds: open the Smart Lights connection, tick **Pair now** and **Save** (or press a **PAIR HUE** key).
+3. The log says *Paired with the Hue Bridge*, and your lights, rooms and scenes appear in the presets.
+
+### N.3 Grid Connect bulbs and plugs (once, about 10 minutes)
+Grid Connect is built on Tuya. Each device has its own key; once Companion has it, it talks to the device directly over your Wi-Fi. To get the keys without re-pairing anything, sign in once with your **Grid Connect account** using a free community tool ([HomeAssistant_GridConnect](https://github.com/rickevans86/HomeAssistant_GridConnect)). It's unofficial and only talks to Tuya's own servers, the same ones the Grid Connect app uses. On the Mac, in Terminal:
+
+```bash
+git clone https://github.com/rickevans86/HomeAssistant_GridConnect.git
+cd HomeAssistant_GridConnect
+python3 -m pip install -r requirements.txt
+python3 cli.py --email YOUR-GRID-CONNECT-EMAIL --country 61 devices
+```
+
+It asks for your Grid Connect password (it isn't saved), then lists each device:
+
+```
+Lounge Lamp  (online)
+  devId     : bf0123…
+  localKey  : a1b2c3…
+  …
+```
+
+Copy the whole list and paste it into the Smart Lights connection's **Grid Connect devices** box, then Save. Companion finds each device on the network by itself (if one isn't found, add its IP address: *Name, devId, localKey, IP*).
+
+- If sign-in fails, try `--region eu` (your account may live in another Tuya region).
+- A device's key only changes if you **remove it from the Grid Connect app and add it again**; then run the tool again and paste the new key.
+- Keep the list private: anyone with a device's key on your Wi-Fi could control it.
+
+### N.4 Keys
+- **One key per light, room and plug**: press = on / off, amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall).
+- **Knobs**: brightness (push = on / off) per light and room; warm ↔ cold white in the actions.
+- **Hue scenes**: one key per scene, named with its room.
+- **ALL OFF**: every Hue light and Grid Connect device off.
+- **Wide key viewers**: lights on, and clock + lights on.
