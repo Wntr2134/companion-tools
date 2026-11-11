@@ -6,7 +6,7 @@
 // Run from the repo root after `npm install` in each module: node tools/preset-check.mjs [module…]
 import { loadModule, checkButton } from './module-host.mjs'
 
-const MODULES = ['apple-music-local', 'echo360-capture', 'grandma2', 'magicq', 'ndi-router', 'ndi-studio-monitor', 'panasonic-ptz', 'show-health', 'spotify-local', 'system-tools', 'uad-console', 'digico-sd']
+const MODULES = ['apple-music-local', 'echo360-capture', 'grandma2', 'magicq', 'ndi-router', 'ndi-studio-monitor', 'panasonic-ptz', 'show-health', 'smart-lights', 'spotify-local', 'system-tools', 'uad-console', 'digico-sd']
 const wanted = process.argv.slice(2).length ? process.argv.slice(2) : MODULES
 
 let failed = 0

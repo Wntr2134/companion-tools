@@ -1,6 +1,6 @@
 # companion-tools
 
-Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiCo SD, ChamSys MagicQ, Echo360, Show Health, System Tools (was App Launcher), NDI Router, NDI Studio Monitor, Spotify, Apple Music and grandMA2 modules, Mac tools). See README.md.
+Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiCo SD, ChamSys MagicQ, Echo360, Show Health, Smart Lights (Hue + Grid Connect), System Tools (was App Launcher), NDI Router, NDI Studio Monitor, Spotify, Apple Music and grandMA2 modules, Mac tools). See README.md.
 
 ## How work gets in
 - Work on a branch and open a pull request into `main`. Then **merge it yourself**: Will has said merging doesn't need his permission. Tell him afterwards what was merged.
@@ -10,6 +10,7 @@ Will's Companion add-ons (Ulanzi D200X plugin, Panasonic PTZ, UAD Console, DiGiC
 - Echo360 module: `node --test test/echo.test.mjs` in `echo360-capture/`.
 - MagicQ module: `node --test test/knobs.test.mjs` in `magicq/` (npm install rewrites yarn.lock: restore it before committing).
 - Show Health module: `node --test test/health.test.mjs` in `show-health/`.
+- Smart Lights module: `npm test` in `smart-lights/` (Hue Bridge local API; Grid Connect / Tuya over the LAN with tuyapi, keys fetched by the module's own Grid Connect sign-in in `src/gridconnect.js`, unofficial Tuya mobile API; pasting the list by hand still works: see SETUP-GUIDE).
 - System Tools module (was App Launcher; manifest `legacyIds` keeps old connections): `npm test` in `system-tools/`. Windows features go through one long-running PowerShell helper (`src/win-host.js`, its C# in `src/win-host-cs.js`: C# 5 only, Windows PowerShell 5.1 compiles it), built on `src/win-helper.js`, which is the same file in every module with Windows features (`spotify-local/` uses it for Windows' media controls in `src/win-media.js`, `echo360-capture/` for Universal Capture's shortcuts in `src/win-keys.js`; tests check the copies match); `node tools/win-check.mjs` on a PC (CI runs it on Windows) compiles it and runs the safe requests. Keep the App Launcher action ids (`launch`, `quit`, `toggle`, `rescan`, `app_running`).
 - NDI Router module: `node --test test/ndi.test.mjs test/virtual-input.test.mjs` in `ndi-router/` (builds a fake NDI library with `cc`).
 - NDI Studio Monitor module: `node --test test/monitor.test.mjs` in `ndi-studio-monitor/`.

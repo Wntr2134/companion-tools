@@ -151,6 +151,19 @@ jobs:
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund
       - run: node --test test/health.test.mjs
 
+  smart-lights:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: smart-lights
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund
+      - run: npm test
+
   echo360-capture:
     runs-on: ubuntu-latest
     defaults:
@@ -188,7 +201,7 @@ jobs:
           node-version: 22
       - name: Install every module
         run: |
-          for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health spotify-local system-tools uad-console; do
+          for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health smart-lights spotify-local system-tools uad-console; do
             (cd "$d" && npm install --no-save --ignore-scripts --no-audit --no-fund --legacy-peer-deps)
           done
           (cd digico-sd && npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps && npx tsc6 -p tsconfig.build.json)
@@ -233,7 +246,7 @@ jobs:
       - run: node tools/win-check.mjs
       - name: Install every module
         run: |
-          for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health spotify-local system-tools uad-console; do
+          for d in apple-music-local echo360-capture grandma2 magicq ndi-router ndi-studio-monitor panasonic-ptz show-health smart-lights spotify-local system-tools uad-console; do
             (cd "$d" && npm install --no-save --ignore-scripts --no-audit --no-fund --legacy-peer-deps)
           done
           (cd digico-sd && npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps && npx tsc6 -p tsconfig.build.json)
