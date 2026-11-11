@@ -1,6 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { HueBridge } from './hue.js'
 import { TuyaDevice, parseTuyaDevices } from './tuya.js'
+import { signIn, devicesText } from './gridconnect.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
 
@@ -29,6 +30,8 @@ class SmartLightsInstance extends InstanceBase {
 	async init(config, _isFirstInit, secrets) {
 		this.config = config
 		this.secrets = secrets ?? {}
+		// signed-in details but no device list yet: fetch it once by itself
+		if (!parseTuyaDevices(this.config.tuyaDevices).length && this.#gcReady()) await this.fetchGridConnect(false)
 		await this.start()
 	}
 
@@ -41,7 +44,47 @@ class SmartLightsInstance extends InstanceBase {
 			this.saveConfig(this.config, this.secrets)
 			void this.pairHue()
 		}
+		// ticked, or signed-in details with no device list yet: fetch it
+		if (config.gcFetchNow || (!parseTuyaDevices(config.tuyaDevices).length && this.#gcReady())) {
+			if (config.gcFetchNow) {
+				this.config = { ...this.config, gcFetchNow: false }
+				this.saveConfig(this.config, this.secrets)
+			}
+			await this.fetchGridConnect(false)
+		}
 		await this.start()
+	}
+
+	#gcReady() {
+		return !!String(this.config.gcEmail ?? '').trim() && !!String(this.secrets.gcPassword ?? '')
+	}
+
+	/**
+	 * Signs in to Grid Connect, reads every device's ID and local key, and fills in the device list
+	 * (keeping any IP address typed in for a device). Only the list is kept: the lights are then
+	 * controlled over the network as before. The password never goes in the log.
+	 */
+	async fetchGridConnect(restart = true) {
+		if (!this.#gcReady()) {
+			this.log('warn', 'Grid Connect: put your Grid Connect email and password in the settings first')
+			return false
+		}
+		const email = String(this.config.gcEmail).trim()
+		try {
+			this.updateStatus(InstanceStatus.Connecting, 'Signing in to Grid Connect…')
+			const cloud = await signIn(email, String(this.secrets.gcPassword), { country: String(this.config.gcCountry ?? '61').replace(/\D/g, '') || '61' })
+			const found = await cloud.devices()
+			const ips = Object.fromEntries(parseTuyaDevices(this.config.tuyaDevices).filter((d) => d.ip).map((d) => [d.id, d.ip]))
+			this.config = { ...this.config, tuyaDevices: devicesText(found, ips) }
+			this.saveConfig(this.config, this.secrets)
+			this.log('info', `Grid Connect: found ${found.length} device${found.length === 1 ? '' : 's'} (${cloud.region} data centre)`)
+			if (restart) await this.start()
+			return true
+		} catch (e) {
+			this.log('error', e.message)
+			this.updateStatus(InstanceStatus.ConnectionFailure, 'Grid Connect sign-in failed: see the log')
+			return false
+		}
 	}
 
 	async destroy() {
@@ -300,6 +343,7 @@ class SmartLightsInstance extends InstanceBase {
 			},
 			all_off: { name: 'All lights off', options: [], callback: () => this.allOff() },
 			pair_hue: { name: 'Hue: pair with the bridge (press its button first)', options: [], callback: () => this.pairHue() },
+			fetch_gridconnect: { name: 'Grid Connect: fetch my devices again (after adding or re-pairing one)', options: [], callback: () => this.fetchGridConnect() },
 			reconnect: { name: 'Reconnect everything (re-read lights, rooms and scenes)', options: [], callback: () => this.start() },
 		})
 
@@ -374,6 +418,7 @@ class SmartLightsInstance extends InstanceBase {
 		}
 		presets.all_off = key('Everything', 'All lights off', 'ALL\\nOFF', [{ actionId: 'all_off', options: {} }], [], '18')
 		presets.pair_hue = key('Everything', 'Pair with the Hue Bridge (press its button first)', 'PAIR\\nHUE', [{ actionId: 'pair_hue', options: {} }])
+		presets.fetch_gridconnect = key('Everything', 'Fetch my Grid Connect devices again', 'FETCH\\nGRID CON', [{ actionId: 'fetch_gridconnect', options: {} }])
 		presets.reconnect = key('Everything', 'Reconnect / re-read everything', 'RE-\\nCONNECT', [{ actionId: 'reconnect', options: {} }])
 		return presets
 	}
@@ -396,8 +441,12 @@ class SmartLightsInstance extends InstanceBase {
 				id: 'tuyaInfo',
 				width: 12,
 				label: 'Grid Connect (and other Tuya) bulbs and plugs',
-				value: 'Paste the device list from the one-off Grid Connect sign-in (see the setup guide): each device\'s name, devId and localKey. Or one per line: <i>Name, devId, localKey</i> (an IP address after it if a device isn\'t found by itself). Everything after that is on your own network: no cloud.',
+				value: 'Sign in with your Grid Connect app email and password, tick <b>Fetch my devices</b> and Save: the module reads each device\'s ID and key and fills in the list below. After that everything is on your own network (the cloud is only used to fetch the list). Fetch again after adding or re-pairing a device. Unofficial: if Grid Connect changes its sign-in, paste the list by hand instead (see the setup guide).',
 			},
+			{ type: 'textinput', id: 'gcEmail', label: 'Grid Connect email', width: 5, default: '' },
+			{ type: 'secret-text', id: 'gcPassword', label: 'Grid Connect password', width: 4, default: '' },
+			{ type: 'textinput', id: 'gcCountry', label: 'Country code', width: 3, default: '61' },
+			{ type: 'checkbox', id: 'gcFetchNow', label: 'Fetch my devices (on Save)', width: 12, default: false },
 			{ type: 'textinput', id: 'tuyaDevices', label: 'Grid Connect devices', width: 12, default: '', multiline: true },
 			{ type: 'number', id: 'poll', label: 'Read the Hue lights every (seconds)', width: 6, default: 2, min: 1, max: 30 },
 		]

@@ -1,6 +1,6 @@
 // Grid Connect (and other Tuya-based) bulbs and plugs, straight over your Wi-Fi with each device's own
-// key: no cloud, no app. Device IDs and keys come from a one-off sign-in with your Grid Connect account
-// (see the setup guide); paste that list into this connection's settings.
+// key: no cloud, no app. Device IDs and keys are fetched once from your Grid Connect account
+// (gridconnect.js) or pasted into this connection's settings.
 // No Companion dependency, so it can be tested on its own.
 import TuyAPI from 'tuyapi'
 

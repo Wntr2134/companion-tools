@@ -152,3 +152,87 @@ test('wide key viewers: display only, short enough for a normal key too', async 
 		assert.deepEqual(p.steps[0], { down: [], up: [] })
 	}
 })
+
+test('Grid Connect sign-in: signature, channel key and body encryption', async () => {
+	const crypto = await import('node:crypto')
+	const { signParams, channelKey, bodyKey, sealBody, openBody, APP } = await import('../src/gridconnect.js')
+	const signKey = `${APP.package}_${APP.cert}_${APP.hidden}_${APP.secret}`
+	const h = crypto.createHash('md5').update('{"a":1}').digest('hex')
+	const pre = `a=x.y||et=3||postData=${h.slice(8, 16) + h.slice(0, 8) + h.slice(24, 32) + h.slice(16, 24)}||time=100`
+	assert.equal(
+		signParams({ time: '100', a: 'x.y', et: '3', postData: '{"a":1}', sdkVersion: 'not signed', sid: '' }),
+		crypto.createHmac('sha256', signKey).update(pre).digest('hex'),
+		'only listed, non-empty fields, sorted, postData by its shuffled MD5',
+	)
+	assert.match(channelKey(), /^[0-9a-f]{8}$/)
+	const k = bodyKey('req-1')
+	assert.equal(k.length, 16)
+	assert.notDeepEqual(bodyKey('req-1', 'E1'), k, 'after sign-in the session changes the key')
+	assert.equal(openBody(k, sealBody(k, 'hello')), 'hello')
+	const zipped = (await import('node:zlib')).gzipSync(Buffer.from('{"z":true}'))
+	const c = crypto.createCipheriv('aes-128-gcm', k, Buffer.alloc(12, 1))
+	const blob = Buffer.concat([Buffer.alloc(12, 1), c.update(zipped), c.final(), c.getAuthTag()]).toString('base64')
+	assert.equal(openBody(k, blob), '{"z":true}', 'gzipped replies are unzipped')
+	assert.throws(() => openBody(bodyKey('other'), sealBody(k, 'x')), 'a wrong key fails, not garbage')
+})
+
+/** A stand-in for Grid Connect's servers: checks what the module sends and answers like the real thing. */
+function fakeGridConnect({ home = 'eu', password = 'pw' } = {}) {
+	const { crypto, signParams, bodyKey, sealBody, openBody, wrap } = fakeGridConnect.deps
+	const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 1024 })
+	const jwk = publicKey.export({ format: 'jwk' })
+	const dec = (b64u) => BigInt(`0x${Buffer.from(b64u, 'base64url').toString('hex')}`).toString(10)
+	const seen = []
+	const fetchFn = async (url, opts) => {
+		const p = Object.fromEntries(new URLSearchParams(opts.body))
+		seen.push([url, p.a])
+		const { sign, ...rest } = p
+		assert.equal(sign, signParams(rest), `${p.a}: signed`)
+		const ecode = p.sid ? 'EC9' : null
+		const body = p.postData ? JSON.parse(openBody(bodyKey(p.requestId, ecode), p.postData)) : {}
+		const answer = (result) => ({ ok: true, status: 200, json: async () => ({ success: true, result: sealBody(bodyKey(p.requestId, ecode), JSON.stringify(wrap ? { success: true, result } : result)) }) })
+		const nope = (code) => ({ ok: true, status: 200, json: async () => ({ success: false, errorCode: code, errorMsg: 'no' }) })
+		if (!url.includes(home === 'eu' ? 'tuyaeu.com' : 'tuyaus.com') || url.includes('-weaz')) return nope('USER_NOT_EXISTS')
+		if (p.a === 'smartlife.m.user.email.token.create') return answer({ token: 'T1', publicKey: dec(jwk.n), exponent: dec(jwk.e) })
+		if (p.a === 'smartlife.m.user.email.password.login') {
+			const sent = crypto.privateDecrypt({ key: privateKey, padding: crypto.constants.RSA_PKCS1_PADDING }, Buffer.from(body.passwd, 'hex')).toString()
+			if (sent !== crypto.createHash('md5').update(password).digest('hex')) return nope('USER_PASSWD_WRONG')
+			assert.equal(body.token, 'T1')
+			assert.equal(body.countryCode, '61')
+			return answer({ sid: 'S1', ecode: 'EC9', uid: 'u' })
+		}
+		assert.equal(p.sid, 'S1', `${p.a}: sent with the session`)
+		if (p.a === 'm.life.home.space.list') return answer([{ gid: 42, name: 'Home' }])
+		if (p.a === 'smartlife.m.my.group.device.list') {
+			assert.equal(p.gid, '42')
+			return answer([
+				{ devId: 'bf0123456789abcdefgh', name: 'Lounge Lamp', localKey: 'a1b2c3d4e5f6a7b8', category: 'dj', isOnline: true, dps: { 20: true, 22: 500 } },
+				{ devId: 'bfnokeyyyyyyyyyyyyyy', name: 'Hub', localKey: '' },
+			])
+		}
+		throw new Error(`unexpected ${p.a}`)
+	}
+	return { fetchFn, seen }
+}
+
+test('Grid Connect sign-in: finds the right data centre, the password goes encrypted, devices fill the list', async () => {
+	const crypto = await import('node:crypto')
+	const gc = await import('../src/gridconnect.js')
+	for (const wrap of [false, true]) {
+		fakeGridConnect.deps = { crypto, ...gc, wrap }
+		const { fetchFn, seen } = fakeGridConnect({ home: 'eu' })
+		const cloud = await gc.signIn('me@example.com', 'pw', { fetchFn })
+		assert.equal(cloud.region, 'eu', 'tried us first, then found the account on eu')
+		assert.ok(seen[0][0].includes('tuyaus.com'))
+		const devices = await cloud.devices()
+		assert.deepEqual(devices.map((d) => [d.name, d.id, d.key, d.online]), [['Lounge Lamp', 'bf0123456789abcdefgh', 'a1b2c3d4e5f6a7b8', true]], 'a device with no local key (a hub) is left out')
+		const text = gc.devicesText(devices, { bf0123456789abcdefgh: '192.168.1.40' })
+		const [parsed] = parseTuyaDevices(text)
+		assert.deepEqual([parsed.name, parsed.id, parsed.key, parsed.category, parsed.ip], ['Lounge Lamp', 'bf0123456789abcdefgh', 'a1b2c3d4e5f6a7b8', 'dj', '192.168.1.40'], 'the settings box reads it back, IP kept')
+		assert.deepEqual(parsed.dps, { 20: true, 22: 500 })
+	}
+	fakeGridConnect.deps = { crypto, ...gc }
+	const { fetchFn, seen } = fakeGridConnect({ home: 'us', password: 'right' })
+	await assert.rejects(gc.signIn('me@example.com', 'wrong', { fetchFn }), (e) => !/wrong/.test(e.message) && /USER_PASSWD_WRONG/.test(e.message), 'says so without echoing the password')
+	assert.equal(seen.filter(([, a]) => a.endsWith('password.login')).length, 1, 'a wrong password stops there: no other data centres')
+})
