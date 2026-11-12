@@ -46,6 +46,8 @@ export class D200Surface implements SurfaceInstance {
 	#initialPushDone = false
 	#statusActive = false
 	#screensaverEnabled = false
+	/** The little buttons beside the knobs press ordinary Companion buttons instead of changing page. */
+	#pageButtonsAsKeys = false
 	#screensaverMinutes = 5
 	#screensaverActive = false
 	#screensaverWaking = false
@@ -100,6 +102,9 @@ export class D200Surface implements SurfaceInstance {
 			else if (event.action === 'right') this.#context.rotateRightById(controlId)
 			else if (event.action === 'press') this.#context.keyDownById(pushId)
 			else if (event.action === 'release') this.#context.keyUpById(pushId)
+		} else if ((controlId === 'page-left' || controlId === 'page-right') && this.#pageButtonsAsKeys) {
+			if (event.action === 'press') this.#context.keyDownById(controlId)
+			else if (event.action === 'release') this.#context.keyUpById(controlId)
 		} else if (controlId === 'page-left') {
 			if (event.action === 'press') this.#context.changePage(false)
 		} else if (controlId === 'page-right') {
@@ -138,6 +143,7 @@ export class D200Surface implements SurfaceInstance {
 		const mode = Number(config.smallWindowMode ?? SMALL_WINDOW_DISABLED)
 		this.#smallWindowMode = mode
 		this.#screensaverEnabled = config.screensaverEnabled === true
+		this.#pageButtonsAsKeys = config.pageButtons === 'buttons'
 		this.#screensaverMinutes = Number(config.screensaverMinutes || 5)
 		this.#device.setTwelveHour(!!config.twelveHour)
 		const bgChanged = await this.#updateBackgroundImage(String(config.backgroundImagePath ?? ''))
