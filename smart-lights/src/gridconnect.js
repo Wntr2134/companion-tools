@@ -167,6 +167,10 @@ export class GridConnectCloud {
 		if (!user?.sid) throw new Error('signed in but got no session')
 		this.sid = user.sid
 		this.ecode = user.ecode ?? null
+		// The session only works on the server the sign-in names (Australian accounts sign in anywhere but
+		// live on one): carry on there
+		const home = String(user.domain?.mobileApiUrl ?? '').trim().replace(/\/+$/, '')
+		if (home) this.endpoint = `${/^https?:\/\//i.test(home) ? home : `https://${home}`}/api.json`
 	}
 
 	/** Every device in every home: [{ name, id, key, category, productId, online, dps }]. */

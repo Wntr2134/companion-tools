@@ -192,7 +192,7 @@ function fakeGridConnect({ home = 'eu', password = 'pw' } = {}) {
 		const body = p.postData ? JSON.parse(openBody(bodyKey(p.requestId, ecode), p.postData)) : {}
 		const answer = (result) => ({ ok: true, status: 200, json: async () => ({ success: true, result: sealBody(bodyKey(p.requestId, ecode), JSON.stringify(wrap ? { success: true, result } : result)) }) })
 		const nope = (code) => ({ ok: true, status: 200, json: async () => ({ success: false, errorCode: code, errorMsg: 'no' }) })
-		if (!url.includes(home === 'eu' ? 'tuyaeu.com' : 'tuyaus.com') || url.includes('-weaz')) return nope('USER_NOT_EXISTS')
+		if (!url.includes('a1-home.example.com') && (!url.includes(home === 'eu' ? 'tuyaeu.com' : 'tuyaus.com') || url.includes('-weaz'))) return nope('USER_NOT_EXISTS')
 		if (p.a === 'smartlife.m.user.email.token.create') return answer({ token: 'T1', publicKey: dec(jwk.n), exponent: dec(jwk.e) })
 		if (p.a === 'smartlife.m.user.email.password.login') {
 			assert.equal(body.passwd.length, 256, 'the key\'s full length (1024 bits) in hex')
@@ -201,9 +201,10 @@ function fakeGridConnect({ home = 'eu', password = 'pw' } = {}) {
 			if (sent !== crypto.createHash('md5').update(password).digest('hex')) return nope('USER_PASSWD_WRONG')
 			assert.equal(body.token, 'T1')
 			assert.equal(body.countryCode, '61')
-			return answer({ sid: 'S1', ecode: 'EC9', uid: 'u' })
+			return answer({ sid: 'S1', ecode: 'EC9', uid: 'u', domain: { mobileApiUrl: 'https://a1-home.example.com', regionCode: 'AZ' } })
 		}
 		assert.equal(p.sid, 'S1', `${p.a}: sent with the session`)
+		if (url !== 'https://a1-home.example.com/api.json') return nope('USER_SESSION_INVALID') // the session only works on the server the sign-in named
 		if (p.a === 'm.life.home.space.list') return answer([{ gid: 42, name: 'Home' }])
 		if (p.a === 'smartlife.m.my.group.device.list') {
 			assert.equal(p.gid, '42')
