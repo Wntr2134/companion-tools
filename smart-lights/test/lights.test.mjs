@@ -195,7 +195,9 @@ function fakeGridConnect({ home = 'eu', password = 'pw' } = {}) {
 		if (!url.includes(home === 'eu' ? 'tuyaeu.com' : 'tuyaus.com') || url.includes('-weaz')) return nope('USER_NOT_EXISTS')
 		if (p.a === 'smartlife.m.user.email.token.create') return answer({ token: 'T1', publicKey: dec(jwk.n), exponent: dec(jwk.e) })
 		if (p.a === 'smartlife.m.user.email.password.login') {
-			const sent = crypto.privateDecrypt({ key: privateKey, padding: crypto.constants.RSA_PKCS1_PADDING }, Buffer.from(body.passwd, 'hex')).toString()
+			assert.equal(body.passwd.length, 256, 'the key\'s full length (1024 bits) in hex')
+			// no padding: the server gets back exactly the text, with zeros in front
+			const sent = crypto.privateDecrypt({ key: privateKey, padding: crypto.constants.RSA_NO_PADDING }, Buffer.from(body.passwd, 'hex')).toString().replace(/^\0+/, '')
 			if (sent !== crypto.createHash('md5').update(password).digest('hex')) return nope('USER_PASSWD_WRONG')
 			assert.equal(body.token, 'T1')
 			assert.equal(body.countryCode, '61')
@@ -233,14 +235,8 @@ test('Grid Connect sign-in: finds the right data centre, the password goes encry
 	}
 	fakeGridConnect.deps = { crypto, ...gc }
 	const { fetchFn, seen } = fakeGridConnect({ home: 'us', password: 'right' })
-	await assert.rejects(gc.signIn('me@example.com', 'wrong', { fetchFn }), (e) => !/wrong'/.test(e.message) && /us: .*USER_PASSWD_WRONG/.test(e.message), 'says so without echoing the password')
-	assert.equal(seen.filter(([, a]) => a.endsWith('token.create')).length, 6, 'every data centre asked')
-	// a data centre without the account says "wrong password" too: keep going until the one that has it
-	const { fetchFn: f2 } = fakeGridConnect({ home: 'eu' })
-	const passwdEverywhereElse = async (url, opts) => (url.includes('tuyaus.com') ? { ok: true, status: 200, json: async () => ({ success: false, errorCode: 'USER_PASSWD_WRONG', errorMsg: 'incorrect account or password' }) } : f2(url, opts))
-	assert.equal((await gc.signIn('me@example.com', 'pw', { fetchFn: passwdEverywhereElse })).region, 'eu')
-	const allWrong = async () => ({ ok: true, status: 200, json: async () => ({ success: false, errorCode: 'USER_PASSWD_WRONG', errorMsg: 'x' }) })
-	await assert.rejects(gc.signIn('me@example.com', 'pw', { fetchFn: allWrong }), /every data centre/)
+	await assert.rejects(gc.signIn('me@example.com', 'wrong', { fetchFn }), (e) => !/wrong'/.test(e.message) && /us said "incorrect account or password"/.test(e.message), 'says so without echoing the password')
+	assert.equal(seen.filter(([, a]) => a.endsWith('password.login')).length, 1, 'one wrong-password answer is enough: each try counts towards Grid Connect\'s lock-out')
 })
 
 test('Hue bridge found on the local network first (SSDP), the online finder only as a fallback', async () => {

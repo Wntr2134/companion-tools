@@ -70,16 +70,30 @@ export function openBody(key, b64) {
 	return plain.toString('utf8')
 }
 
-const b64url = (n) => {
-	let hex = BigInt(n).toString(16)
-	if (hex.length % 2) hex = `0${hex}`
-	return Buffer.from(hex, 'hex').toString('base64url')
+/** b^e mod m, for BigInts. */
+function modPow(b, e, m) {
+	let r = 1n
+	b %= m
+	while (e > 0n) {
+		if (e & 1n) r = (r * b) % m
+		b = (b * b) % m
+		e >>= 1n
+	}
+	return r
 }
 
-/** The password as the app sends it: RSA (PKCS#1 v1.5, the server's one-off key, decimal) of its MD5 in hex. */
+/**
+ * The password as the app sends it: the lowercase hex MD5 of the password, as text, raised to the
+ * server's one-off RSA key (modulus and exponent arrive as decimal strings) with NO padding, the way the
+ * Tuya mobile apps do it (TuyaAPI/cloud's working login: node-rsa, "pkcs1" with RSA_NO_PADDING). Hex,
+ * the key's full length.
+ */
 export function wrapPassword(password, modulusDecimal, exponentDecimal) {
-	const key = crypto.createPublicKey({ key: { kty: 'RSA', n: b64url(modulusDecimal), e: b64url(exponentDecimal) }, format: 'jwk' })
-	return crypto.publicEncrypt({ key, padding: crypto.constants.RSA_PKCS1_PADDING }, Buffer.from(md5(password), 'utf8')).toString('hex')
+	const n = BigInt(String(modulusDecimal))
+	const e = BigInt(String(exponentDecimal))
+	const m = BigInt(`0x${Buffer.from(md5(password), 'utf8').toString('hex')}`)
+	const width = n.toString(16).length + (n.toString(16).length % 2)
+	return modPow(m, e, n).toString(16).padStart(width, '0')
 }
 
 export class GridConnectCloud {
@@ -187,6 +201,11 @@ export async function signIn(email, password, { country = '61', fetchFn = fetch,
 		} catch (e) {
 			// A data centre that doesn't have the account also says "incorrect account or password", so keep going
 			why.push({ region, code: e.code ?? '', message: e?.name === 'TimeoutError' ? 'no answer' : e.message })
+			if (/PASSWD_WRONG/i.test(e.code ?? '')) {
+				// Will's account got the same answer from every data centre, and each try counted towards the
+				// lock-out: one "wrong password" is enough
+				throw Object.assign(new Error(`Grid Connect sign-in failed: ${region} said "incorrect account or password" (${e.message}). Check the email and password in the Grid Connect app, wait a few minutes, then tick Fetch my devices once.`), { code: e.code })
+			}
 			if (isLockout(e.code)) {
 				throw Object.assign(new Error(`Grid Connect says to wait before trying again (${region}: ${e.message}). Wait 15 minutes, then tick Fetch my devices once.`), { code: e.code, lockout: true })
 			}
