@@ -276,3 +276,16 @@ test('Grid Connect sign-in: a data centre that never answers doesn\'t hold up th
 		clearInterval(keepAlive)
 	}
 })
+
+test('Grid Connect sign-in: one data centre at a time, and stops when Grid Connect says to wait', async () => {
+	const gc = await import('../src/gridconnect.js')
+	const asked = []
+	const tooMany = async (url, opts) => {
+		asked.push(new URLSearchParams(opts.body).get('a'))
+		return { ok: true, status: 200, json: async () => ({ success: false, errorCode: 'USER_PASSWD_ERROR_TIMES_TOO_MANY_2', errorMsg: 'try again 15 minutes later' }) }
+	}
+	await assert.rejects(gc.signIn('me@example.com', 'pw', { fetchFn: tooMany }), (e) => e.lockout && /Wait 15 minutes/.test(e.message))
+	assert.equal(asked.length, 1, 'no more tries after "wait"')
+	assert.ok(gc.isLockout('REQUEST_TOO_FREQUENTLY_PLEASE_TRY_AGAIN_LATER'))
+	assert.ok(!gc.isLockout('USER_PASSWD_WRONG'))
+})

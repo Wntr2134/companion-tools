@@ -8,7 +8,7 @@ Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs fro
 3. Your lights, rooms and scenes appear in the presets.
 
 ### Grid Connect
-1. Type your Grid Connect app **email** and **password**, leave **Country code** as 61 (Australia), and **Save**.
+1. Type your Grid Connect app **email** and **password**, leave **Country code** as 61 (Australia), tick **Fetch my devices** and **Save**. It only signs in when you tick this (Grid Connect locks sign-in for 15 minutes after a few wrong tries).
 2. The module signs in once, fills in the **Grid Connect devices** box with each device's ID and key, then talks to the devices directly on your Wi-Fi.
 3. The log should say *Grid Connect: found N devices*. If the sign-in fails, the connection turns red and the log says why.
 4. Fetch again (**Fetch my devices**, or a **FETCH GRID CON** key) after adding a device, or after removing one and adding it again.
