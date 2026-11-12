@@ -30,9 +30,13 @@ class SmartLightsInstance extends InstanceBase {
 	async init(config, _isFirstInit, secrets) {
 		this.config = config
 		this.secrets = secrets ?? {}
+		// Don't hold Companion up: the keys that don't depend on the network now, everything that talks to
+		// the network in the background (Companion gives up on a module that takes over 10 s to start)
+		this.updateDefinitions()
+		this.updateStatus(InstanceStatus.Connecting, 'Looking for lights…')
+		this.#startSoon()
 		// signed-in details but no device list yet: fetch it once by itself
-		if (!parseTuyaDevices(this.config.tuyaDevices).length && this.#gcReady()) await this.fetchGridConnect(false)
-		await this.start()
+		if (!parseTuyaDevices(this.config.tuyaDevices).length && this.#gcReady()) void this.fetchGridConnect()
 	}
 
 	async configUpdated(config, secrets) {
@@ -50,9 +54,11 @@ class SmartLightsInstance extends InstanceBase {
 				this.config = { ...this.config, gcFetchNow: false }
 				this.saveConfig(this.config, this.secrets)
 			}
-			await this.fetchGridConnect(false)
+			this.#startSoon()
+			void this.fetchGridConnect()
+			return
 		}
-		await this.start()
+		this.#startSoon()
 	}
 
 	#gcReady() {
@@ -65,6 +71,16 @@ class SmartLightsInstance extends InstanceBase {
 	 * controlled over the network as before. The password never goes in the log.
 	 */
 	async fetchGridConnect(restart = true) {
+		if (this.gcBusy) return false // one at a time
+		this.gcBusy = true
+		try {
+			return await this.#fetchGridConnect(restart)
+		} finally {
+			this.gcBusy = false
+		}
+	}
+
+	async #fetchGridConnect(restart) {
 		if (!this.#gcReady()) {
 			this.log('warn', 'Grid Connect: put your Grid Connect email and password in the settings first')
 			return false
@@ -91,7 +107,12 @@ class SmartLightsInstance extends InstanceBase {
 		}
 	}
 
+	#startSoon() {
+		this.start().catch((e) => this.log('error', `Start-up: ${e?.message ?? e}`))
+	}
+
 	async destroy() {
+		this.gen = (this.gen ?? 0) + 1
 		this.stop()
 	}
 
@@ -104,6 +125,7 @@ class SmartLightsInstance extends InstanceBase {
 
 	async start() {
 		this.stop()
+		const gen = (this.gen = (this.gen ?? 0) + 1) // a newer start() takes over from this one
 		this.targets.clear()
 		this.scenes = []
 		// Grid Connect / Tuya: each device kept connected
@@ -135,6 +157,7 @@ class SmartLightsInstance extends InstanceBase {
 					this.log('warn', `Couldn't find the Hue Bridge (${e.message}): type its address in the settings (Hue app: Settings → My Hue system → the bridge → IP address)`)
 				}
 			}
+			if (gen !== this.gen) return
 			if (ip) this.hue = new HueBridge({ ip, key: String(this.secrets.hueKey ?? '') })
 		}
 		this.updateDefinitions()

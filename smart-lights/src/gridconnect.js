@@ -170,23 +170,27 @@ export class GridConnectCloud {
 }
 
 /** Signs in on whichever data centre has the account. Returns the signed-in client. */
-export async function signIn(email, password, { country = '61', fetchFn = fetch, regions = Object.keys(REGIONS) } = {}) {
-	const why = []
-	for (const region of regions) {
-		const c = new GridConnectCloud({ region, country, fetchFn })
+export async function signIn(email, password, { country = '61', fetchFn = fetch, regions = Object.keys(REGIONS), timeout = 10000 } = {}) {
+	// Every data centre at once (a slow or unreachable one mustn't hold up the others). Only the one that
+	// has the account can sign in; the others say "incorrect account or password" too.
+	const tries = regions.map(async (region) => {
+		const c = new GridConnectCloud({ region, country, fetchFn, timeout })
 		try {
 			await c.login(email, password)
 			return c
 		} catch (e) {
-			// Keep going: a data centre that doesn't have the account says "incorrect account or password"
-			// too, so only the one that has it can say the password is right.
-			why.push({ region, code: e.code ?? '', message: e.message })
+			throw Object.assign(new Error(e.message), { region, code: e.code ?? '', timedOut: e?.name === 'TimeoutError' })
 		}
+	})
+	try {
+		return await Promise.any(tries)
+	} catch (all) {
+		const why = all.errors ?? []
+		if (why.length && why.every((w) => /PASSWD/i.test(w.code))) {
+			throw new Error(`Grid Connect sign-in failed: every data centre (${why.map((w) => w.region).join(', ')}) said "incorrect account or password". Check the email and password by signing out of the Grid Connect app and back in.`)
+		}
+		throw new Error(`Grid Connect sign-in failed (${why.map((w) => `${w.region}: ${w.timedOut ? 'no answer' : w.message}`).join('; ')})`)
 	}
-	if (why.length && why.every((w) => /PASSWD/i.test(w.code))) {
-		throw new Error(`Grid Connect sign-in failed: every data centre (${why.map((w) => w.region).join(', ')}) said "incorrect account or password". Check the email and password by signing out of the Grid Connect app and back in.`)
-	}
-	throw new Error(`Grid Connect sign-in failed (${why.map((w) => `${w.region}: ${w.message}`).join('; ')})`)
 }
 
 /**
