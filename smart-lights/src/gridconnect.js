@@ -170,27 +170,32 @@ export class GridConnectCloud {
 }
 
 /** Signs in on whichever data centre has the account. Returns the signed-in client. */
+/** Grid Connect's "slow down" answers: too many tries, or too many wrong passwords (locked for 15 minutes). */
+export const isLockout = (code) => /TOO_FREQUENTLY|TIMES_TOO_MANY/i.test(code ?? '')
+
+/**
+ * Signs in on whichever data centre has the account, one at a time (each wrong try counts against the
+ * account, so never all at once), and stops as soon as Grid Connect says to slow down.
+ */
 export async function signIn(email, password, { country = '61', fetchFn = fetch, regions = Object.keys(REGIONS), timeout = 10000 } = {}) {
-	// Every data centre at once (a slow or unreachable one mustn't hold up the others). Only the one that
-	// has the account can sign in; the others say "incorrect account or password" too.
-	const tries = regions.map(async (region) => {
+	const why = []
+	for (const region of regions) {
 		const c = new GridConnectCloud({ region, country, fetchFn, timeout })
 		try {
 			await c.login(email, password)
 			return c
 		} catch (e) {
-			throw Object.assign(new Error(e.message), { region, code: e.code ?? '', timedOut: e?.name === 'TimeoutError' })
+			// A data centre that doesn't have the account also says "incorrect account or password", so keep going
+			why.push({ region, code: e.code ?? '', message: e?.name === 'TimeoutError' ? 'no answer' : e.message })
+			if (isLockout(e.code)) {
+				throw Object.assign(new Error(`Grid Connect says to wait before trying again (${region}: ${e.message}). Wait 15 minutes, then tick Fetch my devices once.`), { code: e.code, lockout: true })
+			}
 		}
-	})
-	try {
-		return await Promise.any(tries)
-	} catch (all) {
-		const why = all.errors ?? []
-		if (why.length && why.every((w) => /PASSWD/i.test(w.code))) {
-			throw new Error(`Grid Connect sign-in failed: every data centre (${why.map((w) => w.region).join(', ')}) said "incorrect account or password". Check the email and password by signing out of the Grid Connect app and back in.`)
-		}
-		throw new Error(`Grid Connect sign-in failed (${why.map((w) => `${w.region}: ${w.timedOut ? 'no answer' : w.message}`).join('; ')})`)
 	}
+	if (why.length && why.every((w) => /PASSWD/i.test(w.code))) {
+		throw Object.assign(new Error(`Grid Connect sign-in failed: every data centre (${why.map((w) => w.region).join(', ')}) said "incorrect account or password". Check the email and password by signing out of the Grid Connect app and back in.`), { code: 'USER_PASSWD_WRONG' })
+	}
+	throw new Error(`Grid Connect sign-in failed (${why.map((w) => `${w.region}: ${w.message}`).join('; ')})`)
 }
 
 /**

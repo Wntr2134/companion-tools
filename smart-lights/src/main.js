@@ -1,7 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { HueBridge } from './hue.js'
 import { TuyaDevice, parseTuyaDevices } from './tuya.js'
-import { signIn, devicesText } from './gridconnect.js'
+import { signIn, devicesText, REGIONS } from './gridconnect.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
 
@@ -35,8 +35,8 @@ class SmartLightsInstance extends InstanceBase {
 		this.updateDefinitions()
 		this.updateStatus(InstanceStatus.Connecting, 'Looking for lights…')
 		this.#startSoon()
-		// signed-in details but no device list yet: fetch it once by itself
-		if (!parseTuyaDevices(this.config.tuyaDevices).length && this.#gcReady()) void this.fetchGridConnect()
+		// Grid Connect is only signed in to when asked (Fetch my devices, or a FETCH key): every wrong
+		// try counts against the account, and Grid Connect locks it for 15 minutes after a few
 	}
 
 	async configUpdated(config, secrets) {
@@ -48,12 +48,10 @@ class SmartLightsInstance extends InstanceBase {
 			this.saveConfig(this.config, this.secrets)
 			void this.pairHue()
 		}
-		// ticked, or signed-in details with no device list yet: fetch it
-		if (config.gcFetchNow || (!parseTuyaDevices(config.tuyaDevices).length && this.#gcReady())) {
-			if (config.gcFetchNow) {
-				this.config = { ...this.config, gcFetchNow: false }
-				this.saveConfig(this.config, this.secrets)
-			}
+		// only when ticked (a one-off, like Pair now)
+		if (config.gcFetchNow) {
+			this.config = { ...this.config, gcFetchNow: false }
+			this.saveConfig(this.config, this.secrets)
 			this.#startSoon()
 			void this.fetchGridConnect()
 			return
@@ -81,6 +79,11 @@ class SmartLightsInstance extends InstanceBase {
 	}
 
 	async #fetchGridConnect(restart) {
+		if (this.gcWaitUntil && Date.now() < this.gcWaitUntil) {
+			const mins = Math.ceil((this.gcWaitUntil - Date.now()) / 60000)
+			this.log('warn', `Grid Connect: not trying again yet (it asked to wait): try in ${mins} minute${mins === 1 ? '' : 's'}`)
+			return false
+		}
 		if (!this.#gcReady()) {
 			this.log('warn', 'Grid Connect: put your Grid Connect email and password in the settings first')
 			return false
@@ -90,7 +93,15 @@ class SmartLightsInstance extends InstanceBase {
 		try {
 			this.updateStatus(InstanceStatus.Connecting, 'Signing in to Grid Connect…')
 			this.log('info', 'Grid Connect: signing in…')
-			const cloud = await signIn(email, String(this.secrets.gcPassword), { country: String(this.config.gcCountry ?? '61').replace(/\D/g, '') || '61' })
+			const region = String(this.config.gcRegion ?? 'auto')
+			const cloud = await signIn(email, String(this.secrets.gcPassword), {
+				country: String(this.config.gcCountry ?? '61').replace(/\D/g, '') || '61',
+				regions: REGIONS[region] ? [region] : Object.keys(REGIONS),
+			})
+			if (region !== cloud.region) {
+				// remember where the account lives: next time only that data centre is asked
+				this.config = { ...this.config, gcRegion: cloud.region }
+			}
 			const found = await cloud.devices()
 			const ips = Object.fromEntries(parseTuyaDevices(this.config.tuyaDevices).filter((d) => d.ip).map((d) => [d.id, d.ip]))
 			this.config = { ...this.config, tuyaDevices: devicesText(found, ips) }
@@ -101,7 +112,8 @@ class SmartLightsInstance extends InstanceBase {
 			return true
 		} catch (e) {
 			this.log('error', e.message)
-			this.gcError = 'sign-in failed (see the log)'
+			if (e.lockout) this.gcWaitUntil = Date.now() + 15 * 60000
+			this.gcError = e.lockout ? 'Grid Connect asked to wait 15 minutes' : 'sign-in failed (see the log)'
 			this.updateStatus(InstanceStatus.ConnectionFailure, 'Grid Connect sign-in failed: see the log')
 			return false
 		}
@@ -470,11 +482,19 @@ class SmartLightsInstance extends InstanceBase {
 				id: 'tuyaInfo',
 				width: 12,
 				label: 'Grid Connect (and other Tuya) bulbs and plugs',
-				value: 'Sign in with your Grid Connect app email and password, tick <b>Fetch my devices</b> and Save: the module reads each device\'s ID and key and fills in the list below. After that everything is on your own network (the cloud is only used to fetch the list). Fetch again after adding or re-pairing a device. Unofficial: if Grid Connect changes its sign-in, paste the list by hand instead (see the setup guide).',
+				value: 'Type your Grid Connect app email and password, tick <b>Fetch my devices</b> and Save (it only signs in when you tick it): the module reads each device\'s ID and key and fills in the list below. After that everything is on your own network (the cloud is only used to fetch the list). Fetch again after adding or re-pairing a device. Unofficial: if Grid Connect changes its sign-in, paste the list by hand instead (see the setup guide).',
 			},
 			{ type: 'textinput', id: 'gcEmail', label: 'Grid Connect email', width: 5, default: '' },
 			{ type: 'secret-text', id: 'gcPassword', label: 'Grid Connect password', width: 4, default: '' },
 			{ type: 'textinput', id: 'gcCountry', label: 'Country code', width: 3, default: '61' },
+			{
+				type: 'dropdown',
+				id: 'gcRegion',
+				label: 'Grid Connect data centre (Find it = try each once; remembered after a sign-in)',
+				width: 12,
+				default: 'auto',
+				choices: [{ id: 'auto', label: 'Find it' }, ...Object.keys(REGIONS).map((r) => ({ id: r, label: r }))],
+			},
 			{ type: 'checkbox', id: 'gcFetchNow', label: 'Fetch my devices (on Save)', width: 12, default: false },
 			{ type: 'textinput', id: 'tuyaDevices', label: 'Grid Connect devices', width: 12, default: '', multiline: true },
 			{ type: 'number', id: 'poll', label: 'Read the Hue lights every (seconds)', width: 6, default: 2, min: 1, max: 30 },

@@ -741,7 +741,7 @@ Grid Connect is built on Tuya. Each device has its own key; once Companion has i
 
 1. Open the Smart Lights connection.
 2. Fill in **Grid Connect email** and **Grid Connect password** (the password is kept in Companion's secret settings and never written to the log). Leave **Country code** as 61 for Australia.
-3. Tick **Fetch my devices** and **Save**.
+3. Tick **Fetch my devices** and **Save**. It only signs in when you tick this: each wrong try counts against your account, and Grid Connect locks sign-in for 15 minutes after a few. Once it has signed in, it remembers which data centre your account is on.
 4. The log says *Grid Connect: found N devices*, the **Grid Connect devices** box fills in, and the devices appear in the presets. Companion finds each one on the network by itself; if one isn't found, add a line `ip : 192.168.x.x` under it in the box and Save.
 
 - After adding a device, or removing one from the Grid Connect app and adding it again (its key changes), press a **FETCH GRID CON** key or tick **Fetch my devices** again. Any IP addresses you typed in are kept.
