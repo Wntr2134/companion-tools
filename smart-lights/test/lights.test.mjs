@@ -257,3 +257,22 @@ test('Hue bridge found on the local network first (SSDP), the online finder only
 	await assert.rejects(HueBridge.discover({ fetchFn, local: async () => [] }), /no bridge answered on the network, and Philips' bridge finder said 429/)
 })
 
+
+test('Grid Connect sign-in: a data centre that never answers doesn\'t hold up the one that has the account', async () => {
+	const crypto = await import('node:crypto')
+	const gc = await import('../src/gridconnect.js')
+	fakeGridConnect.deps = { crypto, ...gc }
+	const { fetchFn: real } = fakeGridConnect({ home: 'eu' })
+	const keepAlive = setInterval(() => {}, 50) // the timeouts alone don't keep the test running
+	const hang = (url, opts) =>
+		url.includes('tuyacn.com') ? new Promise((_, no) => opts.signal.addEventListener('abort', () => no(opts.signal.reason))) : real(url, opts)
+	try {
+		const t = Date.now()
+		assert.equal((await gc.signIn('me@example.com', 'pw', { fetchFn: hang, timeout: 5000 })).region, 'eu')
+		assert.ok(Date.now() - t < 2000, 'answered without waiting for the silent one')
+		const allHang = (url, opts) => new Promise((_, no) => opts.signal.addEventListener('abort', () => no(opts.signal.reason)))
+		await assert.rejects(gc.signIn('me@example.com', 'pw', { fetchFn: allHang, timeout: 200 }), /us: .*no answer/)
+	} finally {
+		clearInterval(keepAlive)
+	}
+})
