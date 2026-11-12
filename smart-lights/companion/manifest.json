@@ -2,7 +2,7 @@
 	"id": "smart-lights",
 	"name": "smart-lights",
 	"shortname": "Smart Lights",
-	"description": "Philips Hue (through the Hue Bridge) and Grid Connect / Tuya bulbs and plugs, on your own network: on/off, brightness and warm–cold knobs, rooms, scenes and ALL OFF.",
+	"description": "Philips Hue (through the Hue Bridge), Grid Connect / Tuya bulbs and plugs, and Magic Home LED strips, on your own network: on/off, brightness and warm–cold knobs, colours, rooms, scenes and ALL OFF.",
 	"version": "0.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/Wntr2134/companion-tools.git",
@@ -16,6 +16,6 @@
 		"entrypoint": "../src/main.js"
 	},
 	"manufacturer": "Generic",
-	"products": ["Philips Hue", "Grid Connect", "Tuya"],
+	"products": ["Philips Hue", "Grid Connect", "Tuya", "Magic Home"],
 	"keywords": ["lights", "hue", "philips", "grid connect", "tuya", "smart home", "bulbs"]
 }

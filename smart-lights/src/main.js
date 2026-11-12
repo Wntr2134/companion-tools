@@ -1,6 +1,7 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { HueBridge } from './hue.js'
 import { TuyaDevice, parseTuyaDevices } from './tuya.js'
+import { MagicHomeDevice, parseMagicDevices, discoverMagicHome, toRgb } from './magichome.js'
 import { signIn, devicesText, REGIONS } from './gridconnect.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
@@ -10,6 +11,17 @@ const DARK = combineRgb(24, 26, 30)
 const GREY = combineRgb(70, 70, 76)
 const WHITE = combineRgb(255, 255, 255)
 const BLACK = combineRgb(0, 0, 0)
+const COLOURS = [
+	['RED', 0xff0000],
+	['ORANGE', 0xff6000],
+	['YELLOW', 0xffc000],
+	['GREEN', 0x00ff00],
+	['CYAN', 0x00ffff],
+	['BLUE', 0x0000ff],
+	['PURPLE', 0x8000ff],
+	['PINK', 0xff0080],
+	['WHITE', 0xffffff],
+]
 const STEPS = [1, 2, 3, 5, 8, 10, 15, 20, 25, 33] // % per knob click, for the 1-10 step size
 const PAIR_SECONDS = 30
 
@@ -25,6 +37,7 @@ class SmartLightsInstance extends InstanceBase {
 	targets = new Map() // id -> { id, name, source, kind, on, brightness, warmCold, reachable }
 	scenes = []
 	tuya = []
+	magic = []
 	timers = []
 
 	async init(config, _isFirstInit, secrets) {
@@ -133,6 +146,8 @@ class SmartLightsInstance extends InstanceBase {
 		this.timers = []
 		for (const d of this.tuya) d.stop()
 		this.tuya = []
+		for (const d of this.magic) d.stop()
+		this.magic = []
 	}
 
 	async start() {
@@ -152,6 +167,27 @@ class SmartLightsInstance extends InstanceBase {
 		for (const d of this.tuya) {
 			this.#tuyaChanged(d, false)
 			void d.start()
+		}
+		// Magic Home LED strips: listed in the settings, or found on the network the first time
+		if (this.config.magicHome !== false) {
+			let defs = parseMagicDevices(this.config.magicDevices)
+			if (!defs.length && !this.magicLooked) {
+				this.magicLooked = true // once per start-up of the module, not on every Save
+				const found = await discoverMagicHome().catch(() => [])
+				if (gen !== this.gen) return
+				if (found.length) {
+					const text = found.map((f) => `LED strip ${f.ip.split('.').pop()}, ${f.ip}`).join('\n')
+					this.log('info', `Found ${found.length} Magic Home controller${found.length === 1 ? '' : 's'}: rename them in the settings if you like`)
+					this.config = { ...this.config, magicDevices: text }
+					this.saveConfig(this.config, this.secrets)
+					defs = parseMagicDevices(text)
+				}
+			}
+			this.magic = defs.map((def) => new MagicHomeDevice(def, { log: (level, msg) => this.log(level, msg), onChange: (d) => this.#magicChanged(d) }))
+			for (const d of this.magic) {
+				this.#magicChanged(d, false)
+				void d.start()
+			}
 		}
 		// Hue
 		this.hue = null
@@ -187,11 +223,14 @@ class SmartLightsInstance extends InstanceBase {
 		if (!this.hue && this.config.hue !== false) parts.push('Hue: no bridge found')
 		if (this.hueError) parts.push(`Hue: ${this.hueError}`)
 		if (this.gcError) parts.push(`Grid Connect: ${this.gcError}`)
-		const off = this.tuya.filter((d) => !d.online).length
-		if (off) parts.push(`${off} Grid Connect device(s) not connected yet`)
 		if (this.gcError) this.updateStatus(InstanceStatus.ConnectionFailure, parts.join('; '))
 		else if (parts.length) this.updateStatus(InstanceStatus.UnknownWarning, parts.join('; '))
-		else this.updateStatus(InstanceStatus.Ok, `${this.targets.size} lights and rooms`)
+		else {
+			// a device that's switched off at the wall isn't a problem with the connection: its key goes grey
+			const all = [...this.tuya, ...this.magic]
+			const off = all.filter((d) => !d.online).length
+			this.updateStatus(InstanceStatus.Ok, `${this.targets.size} lights and rooms${off ? ` (${off} not reachable)` : ''}`)
+		}
 	}
 
 	// ---------- Hue ----------
@@ -268,6 +307,19 @@ class SmartLightsInstance extends InstanceBase {
 		this.#publish()
 	}
 
+	// ---------- Magic Home ----------
+
+	#magicChanged(d, publish = true) {
+		const id = `magic:${d.id}`
+		const had = this.targets.get(id)
+		const s = d.state
+		this.targets.set(id, { id, name: d.name, source: 'magic', kind: 'strip', on: s.on, brightness: s.brightness, warmCold: null, reachable: s.reachable })
+		if (!publish) return
+		if (!had) this.updateDefinitions()
+		if (!had || had.reachable !== s.reachable) this.#status()
+		this.#publish()
+	}
+
 	// ---------- changes ----------
 
 	/** Sets a light, room or plug: { on, brightness (0-100), warmCold (0-100) }. */
@@ -281,12 +333,14 @@ class SmartLightsInstance extends InstanceBase {
 			t.on = change.brightness > 0
 		}
 		if (change.warmCold !== undefined) t.warmCold = change.warmCold
+		if (change.colour) t.on = true
 		this.#publish()
 		try {
 			const [source, kind, rest] = id.split(':')
 			if (source === 'hue' && kind === 'light') await this.hue.setLight(rest, change)
 			else if (source === 'hue' && kind === 'group') await this.hue.setGroup(rest, change)
 			else if (source === 'tuya') await this.tuya.find((d) => d.id === kind)?.set(change)
+			else if (source === 'magic') await this.magic.find((d) => d.id === kind)?.set(change)
 		} catch (e) {
 			this.log('warn', `${t.name}: ${e.message}`)
 		}
@@ -303,7 +357,7 @@ class SmartLightsInstance extends InstanceBase {
 	async allOff() {
 		const jobs = []
 		if (this.hue?.key) jobs.push(this.hue.setGroup('0', { on: false }).catch((e) => this.log('warn', `Hue all off: ${e.message}`)))
-		for (const d of this.tuya) if (d.online) jobs.push(d.set({ on: false }).catch((e) => this.log('warn', `${d.name}: ${e.message}`)))
+		for (const d of [...this.tuya, ...this.magic]) if (d.online) jobs.push(d.set({ on: false }).catch((e) => this.log('warn', `${d.name}: ${e.message}`)))
 		for (const t of this.targets.values()) t.on = false
 		this.#publish()
 		await Promise.all(jobs)
@@ -317,7 +371,7 @@ class SmartLightsInstance extends InstanceBase {
 	}
 
 	#list() {
-		const order = { room: 0, light: 1, switch: 2 }
+		const order = { room: 0, light: 1, strip: 2, switch: 3 }
 		return [...this.targets.values()].sort((a, b) => order[a.kind] - order[b.kind] || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
 	}
 
@@ -334,7 +388,7 @@ class SmartLightsInstance extends InstanceBase {
 
 	updateDefinitions() {
 		const list = this.#list()
-		const label = (t) => (t.kind === 'room' ? `Room: ${t.name}` : t.source === 'tuya' ? `${t.name} (Grid Connect)` : t.name)
+		const label = (t) => (t.kind === 'room' ? `Room: ${t.name}` : t.source === 'tuya' ? `${t.name} (Grid Connect)` : t.source === 'magic' ? `${t.name} (Magic Home)` : t.name)
 		const target = { type: 'dropdown', id: 'target', label: 'Light, room or plug', default: list[0]?.id ?? '', allowCustom: true, choices: list.map((t) => ({ id: t.id, label: label(t) })) }
 		const mode = { type: 'dropdown', id: 'mode', label: 'Mode', default: 'toggle', choices: [{ id: 'toggle', label: 'Toggle' }, { id: 'on', label: 'On' }, { id: 'off', label: 'Off' }] }
 		const dir = { type: 'dropdown', id: 'direction', label: 'Direction', default: 'up', choices: [{ id: 'up', label: 'Up' }, { id: 'down', label: 'Down' }] }
@@ -371,6 +425,14 @@ class SmartLightsInstance extends InstanceBase {
 				name: 'Warm ↔ cold white: set',
 				options: [target, { type: 'number', id: 'value', label: '0 = warmest, 100 = coldest', default: 30, min: 0, max: 100 }],
 				callback: (a) => this.change(a.options.target, { warmCold: clamp(a.options.value) }),
+			},
+			colour: {
+				name: 'LED strip (Magic Home): colour',
+				options: [
+					{ ...target, choices: target.choices.filter((c) => c.id.startsWith('magic:')), default: list.find((t) => t.source === 'magic')?.id ?? '' },
+					{ type: 'colorpicker', id: 'colour', label: 'Colour', default: 0xffffff },
+				],
+				callback: (a) => this.change(a.options.target, { colour: toRgb(a.options.colour) }),
 			},
 			scene: {
 				name: 'Hue: scene',
@@ -430,7 +492,7 @@ class SmartLightsInstance extends InstanceBase {
 		const key = (category, name, text, down, feedbacks = [], size = 'auto') => ({ type: 'button', category, name, style: { text, size, color: WHITE, bgcolor: DARK, show_topbar: false }, steps: [{ down, up: [] }], feedbacks })
 		for (const t of list) {
 			const s = slug(`${t.source}_${t.name}`)
-			const cat = t.kind === 'room' ? 'Rooms' : t.source === 'tuya' ? 'Grid Connect' : 'Hue lights'
+			const cat = t.kind === 'room' ? 'Rooms' : t.source === 'tuya' ? 'Grid Connect' : t.source === 'magic' ? 'LED strips' : 'Hue lights'
 			const name = short(t.name.toUpperCase())
 			const hasBri = t.kind !== 'switch'
 			presets[`t_${s}`] = key(cat, `${label(t)}: on / off`, hasBri ? `${name}\\n${v(`${s}_brightness`)}` : `${name}\\n${v(`${s}_on`)}`, [{ actionId: 'power', options: { target: t.id, mode: 'toggle' } }], lit(t.id))
@@ -450,6 +512,20 @@ class SmartLightsInstance extends InstanceBase {
 						},
 					],
 					feedbacks: lit(t.id),
+				}
+			}
+		}
+		for (const t of list.filter((x) => x.source === 'magic')) {
+			const s = slug(`${t.source}_${t.name}`)
+			for (const [word, rgb] of COLOURS) {
+				const fg = (rgb >> 16) * 0.3 + ((rgb >> 8) & 0xff) * 0.59 + (rgb & 0xff) * 0.11 > 140 ? BLACK : WHITE
+				presets[`c_${s}_${word.toLowerCase()}`] = {
+					type: 'button',
+					category: 'LED strips: colours',
+					name: `${label(t)}: ${word.toLowerCase()}`,
+					style: { text: `${short(t.name.toUpperCase(), 12)}\\n${word}`, size: 'auto', color: fg, bgcolor: rgb, show_topbar: false },
+					steps: [{ down: [{ actionId: 'colour', options: { target: t.id, colour: rgb } }], up: [] }],
+					feedbacks: [],
 				}
 			}
 		}
@@ -497,6 +573,15 @@ class SmartLightsInstance extends InstanceBase {
 			},
 			{ type: 'checkbox', id: 'gcFetchNow', label: 'Fetch my devices (on Save)', width: 12, default: false },
 			{ type: 'textinput', id: 'tuyaDevices', label: 'Grid Connect devices', width: 12, default: '', multiline: true },
+			{
+				type: 'static-text',
+				id: 'magicInfo',
+				width: 12,
+				label: 'Magic Home LED strips',
+				value: 'Found on your network by themselves the first time (leave the list blank). One per line: <i>Name, IP address</i>; rename them here. No account needed.',
+			},
+			{ type: 'checkbox', id: 'magicHome', label: 'Use Magic Home LED strips', width: 4, default: true },
+			{ type: 'textinput', id: 'magicDevices', label: 'Magic Home LED strips (blank = find them)', width: 12, default: '', multiline: true },
 			{ type: 'number', id: 'poll', label: 'Read the Hue lights every (seconds)', width: 6, default: 2, min: 1, max: 30 },
 		]
 	}

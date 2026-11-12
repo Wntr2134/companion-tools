@@ -724,9 +724,9 @@ If you said no to one by mistake: turn it on in the place above, then press the 
 | UAD connection is red | Open UAD Console once, then check the IP is `127.0.0.1` on the same Mac. Then run `node ~/companion-tools/tools/mac-kit/ua-probe.mjs`. It should list your devices. |
 | Anything else | Copy the connection's or surface's **Logs** and send them over. |
 
-## Part N: Smart Lights (Philips Hue and Grid Connect)
+## Part N: Smart Lights (Philips Hue, Grid Connect and Magic Home)
 
-Your Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs, from Companion keys, over your own network: no Google Home, no cloud, nothing to re-pair. Keys light up while a light is on.
+Your Hue lights (through the Hue Bridge), Grid Connect bulbs and plugs and Magic Home LED strips, from Companion keys, over your own network: no Google Home, no cloud, nothing to re-pair. Keys light up while a light is on.
 
 ### N.1 Add the connection
 **Connections → + Add connection** → search **Smart Lights** → add it. It looks for your Hue Bridge by itself (or type the bridge's address in the settings).
@@ -748,6 +748,12 @@ Grid Connect is built on Tuya. Each device has its own key; once Companion has i
 - After the fetch, the cloud isn't used: the lights work with the internet down.
 - This sign-in is **unofficial** (worked out by the community, [HomeAssistant_GridConnect](https://github.com/rickevans86/HomeAssistant_GridConnect)). If Grid Connect changes it and the fetch fails, the log says why; you can still get the list with that project's tool (`python3 cli.py --email YOUR-EMAIL --country 61 devices`) and paste its output into the box.
 - Keep the list private: anyone with a device's key on your Wi-Fi could control it.
+
+### N.3b Magic Home LED strips (no setup)
+Magic Home Wi-Fi LED controllers are found on your network by themselves the first time the connection starts, and listed in the settings as *LED strip 51, 192.168.1.51* (the end of each one's address). Rename them there (*Desk strip, 192.168.1.51*) and Save. No account or keys: Companion talks to each controller directly. If one isn't found, add its line by hand (its address is in your router, or the Magic Home app's device info).
+
+- Keys: on / off and a brightness knob per strip, and colour keys (red, orange, yellow, green, cyan, blue, purple, pink, white) under **LED strips: colours**. Any colour: the **LED strip (Magic Home): colour** action.
+- Give each controller a fixed address in your router (a DHCP reservation), so it keeps the same one.
 
 ### N.4 Keys
 - **One key per light, room and plug**: press = on / off, amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall).

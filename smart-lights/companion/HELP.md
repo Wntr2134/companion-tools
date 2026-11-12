@@ -1,4 +1,4 @@
-## Smart Lights: Philips Hue and Grid Connect
+## Smart Lights: Philips Hue, Grid Connect and Magic Home
 
 Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs from Companion keys, over your own network. Nothing gets re-paired.
 
@@ -13,6 +13,9 @@ Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs fro
 3. The log should say *Grid Connect: found N devices*. If the sign-in fails, the connection turns red and the log says why.
 4. Fetch again (**Fetch my devices**, or a **FETCH GRID CON** key) after adding a device, or after removing one and adding it again.
 
-If a device isn't found on the network, add a line `ip : 192.168.x.x` under it in the box.
+### Magic Home LED strips
+Found on your network by themselves the first time (leave the list blank), then listed as *Name, IP address*: rename them there. No account needed. Colour keys are under **LED strips: colours**.
+
+If a Grid Connect device isn't found on the network, add a line `ip : 192.168.x.x` under it in the box.
 
 The Grid Connect sign-in is unofficial. If it stops working, you can still paste the device list by hand (see the setup guide).

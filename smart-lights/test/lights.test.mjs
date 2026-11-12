@@ -286,3 +286,70 @@ test('Grid Connect sign-in: one data centre at a time, and stops when Grid Conne
 	assert.ok(gc.isLockout('REQUEST_TOO_FREQUENTLY_PLEASE_TRY_AGAIN_LATER'))
 	assert.ok(!gc.isLockout('USER_PASSWD_WRONG'))
 })
+
+test('Magic Home: commands, state replies, colours, brightness and the device list', async () => {
+	const mh = await import('../src/magichome.js')
+	assert.deepEqual([...mh.POWER_ON], [0x71, 0x23, 0x0f, 0xa3], 'checksum on the end')
+	assert.deepEqual([...mh.POWER_OFF], [0x71, 0x24, 0x0f, 0xa4])
+	assert.deepEqual([...mh.QUERY], [0x81, 0x8a, 0x8b, 0x96])
+	assert.deepEqual([...mh.colourCommand({ r: 255, g: 0, b: 0 })], [0x31, 0xff, 0, 0, 0, 0, 0x0f, 0x3f])
+	assert.deepEqual(mh.parseState(Buffer.from([0x81, 0x25, 0x23, 0x61, 0, 0x10, 255, 128, 0, 0, 0x07, 0, 0, 0])), { on: true, r: 255, g: 128, b: 0, w: 0 })
+	assert.equal(mh.parseState(Buffer.from([0x31, 1, 2])), null)
+	assert.equal(mh.colourBrightness({ r: 128, g: 0, b: 0 }), 50)
+	assert.deepEqual(mh.atBrightness({ r: 255, g: 128, b: 0, w: 0 }, 50), { r: 128, g: 64, b: 0, w: 0 }, 'same colour, half as bright')
+	assert.deepEqual(mh.atBrightness({ r: 0, g: 0, b: 0, w: 0 }, 100), { r: 255, g: 255, b: 255, w: 0 }, 'black comes back as white')
+	assert.deepEqual(mh.toRgb(0x00ff80), { r: 0, g: 255, b: 128, w: 0 })
+	assert.deepEqual(mh.toRgb('#ff0000'), { r: 255, g: 0, b: 0, w: 0 })
+	assert.deepEqual(mh.parseMagicDevices('# strips\nDesk strip, 192.168.1.50\n192.168.1.51\nnot one'), [{ name: 'Desk strip', ip: '192.168.1.50' }, { name: 'LED strip 51', ip: '192.168.1.51' }])
+})
+
+test('Magic Home controller: connected, read, switched, coloured, dimmed, and grey when it goes away', async () => {
+	const net = await import('node:net')
+	const mh = await import('../src/magichome.js')
+	const got = []
+	let state = { on: false, r: 0, g: 0, b: 255 }
+	const socks = []
+	const server = net.createServer((sock) => {
+		socks.push(sock)
+		sock.on('data', (chunk) => {
+			// commands can arrive together: split them by their lengths
+			for (let i = 0; i < chunk.length; ) {
+				const len = chunk[i] === 0x31 ? 8 : 4
+				const d = chunk.subarray(i, i + len)
+				i += len
+				got.push([...d])
+				if (d[0] === 0x81) sock.write(Buffer.from([0x81, 0x25, state.on ? 0x23 : 0x24, 0x61, 0, 0x10, state.r, state.g, state.b, 0, 0x07, 0, 0, 0]))
+				if (d[0] === 0x71) state.on = d[1] === 0x23
+				if (d[0] === 0x31) Object.assign(state, { r: d[1], g: d[2], b: d[3] })
+			}
+		})
+	})
+	await new Promise((r) => server.listen(0, '127.0.0.1', r))
+	const changes = []
+	const d = new mh.MagicHomeDevice({ name: 'Desk', ip: '127.0.0.1' }, { port: server.address().port, pollMs: 50, onChange: (x) => changes.push(x.state) })
+	try {
+		await d.start()
+		await new Promise((r) => setTimeout(r, 80))
+		assert.deepEqual(d.state, { on: false, brightness: 100, warmCold: null, reachable: true }, 'read from the controller')
+		await d.set({ colour: { r: 255, g: 0, b: 0, w: 0 } })
+		await new Promise((r) => setTimeout(r, 30))
+		assert.ok(got.some((g) => g[0] === 0x71 && g[1] === 0x23), 'a colour turns it on')
+		assert.deepEqual(got.find((g) => g[0] === 0x31), [...mh.colourCommand({ r: 255, g: 0, b: 0 })])
+		await d.set({ brightness: 50 })
+		await new Promise((r) => setTimeout(r, 80))
+		assert.deepEqual([state.r, state.g, state.b], [128, 0, 0], 'dimmed, same colour')
+		assert.equal(d.state.brightness, 50)
+		await d.set({ brightness: 0 })
+		await new Promise((r) => setTimeout(r, 30))
+		assert.equal(state.on, false, 'brightness 0 = off')
+		for (const c of socks) c.destroy()
+		server.close()
+		d.sock?.destroy()
+		await new Promise((r) => setTimeout(r, 150))
+		assert.equal(d.state.reachable, false, 'gone: shown as not reachable')
+	} finally {
+		d.stop()
+		for (const c of socks) c.destroy()
+		server.close()
+	}
+})
