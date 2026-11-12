@@ -4,6 +4,17 @@ export const SMALL_WINDOW_DISABLED = -1
 
 export const CONFIG_FIELDS: SomeCompanionInputField[] = [
 	{
+		id: 'pageButtons',
+		type: 'dropdown',
+		label: 'Little buttons beside the knobs',
+		choices: [
+			{ id: 'page', label: 'Previous / next page' },
+			{ id: 'buttons', label: 'Ordinary buttons (row 3, col 0 and col 4: put any action on them, e.g. jump to a page)' },
+		],
+		default: 'page',
+		tooltip: 'As ordinary buttons they press the Companion buttons at row 3 col 0 (left) and row 3 col 4 (right) on the current page. For page jumps use the internal actions "Surface: Set to page" or "Surface: Page up / down".',
+	},
+	{
 		id: 'smallWindowMode',
 		type: 'dropdown',
 		label: 'Small window mode (3_2 slot)',

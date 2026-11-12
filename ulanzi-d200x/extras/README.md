@@ -18,10 +18,12 @@ The source in this folder already includes these changes. `patches/d200x-plugin-
 | 0 | KEY 1 | KEY 2 | KEY 3 | KEY 4 | KEY 5 |
 | 1 | KEY 6 | KEY 7 | KEY 8 | KEY 9 | KEY 10 |
 | 2 | KEY 11 | KEY 12 | KEY 13 | WIDE KEY | (covered by the wide key) |
-| 3 | page ◀ (hardware) | knob 1 TURN | knob 2 TURN | knob 3 TURN | page ▶ (hardware) |
+| 3 | page ◀ (hardware; or an ordinary button) | knob 1 TURN | knob 2 TURN | knob 3 TURN | page ▶ (hardware; or an ordinary button) |
 | 4 | | knob 1 PUSH | knob 2 PUSH | knob 3 PUSH | |
 
 On the TURN buttons, switch on **Rotary actions** and use **Rotate left / Rotate right**.
+
+The little page buttons change page by default. Set the surface's **Little buttons beside the knobs** to **Ordinary buttons** and they press the Companion buttons at row 3 col 0 and col 4 instead (e.g. **Surface: Set to page** for page jumps).
 
 ## Files
 
