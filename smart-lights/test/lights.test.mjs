@@ -362,7 +362,7 @@ test('Home page: a ready-to-import page built from the connection\'s own lights'
 	for (let i = 0; i < 14; i++) {
 		const slug = `hue_l${i}`
 		targets.push({ id: `hue:light:${i}`, kind: 'light', slug })
-		presets[`t_${slug}`] = { ...btn(`L${i}`), steps: [{ down: [], up: [{ actionId: 'power', options: { target: `hue:light:${i}`, mode: 'toggle' } }], 600: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: `hue:light:${i}`, value: 100 } }] } }] }
+		presets[`t_${slug}`] = { ...btn(`L${i}`), steps: [{ down: [], up: [{ actionId: 'power', options: { target: `hue:light:${i}`, mode: 'toggle' } }], 600: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: `hue:light:${i}`, value: 100 } }] }, 1500: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: `hue:light:${i}`, value: 20 } }] } }] }
 		presets[`k_${slug}`] = btn(`K${i}`, { options: { rotaryActions: true }, steps: [{ down: [], up: [], rotate_left: [{ actionId: 'brightness_step', options: {} }], rotate_right: [{ actionId: 'brightness_step', options: {} }] }] })
 		presets[`k_${slug}__push`] = btn(`P${i}`)
 	}
@@ -380,7 +380,8 @@ test('Home page: a ready-to-import page built from the connection\'s own lights'
 	const tap = home[0][0].steps[0]
 	assert.equal(tap.action_sets.up[0].definitionId, 'power')
 	assert.equal(tap.action_sets[600][0].definitionId, 'brightness_set', 'hold = 100% kept')
-	assert.deepEqual(tap.options.runWhileHeld, [600])
+	assert.deepEqual(tap.options.runWhileHeld, [600, 1500])
+	assert.equal(tap.action_sets[1500][0].options.value.value, 20, 'held 1.5 s = 20%')
 	assert.equal(tap.action_sets.up[0].connectionId, 'abc123')
 	assert.deepEqual(file.instances.abc123, { label: 'Smart_Lights', moduleId: 'smart-lights', lastUpgradeIndex: -1, sortOrder: 0 })
 	assert.equal(file.instances['system-tools'].moduleId, 'system-tools')

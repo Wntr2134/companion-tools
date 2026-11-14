@@ -26,6 +26,7 @@ const COLOURS = [
 const STEPS = [1, 2, 3, 5, 8, 10, 15, 20, 25, 33] // % per knob click, for the 1-10 step size
 const PAIR_SECONDS = 30
 const HOLD_MS = 600 // light keys: held this long = full brightness
+const LONG_HOLD_MS = 1500 // … and held this long = 20 %
 
 const slug = (s) =>
 	String(s)
@@ -501,10 +502,17 @@ class SmartLightsInstance extends InstanceBase {
 			const hasBri = t.kind !== 'switch'
 			const toggle = [{ actionId: 'power', options: { target: t.id, mode: 'toggle' } }]
 			if (hasBri) {
-				// tap = on / off; hold = full brightness (fires while still held)
+				// tap = on / off; hold = full brightness, keep holding = 20 % (each fires while still held)
 				presets[`t_${s}`] = {
-					...key(cat, `${label(t)}: tap = on / off, hold = 100%`, `${name}\\n${v(`${s}_brightness`)}`, [], lit(t.id)),
-					steps: [{ down: [], up: toggle, [HOLD_MS]: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: t.id, value: 100 } }] } }],
+					...key(cat, `${label(t)}: tap = on / off, hold = 100%, hold 1.5 s = 20%`, `${name}\\n${v(`${s}_brightness`)}`, [], lit(t.id)),
+					steps: [
+						{
+							down: [],
+							up: toggle,
+							[HOLD_MS]: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: t.id, value: 100 } }] },
+							[LONG_HOLD_MS]: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: t.id, value: 20 } }] },
+						},
+					],
 				}
 			} else presets[`t_${s}`] = key(cat, `${label(t)}: on / off`, `${name}\\n${v(`${s}_on`)}`, toggle, lit(t.id))
 			if (hasBri) {
