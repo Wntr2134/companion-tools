@@ -2,6 +2,8 @@
 
 Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs from Companion keys, over your own network. Nothing gets re-paired.
 
+Light keys: **tap** = on / off, **hold** = full brightness.
+
 ### Hue
 1. Press the round button on top of the Hue Bridge.
 2. Within 30 seconds, tick **Pair now** and **Save** (or press a **PAIR HUE** key).
