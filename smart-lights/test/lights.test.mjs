@@ -353,3 +353,38 @@ test('Magic Home controller: connected, read, switched, coloured, dimmed, and gr
 		server.close()
 	}
 })
+
+test('Home page: a ready-to-import page built from the connection\'s own lights', async () => {
+	const { buildHomePages } = await import('../src/page.js')
+	const btn = (text, extra = {}) => ({ type: 'button', name: text, style: { text }, steps: [{ down: [{ actionId: 'power', options: { target: text } }], up: [] }], feedbacks: [{ feedbackId: 'is_on', options: { target: text }, style: { bgcolor: 1 } }], ...extra })
+	const targets = []
+	const presets = { all_off: btn('ALL OFF'), view_clock_lights: { ...btn('CLOCK'), steps: [{ down: [], up: [] }], feedbacks: [] } }
+	for (let i = 0; i < 14; i++) {
+		const slug = `hue_l${i}`
+		targets.push({ id: `hue:light:${i}`, kind: 'light', slug })
+		presets[`t_${slug}`] = { ...btn(`L${i}`), steps: [{ down: [], up: [{ actionId: 'power', options: { target: `hue:light:${i}`, mode: 'toggle' } }], 600: { options: { runWhileHeld: true }, actions: [{ actionId: 'brightness_set', options: { target: `hue:light:${i}`, value: 100 } }] } }] }
+		presets[`k_${slug}`] = btn(`K${i}`, { options: { rotaryActions: true }, steps: [{ down: [], up: [], rotate_left: [{ actionId: 'brightness_step', options: {} }], rotate_right: [{ actionId: 'brightness_step', options: {} }] }] })
+		presets[`k_${slug}__push`] = btn(`P${i}`)
+	}
+	const file = buildHomePages({ targets, presets, connection: { id: 'abc123', label: 'Smart_Lights' } })
+	assert.deepEqual(Object.values(file.pages).map((p) => p.name), ['Home', 'Home 2'], '14 lights: 12 on the first page, the rest on a second')
+	const home = file.pages[1].controls
+	assert.equal(home[0][0].style.text, 'L0')
+	assert.equal(home[2][1].style.text, 'L11')
+	assert.equal(home[2][2].style.text, 'ALL OFF')
+	assert.equal(home[2][3].style.text, 'CLOCK', 'wide key')
+	assert.equal(home[3][1].style.text, 'K0', 'knob 1 turn')
+	assert.equal(home[3][1].options.rotaryActions, true)
+	assert.equal(home[4][1].style.text, 'P0', 'knob 1 push')
+	assert.equal(home[3][0], undefined, 'the hardware page buttons are left alone')
+	const tap = home[0][0].steps[0]
+	assert.equal(tap.action_sets.up[0].definitionId, 'power')
+	assert.equal(tap.action_sets[600][0].definitionId, 'brightness_set', 'hold = 100% kept')
+	assert.deepEqual(tap.options.runWhileHeld, [600])
+	assert.equal(tap.action_sets.up[0].connectionId, 'abc123')
+	assert.deepEqual(file.instances.abc123, { label: 'Smart_Lights', moduleId: 'smart-lights', lastUpgradeIndex: -1, sortOrder: 0 })
+	assert.equal(file.pages[2].controls[0][1].style.text, 'L13')
+	assert.equal(file.pages[2].controls[3][1].style.text, 'K12', 'page 2 knobs = its own lights')
+	const empty = buildHomePages({ targets: [], presets: { all_off: btn('ALL OFF') }, connection: { id: 'x', label: 'y' } })
+	assert.equal(empty.pages[1].controls[2][2].style.text, 'ALL OFF', 'no lights yet: still a page')
+})

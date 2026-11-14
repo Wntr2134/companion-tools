@@ -757,6 +757,14 @@ Magic Home Wi-Fi LED controllers are found on your network by themselves the fir
 - Keys: on / off and a brightness knob per strip, and colour keys (red, orange, yellow, green, cyan, blue, purple, pink, white) under **LED strips: colours**. Any colour: the **LED strip (Magic Home): colour** action.
 - Give each controller a fixed address in your router (a DHCP reservation), so it keeps the same one.
 
+### N.3c A ready-made Home page
+Smart Lights builds a D200X page from your own lights:
+
+1. Open the Smart Lights connection's settings and click **download it** under *Home page for the D200X*.
+2. Companion → **Import / Export** → **Import** → pick *Smart Lights Home page.companionconfig* → the **Buttons** tab → choose an empty page.
+
+Rows 1-2 and the first two keys of row 3: your rooms, then lights, LED strips and plugs (tap = on / off, hold = 100%). Then **ALL OFF**, and the wide key shows the time and how many lights are on. Knobs 1-3: brightness of the first three rooms or dimmable lights (push = on / off). More than 12 devices carry on onto *Home 2*. Download it again after adding or renaming lights.
+
 ### N.4 Keys
 - **One key per light, room and plug**: tap = on / off, **hold** (just over half a second) = full brightness. Amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall). Plugs just switch.
 - **Knobs**: brightness (push = on / off) per light and room; warm ↔ cold white in the actions.

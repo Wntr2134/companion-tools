@@ -5,6 +5,7 @@ import { MagicHomeDevice, parseMagicDevices, discoverMagicHome, toRgb } from './
 import { signIn, devicesText, REGIONS } from './gridconnect.js'
 import { withSurfaceExtras } from './surface-extras.js'
 import { getViewerPresets } from './viewers.js'
+import { buildHomePages } from './page.js'
 
 const AMBER = combineRgb(240, 170, 40) // a lit bulb
 const DARK = combineRgb(24, 26, 30)
@@ -478,7 +479,9 @@ class SmartLightsInstance extends InstanceBase {
 		}
 		this.setVariableDefinitions(vars)
 
-		this.setPresetDefinitions(withSurfaceExtras({ ...this.#presets(list, label), ...getViewerPresets(this) }))
+		this.presetMap = withSurfaceExtras({ ...this.#presets(list, label), ...getViewerPresets(this) })
+		this.pageTargets = list.map((t) => ({ id: t.id, kind: t.kind, slug: slug(`${t.source}_${t.name}`) }))
+		this.setPresetDefinitions(this.presetMap)
 		this.#publish()
 	}
 
@@ -548,8 +551,32 @@ class SmartLightsInstance extends InstanceBase {
 		return presets
 	}
 
+	/** The Home page, built from this connection's own lights, as a file Companion imports. */
+	homePage() {
+		return buildHomePages({ targets: this.pageTargets ?? [], presets: this.presetMap ?? {}, connection: { id: this.id, label: this.label } })
+	}
+
+	async handleHttpRequest(request) {
+		const p = String(request.path ?? '').replace(/^\/+/, '')
+		if (p === 'home-page' || p === 'home-page.companionconfig') {
+			return {
+				status: 200,
+				headers: { 'Content-Type': 'application/json', 'Content-Disposition': 'attachment; filename="Smart Lights Home page.companionconfig"' },
+				body: JSON.stringify(this.homePage(), null, 1),
+			}
+		}
+		return { status: 404, body: 'Not found' }
+	}
+
 	getConfigFields() {
 		return [
+			{
+				type: 'static-text',
+				id: 'homePage',
+				width: 12,
+				label: 'Home page for the D200X',
+				value: `A ready-made page of your lights (rooms first; ALL OFF; knobs = brightness): <a href="/instance/${encodeURIComponent(this.label)}/home-page" target="_blank" download>download it</a>, then Import / Export → Import → pick the file → Buttons → choose an empty page. Download it again after adding lights.`,
+			},
 			{
 				type: 'static-text',
 				id: 'info',

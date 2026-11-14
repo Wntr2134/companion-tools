@@ -4,6 +4,8 @@ Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs fro
 
 Light keys: **tap** = on / off, **hold** = full brightness.
 
+**Home page:** the settings have a *download it* link for a ready-made D200X page of your lights. Import it with Import / Export → Import → Buttons.
+
 ### Hue
 1. Press the round button on top of the Hue Bridge.
 2. Within 30 seconds, tick **Pair now** and **Save** (or press a **PAIR HUE** key).
