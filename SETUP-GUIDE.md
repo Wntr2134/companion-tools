@@ -768,7 +768,7 @@ Smart Lights builds a D200X page from your own lights:
 Rows 1-2 and the first two keys of row 3: your rooms, then lights, LED strips and plugs (tap = on / off, hold = 100%). Then **ALL OFF**, and the wide key shows the time and how many lights are on. Knobs 1-3: brightness of the first three rooms or dimmable lights (push = on / off). More than 12 devices carry on onto *Home 2*. Download it again after adding or renaming lights. Every key on it is linked to System Tools' **Key Styler** (the Key style feedback, as on System Tools' own keys), so you can restyle them there after importing; on import, pick your System Tools connection if Companion asks.
 
 ### N.4 Keys
-- **One key per light, room and plug**: tap = on / off, **hold** (just over half a second) = full brightness. Amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall). Plugs just switch.
+- **One key per light, room and plug**: tap = on / off, **hold** (just over half a second) = full brightness, **keep holding** to 1.5 s = 20%. Amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall). Plugs just switch.
 - **Knobs**: brightness (push = on / off) per light and room; warm ↔ cold white in the actions.
 - **Hue scenes**: one key per scene, named with its room.
 - **ALL OFF**: every Hue light and Grid Connect device off.
