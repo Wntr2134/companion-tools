@@ -23,7 +23,7 @@ The source in this folder already includes these changes. `patches/d200x-plugin-
 
 On the TURN buttons, switch on **Rotary actions** and use **Rotate left / Rotate right**.
 
-The little page buttons change page by default. Set the surface's **Little buttons beside the knobs** to **Ordinary buttons** and they press the Companion buttons at row 3 col 0 and col 4 instead (e.g. **Surface: Set to page** for page jumps).
+The little page buttons change page by default, once **Little buttons beside the knobs change page** is ticked in the surface's settings (Companion ignores page changes from a surface until then). Set the surface's **Little buttons beside the knobs** to **Ordinary buttons** and they press the Companion buttons at row 3 col 0 and col 4 instead (e.g. **Surface: Set to page** for page jumps).
 
 ## Files
 
