@@ -757,7 +757,7 @@ Magic Home Wi-Fi LED controllers are found on your network by themselves the fir
 - Give each controller a fixed address in your router (a DHCP reservation), so it keeps the same one.
 
 ### N.4 Keys
-- **One key per light, room and plug**: press = on / off, amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall).
+- **One key per light, room and plug**: tap = on / off, **hold** (just over half a second) = full brightness. Amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall). Plugs just switch.
 - **Knobs**: brightness (push = on / off) per light and room; warm ↔ cold white in the actions.
 - **Hue scenes**: one key per scene, named with its room.
 - **ALL OFF**: every Hue light and Grid Connect device off.
