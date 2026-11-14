@@ -383,6 +383,10 @@ test('Home page: a ready-to-import page built from the connection\'s own lights'
 	assert.deepEqual(tap.options.runWhileHeld, [600])
 	assert.equal(tap.action_sets.up[0].connectionId, 'abc123')
 	assert.deepEqual(file.instances.abc123, { label: 'Smart_Lights', moduleId: 'smart-lights', lastUpgradeIndex: -1, sortOrder: 0 })
+	assert.equal(file.instances['system-tools'].moduleId, 'system-tools')
+	const fbs = home[0][0].feedbacks
+	assert.deepEqual([fbs[0].definitionId, fbs[0].connectionId], ['key_style', 'system-tools'], 'linked to the Key Styler, first so the lit colour still wins')
+	assert.deepEqual([fbs[1].definitionId, fbs[1].connectionId], ['is_on', 'abc123'])
 	assert.equal(file.pages[2].controls[0][1].style.text, 'L13')
 	assert.equal(file.pages[2].controls[3][1].style.text, 'K12', 'page 2 knobs = its own lights')
 	const empty = buildHomePages({ targets: [], presets: { all_off: btn('ALL OFF') }, connection: { id: 'x', label: 'y' } })

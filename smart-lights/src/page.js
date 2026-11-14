@@ -6,6 +6,8 @@
 //   row 3:   knob 1-3 turn = brightness of the first three rooms / dimmable lights
 //   row 4:   knob 1-3 push = on / off
 // More than 12 devices carry on onto "Home 2", "Home 3" and so on.
+// With a System Tools connection, every key also gets its Key style feedback, so the Key Styler can
+// restyle the keys after import (its look sits underneath the lit / unreachable colours).
 // No Companion dependency, so it can be tested on its own.
 
 const DARK = 0x181a1e
@@ -18,7 +20,10 @@ const KNOBS = [1, 2, 3] // columns of knob 1-3 (row 3 turn, row 4 push)
  * presets: the connection's preset definitions (t_<slug>, k_<slug>, k_<slug>__push, all_off, view_clock_lights).
  * connection: { id, label } of this connection.
  */
-export function buildHomePages({ targets, presets, connection, moduleId = 'smart-lights' }) {
+/** System Tools' Key style feedback, linked to the Key Styler (the same as on System Tools' own presets). */
+export const STYLER_LINK = { feedbackId: 'key_style', options: { theme: 'styler', size: 'keep', place: 'keep', textColour: 'auto' } }
+
+export function buildHomePages({ targets, presets, connection, moduleId = 'smart-lights', styler = { id: 'system-tools', label: 'System_Tools' } }) {
 	const onOff = targets.filter((t) => presets[`t_${t.slug}`])
 	const dimmable = targets.filter((t) => presets[`k_${t.slug}`])
 	const pages = {}
@@ -40,7 +45,7 @@ export function buildHomePages({ targets, presets, connection, moduleId = 'smart
 		const controls = {}
 		for (const [pos, p] of Object.entries(keys)) {
 			const [r, c] = pos.split('/').map(Number)
-			;(controls[r] ??= {})[c] = toControl(`${name} ${pos}`, p, connection.id)
+			;(controls[r] ??= {})[c] = toControl(`${name} ${pos}`, p, connection.id, styler?.id)
 		}
 		pages[n + 1] = { name, controls, gridSize: { minColumn: 0, maxColumn: 4, minRow: 0, maxRow: 4 } }
 	})
@@ -49,7 +54,10 @@ export function buildHomePages({ targets, presets, connection, moduleId = 'smart
 		type: 'full',
 		companionBuild: undefined,
 		pages,
-		instances: { [connection.id]: { label: connection.label, moduleId, lastUpgradeIndex: -1, sortOrder: 0 } },
+		instances: {
+			[connection.id]: { label: connection.label, moduleId, lastUpgradeIndex: -1, sortOrder: 0 },
+			...(styler ? { [styler.id]: { label: styler.label, moduleId: 'system-tools', lastUpgradeIndex: -1, sortOrder: 1 } } : {}),
+		},
 		connectionCollections: [],
 	}
 }
@@ -57,10 +65,10 @@ export function buildHomePages({ targets, presets, connection, moduleId = 'smart
 const wrap = (options) => Object.fromEntries(Object.entries(options ?? {}).map(([k, v]) => [k, { isExpression: false, value: v }]))
 
 /** A preset as an exported Companion button (the same layout Companion writes in its own exports). */
-export function toControl(where, p, connectionId) {
+export function toControl(where, p, connectionId, stylerId) {
 	let n = 0
 	const id = () => `${where.replace(/[^a-z0-9]+/gi, '-')}-${n++}`
-	const entity = (type, definitionId, options) => ({ id: id(), type, definitionId, connectionId, options: wrap(options), upgradeIndex: -1 })
+	const entity = (type, definitionId, options, conn = connectionId) => ({ id: id(), type, definitionId, connectionId: conn, options: wrap(options), upgradeIndex: -1 })
 	const step = p.steps?.[0] ?? { down: [], up: [] }
 	const action_sets = {}
 	for (const set of ['down', 'up', 'rotate_left', 'rotate_right']) {
@@ -89,8 +97,8 @@ export function toControl(where, p, connectionId) {
 			show_topbar: s.show_topbar ?? false,
 			png64: s.png64 ?? null,
 		},
-		feedbacks: (p.feedbacks ?? []).map((f) => ({
-			...entity('feedback', f.feedbackId, f.options),
+		feedbacks: [...(stylerId ? [{ ...STYLER_LINK, conn: stylerId }] : []), ...(p.feedbacks ?? [])].map((f) => ({
+			...entity('feedback', f.feedbackId, f.options, f.conn ?? connectionId),
 			isInverted: { isExpression: false, value: !!f.isInverted },
 			...(f.style ? { style: f.style } : {}),
 		})),
