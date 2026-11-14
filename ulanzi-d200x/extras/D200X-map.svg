@@ -46,10 +46,10 @@
 <text x="561.0" y="370.5" text-anchor="middle" font-size="12" fill="#ddd">row 2 · col 3 (clock window)</text>
 <rect x="90" y="435" width="60" height="40" rx="8" fill="#5a4a1a"/>
 <text x="120" y="462" text-anchor="middle" font-size="18" fill="#fff">◀</text>
-<text x="120" y="497" text-anchor="middle" font-size="12" fill="#ddd">page back</text>
+<text x="120" y="497" text-anchor="middle" font-size="12" fill="#ddd">page back · row 3 col 0</text>
 <rect x="594" y="435" width="60" height="40" rx="8" fill="#5a4a1a"/>
 <text x="624" y="462" text-anchor="middle" font-size="18" fill="#fff">▶</text>
-<text x="624" y="497" text-anchor="middle" font-size="12" fill="#ddd">page next</text>
+<text x="624" y="497" text-anchor="middle" font-size="12" fill="#ddd">page next · row 4 col 0</text>
 <circle cx="246" cy="455" r="36" fill="#7a1f1f" stroke="#4a2a6a" stroke-width="6"/>
 <text x="246" y="461" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">KNOB 1</text>
 <text x="246" y="505" text-anchor="middle" font-size="12" fill="#ddd">row 3 · col 1</text>

@@ -605,8 +605,10 @@
               }
             }
           }
-        },
-        "4": {
+        }
+      },
+      "4": {
+        "0": {
           "type": "button",
           "options": {
             "stepProgression": "auto",
@@ -636,9 +638,7 @@
               }
             }
           }
-        }
-      },
-      "4": {
+        },
         "1": {
           "type": "button",
           "options": {

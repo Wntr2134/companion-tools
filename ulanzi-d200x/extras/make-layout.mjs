@@ -41,7 +41,7 @@ for (let c = 0; c < 3; c++) set(2, c, btn(`KEY ${n++}`, C.key))
 set(2, 3, btn('WIDE KEY\n(clock window)', C.wide))
 set(2, 4, btn('(covered by\nwide key)', C.none))
 set(3, 0, btn('◀ PAGE\nleft button\n(fixed)', C.page))
-set(3, 4, btn('PAGE ▶\nright button\n(fixed)', C.page))
+set(4, 0, btn('PAGE ▶\nright button\n(fixed)', C.page))
 for (let k = 1; k <= 3; k++) set(3, k, btn(`KNOB ${k}\nTURN\n◀ ▶`, C.turn, true))
 for (let k = 1; k <= 3; k++) set(4, k, btn(`KNOB ${k}\nPUSH`, C.push))
 

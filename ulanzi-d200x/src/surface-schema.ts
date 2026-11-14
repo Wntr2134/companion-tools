@@ -71,7 +71,7 @@ const INPUT_CONTROLS: ReadonlyArray<InputControlDef | null> = [
 	{ controlId: '3-2', type: 'button', col: 3, row: 2 },
 	null,
 	{ controlId: 'page-left', type: 'page', col: 0, row: 3 },
-	{ controlId: 'page-right', type: 'page', col: 4, row: 3 },
+	{ controlId: 'page-right', type: 'page', col: 0, row: 4 }, // under the left one in Companion's grid
 	{ controlId: 'enc-1', type: 'encoder', col: 1, row: 3 },
 	{ controlId: 'enc-2', type: 'encoder', col: 2, row: 3 },
 	{ controlId: 'enc-3', type: 'encoder', col: 3, row: 3 },
