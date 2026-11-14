@@ -929,7 +929,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "ha0DLsQjtscuUMWsR_-Pl",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -969,7 +999,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "5rzQb4zOqbxjMmT2I6MYF",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -1354,6 +1414,35 @@
        {
         "id": "0-hWPIxKxKH2BeNC5-Ogi",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "X38pLH-URr_LJJK-nCttW",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -1530,7 +1619,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "j5RaNTe_a_Lbyrm6YRady",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -1626,6 +1745,35 @@
       "feedbacks": [
        {
         "id": "CYH895fm6xHQwtx7Q9Okj",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "LIR-_PKIokUAwwmCeweaF",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -1812,7 +1960,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "29VwH_OAcv9KP0XEL7fAA",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -1876,6 +2054,35 @@
       "feedbacks": [
        {
         "id": "d3faFrtyTjqtilEBrQntj",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "w8qCDJmwW7jaFgb337DPq",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -2784,7 +2991,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "o1OkDl9qbRQj4FRsuqTfJ",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -2824,7 +3061,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "Zvua51oU00IkQVD6GVmI-",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -3127,6 +3394,35 @@
        {
         "id": "GiJeYbGJMg8954asCXSJ0",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "_Wg3V9Dq_dZ0WeYD-4WUR",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -3303,7 +3599,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "Ttl7TwJVXdoO4YFllE1pc",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -3399,6 +3725,35 @@
       "feedbacks": [
        {
         "id": "uCc1WwuZW0z_Tzk-hLzHU",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "n8BIlcxvXoLmP60KuNHqi",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -3585,7 +3940,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "OgaIpc7IEhZeHUMXuEo1D",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -3649,6 +4034,35 @@
       "feedbacks": [
        {
         "id": "_tw2QYV_mRkfT6J_sc_5f",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "ErLegw_nr9OGjrE6LXgLG",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -4557,7 +4971,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "z-SVnEHFDhmojspIHA1_v",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -4597,7 +5041,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "6UsVDw2mOSAZVbmfeK4uq",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -4916,6 +5390,35 @@
        {
         "id": "TbomqEuWkR6aog8S1Yk6P",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "Hloh172o8z969-As3x9R_",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -5092,7 +5595,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "WoQFTQWIzJXnxY6Z5B755",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -5188,6 +5721,35 @@
       "feedbacks": [
        {
         "id": "kdaqwuOO9xBXVfDZM-KdL",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "eOow_reb3v8HXKHbT90ba",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -5374,7 +5936,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "HfKkofeUydufROzttXj6f",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -5438,6 +6030,35 @@
       "feedbacks": [
        {
         "id": "RBh2NNGDLds7FhSLNpr8K",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "S7BEfvZQ1jaAB_oTRo863",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -6191,7 +6812,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "igdFQqCT2n7skZQIyMArQ",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -6231,7 +6882,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "QjDMproLiwASuYPOZHTPb",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -6554,6 +7235,35 @@
        {
         "id": "njJdktVsN54qOZm-WGkXK",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "pbie1UXur5JqWGweqv4Ku",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -6730,7 +7440,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "gHxK0Z5KGJfrJ_tz6mSm0",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -6794,6 +7534,35 @@
       "feedbacks": [
        {
         "id": "PXrayfIsvq3M_HLkaGbRI",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "sFkzhBglaQ8IJUZ5TR96l",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -6980,7 +7749,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "yOA2N0pZGx3Q-ZYv_OZz0",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -7028,6 +7827,35 @@
       "feedbacks": [
        {
         "id": "2FAaSlwzSBWRPfH6VGHYA",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "fpR8x8auhPbmSTn09PtWV",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -7826,7 +8654,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "P74kuKylCq365iunSMDVx",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -7866,7 +8724,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "7ysT0jUfhMdf9fgKS-EpC",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -8173,6 +9061,35 @@
        {
         "id": "rOFXBNKRAq9_C4v11buxX",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "v_ZxcnqYRc0YEIgFb0c2w",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -8220,7 +9137,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "E5PkyfpwuqXRJc4pNvjtS",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -8313,7 +9260,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "TM0mSSabihZp_MimQ_TUG",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -8410,6 +9387,35 @@
        {
         "id": "mhNMf0T5VaTD-4D_CjAHO",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "kCpnXc8dgV60GgsQefcFd",
+        "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
         "options": {},
@@ -8504,7 +9510,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "P1-z7u-3qWcIugBtq0Nu5",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -8565,7 +9601,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "h4kuA2_UqsslP3FZ6El7a",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -8629,6 +9695,35 @@
       "feedbacks": [
        {
         "id": "-b1tAtGLyXf6zGCLI_3yg",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "U-GI6MFhyKjJsK4aN7iMf",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -9482,7 +10577,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "P-dKikd8VLha8kpvNsovz",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -9522,7 +10647,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "WuicsIy7a05oNCJEsHHAP",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -9798,6 +10953,35 @@
       "feedbacks": [
        {
         "id": "h-SSnKpDtHbjkgdmbBGBB",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "66xCBUWm1d0gd6Ab1zmgx",
         "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
@@ -10078,6 +11262,35 @@
        {
         "id": "HoZV74FvIw929RcgWW8oC",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "e34kuDKrBj0HuJnNHFimH",
+        "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
         "options": {},
@@ -10267,6 +11480,35 @@
        {
         "id": "5legDhvM0Hd5NXLWsvJPp",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "dMy9iN9FU48suLjc1xWPo",
+        "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
         "options": {},
@@ -10337,6 +11579,35 @@
       "feedbacks": [
        {
         "id": "4Pk7kfR5G_OEYZRQnrJNE",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "a9BfWIo6r76nstK2pWjql",
         "type": "feedback",
         "definitionId": "app_running",
         "connectionId": "system-tools",
@@ -10409,6 +11680,35 @@
        {
         "id": "nkzqajFKT7F4ZleqyWBYO",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "mHeOI6joyRqacpRkWq8ph",
+        "type": "feedback",
         "definitionId": "app_running",
         "connectionId": "system-tools",
         "options": {
@@ -10479,6 +11779,35 @@
       "feedbacks": [
        {
         "id": "Y-t7M8ADKIl0XctkXIKId",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "EhimeeUGcWkbulw251ITF",
         "type": "feedback",
         "definitionId": "app_running",
         "connectionId": "system-tools",
@@ -10551,6 +11880,35 @@
        {
         "id": "J_3NQZ3gYDAinWQ2qj4Z4",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "k25YODjDb9dbeiwbo82tn",
+        "type": "feedback",
         "definitionId": "app_running",
         "connectionId": "system-tools",
         "options": {
@@ -10622,6 +11980,35 @@
        {
         "id": "b89F177MjvwsTaD-FJ96_",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "UNjuAvwuGlUJiaKvXbgBw",
+        "type": "feedback",
         "definitionId": "app_running",
         "connectionId": "system-tools",
         "options": {
@@ -10691,7 +12078,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "3Pqaa9KH-SkQtggh16_aB",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -10889,7 +12306,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "a9U_dinZl5ddSW1GVVdOC",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -10929,7 +12376,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "jBBsllbigllWDvKrNzLFt",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -11252,6 +12729,35 @@
        {
         "id": "irx5GYulQdnCYIAhdZsZD",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "cmK19ECBrNKwnDFmUXqcx",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -11428,7 +12934,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "UkQmAhQ3MZy15I-_jcDSj",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -11492,6 +13028,35 @@
       "feedbacks": [
        {
         "id": "FIgFikyKnOqSmEhiDU8ve",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "8lzjfZFCZRo5fJmGzrF0h",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -11678,7 +13243,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "_wAyj-t6o4KOECIabSixz",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -11726,6 +13321,35 @@
       "feedbacks": [
        {
         "id": "eIFNwxRlZpCahlp7cGotm",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "SiK-bB_5qxK8qzVp17kb2",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -11794,7 +13418,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "hNrh7cVZGk6hDSyuPDiuc",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -11914,7 +13568,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "P0R42dSUE8dIYuEKakygx",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -11979,7 +13663,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "H93LPBz5lS0cOQHs3ez0I",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -12389,7 +14103,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "o7A0emDcKmzM_aBvdhmH-",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -12429,7 +14173,37 @@
        "show_topbar": false,
        "png64": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADOElEQVR4nO1cwcqDMAz2IOwg7DDYQRAZeBA8CB6EPY5v7ev8/BChiLZJk5pMevguY2u/fm2TNGlXtOtSZJxDnYB1qBOwDnUC1qFOwDrUCViHOgHr0Oq4bNfl2a5L067Lp12X4QQf+M4TfnNrgSoY8NiuyzcSI7RR3UmgN1MUn1jvXxaobtdlTiDMHjP09TMC/duL6QJh9pigb7MClWAfrhZmj4+kQZcSp0pkZzj2ScSQS4lzha2hYpYQ6a7iiIl0Z3FERLq7OGyRYsQpjRlkLMYY7xYjkAVXHotPaoGeBgbJBSmYpAqkESFLY0olUG1gcFJAn90oAkl5rXmX63nBsj/Ca5czkuQgKtCbSaaDNh4RTmGPB7TVMQVDpUqwpKhufRPlJSBICK9IsUYpgSpCpxPMjEZ6tIS+KY4kGDxiOsbEPdMV2T0CsEIF4yJMZ77tNYMR1RbkDE1g6wW3GWbZspboCR5OVaPxVDUap6oRa+BDJsJrDkKN+yLnnkCydDwPJ9icHI9IsXO9p01vZI1ZotH7FzyMjxwXPdJT+uyo10RwGvaF7FRvwkXISfi4eCc6JNAQINYdbEnN89pRZaML/GZIKdBGaiAEkzNsDfeY4bOB23GjJwSDI3DCTFZygbAzK1Uy3krYUitVVaAh8XHjJcTxcoGGFFXOwFbkcL1UoGR1cgRiclYsgaj5571X86GCAYXuB9VE2xXyWnuw3LwvUDxC6FwWm5r4ElIoopwxe5u7XEsgIRkfTdDm0XGDahZYR43QYfVsRjbi78QFxtmJoMuI1fPlHlaLxEXCEbZNA7Zmy0XX8Fl3Qf/e8WMEki4U9hGn8S0bIH3wFUmYUVKuITJSSXupSRNJuXK32SgkzJFQXF7BfrBkOGUfzFaqDmpimNgnxolsEC37FAxvdDawGumSB/jumdAxnMQLhwWj9OzO1CMi0nXR7bZr7MpOUnouGMFeJ1AJdWe/Ywid7PJCka+/4JAvUAWQr+AhkC9x3kgklWvAvyKS6kVy6yKZeIrgimTJcJt6zLIhP4dCIj+oQyI/yUQiP+pFIj8LJyD/scBdoE7AOtQJWIc6AetQJ2Ad6gSsQ52AdfwBCxO/GW7nnzQAAAAASUVORK5CYII="
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "zf38B1nHIV0kBuGInujEy",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -12752,6 +14526,35 @@
        {
         "id": "tAtbP3U8T2CucCPjrtE7D",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "iFMciM0WScHXh1B4jSYSw",
+        "type": "feedback",
         "definitionId": "now_playing_art",
         "connectionId": "spotify-local",
         "options": {
@@ -12928,7 +14731,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "MM6mtYmlMVFNtSFJFUgHo",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -12992,6 +14825,35 @@
       "feedbacks": [
        {
         "id": "YlDiiY5orE2U1AlKYy8jZ",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "jHUkSs2c8dGFp5FPImhK-",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -13178,7 +15040,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "uE4KIwQg8IH3TVU5tQnkr",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -13226,6 +15118,35 @@
       "feedbacks": [
        {
         "id": "D7GtDiUIeTe-cUkZZd14a",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "l_pfN8J72g_E9E_bvY87-",
         "type": "feedback",
         "definitionId": "playing",
         "connectionId": "spotify-local",
@@ -13298,6 +15219,35 @@
        {
         "id": "xBCpPHgNStzcqSiqvD0S3",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "Q0jya6Hok10KNpMK02pDG",
+        "type": "feedback",
         "definitionId": "presetActive",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13317,7 +15267,7 @@
         }
        },
        {
-        "id": "Q0jya6Hok10KNpMK02pDG",
+        "id": "EA5dfkP8dtAHCAZ5aNpGp",
         "type": "feedback",
         "definitionId": "presetSaved",
         "connectionId": "panasonic-ptz",
@@ -13404,6 +15354,35 @@
        {
         "id": "QYn6A5IvSjpCJP9xxFPNn",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "UoO4NN_xG4sHyBp2oN1RW",
+        "type": "feedback",
         "definitionId": "presetActive",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13423,7 +15402,7 @@
         }
        },
        {
-        "id": "UoO4NN_xG4sHyBp2oN1RW",
+        "id": "OjqptwLqoTis5Zn3J6-k8",
         "type": "feedback",
         "definitionId": "presetSaved",
         "connectionId": "panasonic-ptz",
@@ -13510,6 +15489,35 @@
        {
         "id": "uQidivtpb0faUPkE8Uxps",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "nCrnHlds5AZvZIqGr07Lq",
+        "type": "feedback",
         "definitionId": "presetActive",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13529,7 +15537,7 @@
         }
        },
        {
-        "id": "nCrnHlds5AZvZIqGr07Lq",
+        "id": "zWKGnRYAGrrcy2WEUuOyL",
         "type": "feedback",
         "definitionId": "presetSaved",
         "connectionId": "panasonic-ptz",
@@ -13616,6 +15624,35 @@
        {
         "id": "jFvcbbj3as-Um3WwsRevm",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "JT25iXOGI228E1dC6EFJ8",
+        "type": "feedback",
         "definitionId": "presetActive",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13635,7 +15672,7 @@
         }
        },
        {
-        "id": "JT25iXOGI228E1dC6EFJ8",
+        "id": "dH6BLJBi-GFZCga5CdpO6",
         "type": "feedback",
         "definitionId": "presetSaved",
         "connectionId": "panasonic-ptz",
@@ -13722,6 +15759,35 @@
        {
         "id": "GXdFAv_fiVAfkB7ITTQaU",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "9uCUUU5zB7SKLvTxDVyn1",
+        "type": "feedback",
         "definitionId": "presetActive",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13741,7 +15807,7 @@
         }
        },
        {
-        "id": "9uCUUU5zB7SKLvTxDVyn1",
+        "id": "BpnTeTtDTHdWQnlBav24M",
         "type": "feedback",
         "definitionId": "presetSaved",
         "connectionId": "panasonic-ptz",
@@ -13830,6 +15896,35 @@
        {
         "id": "lVGEOwVb-M_fdQv1LwCDf",
         "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       },
+       {
+        "id": "IGWBl4USH12sQ3QHKp5Ym",
+        "type": "feedback",
         "definitionId": "insState",
         "connectionId": "panasonic-ptz",
         "options": {
@@ -13895,7 +15990,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "PPUpQs-hTAqklJ23Mifes",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -13964,7 +16089,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "jPTY_is8_2Fft9Ba-CFnw",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -14033,7 +16188,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "LMUt3H-M6Ux2rBNv4JDmg",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {
@@ -14112,7 +16297,37 @@
        "show_topbar": false,
        "png64": null
       },
-      "feedbacks": [],
+      "feedbacks": [
+       {
+        "id": "wmRkoC7L7S0FnB3IuR-0S",
+        "type": "feedback",
+        "definitionId": "key_style",
+        "connectionId": "system-tools",
+        "options": {
+         "theme": {
+          "isExpression": false,
+          "value": "styler"
+         },
+         "size": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "place": {
+          "isExpression": false,
+          "value": "keep"
+         },
+         "textColour": {
+          "isExpression": false,
+          "value": "auto"
+         }
+        },
+        "upgradeIndex": -1,
+        "isInverted": {
+         "isExpression": false,
+         "value": false
+        }
+       }
+      ],
       "localVariables": [],
       "steps": {
        "0": {

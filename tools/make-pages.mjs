@@ -26,6 +26,8 @@ const CONN = {
 	ptz: { id: 'panasonic-ptz', label: 'Panasonic-PTZ', moduleId: 'panasonic-ptz' },
 }
 const DARK = 0x181a1e
+/** System Tools' Key style feedback, linked to the Key Styler (as on System Tools' own presets). */
+const STYLER_LINK = { feedbackId: 'key_style', options: { theme: 'styler', size: 'keep', place: 'keep', textColour: 'auto' } }
 const WHITE = 0xffffff
 const GREEN = 0x008c3c
 
@@ -232,7 +234,7 @@ const wrap = (options = {}) => Object.fromEntries(Object.entries(options).map(([
 
 function toControl(page, pos, b) {
 	const conn = CONN[b.mod]
-	const entity = (type, n, definitionId, options) => ({ id: idFor(page, pos, type, n), type, definitionId, connectionId: conn.id, options: wrap(options), upgradeIndex: -1 })
+	const entity = (type, n, definitionId, options, connectionId = conn.id) => ({ id: idFor(page, pos, type, n), type, definitionId, connectionId, options: wrap(options), upgradeIndex: -1 })
 	const step = b.steps?.[0] ?? { down: [], up: [] }
 	const action_sets = {}
 	for (const set of ['down', 'up', 'rotate_left', 'rotate_right']) {
@@ -261,8 +263,10 @@ function toControl(page, pos, b) {
 			show_topbar: s.show_topbar ?? false,
 			png64: s.png64 ?? null,
 		},
-		feedbacks: (b.feedbacks ?? []).map((f, i) => ({
-			...entity('feedback', i, f.feedbackId, f.options),
+		// Every key is linked to System Tools' Key Styler (System Tools' presets come with it already): its look
+		// goes first, so a key's own on/off colours still show over it.
+		feedbacks: [...(!(b.mod === 'sys' && (b.feedbacks ?? []).some((f) => f.feedbackId === 'key_style')) ? [{ ...STYLER_LINK, sys: true }] : []), ...(b.feedbacks ?? [])].map((f, i) => ({
+			...entity('feedback', i, f.feedbackId, f.options, f.sys ? CONN.sys.id : conn.id),
 			isInverted: { isExpression: false, value: !!f.isInverted },
 			// On/off feedbacks carry their style; advanced ones (the album-art card) draw their own.
 			...(f.style ? { style: f.style } : {}),
