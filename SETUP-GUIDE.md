@@ -170,12 +170,12 @@ How the D200X maps onto Companion's grid:
 | 0 | KEY 1 | KEY 2 | KEY 3 | KEY 4 | KEY 5 |
 | 1 | KEY 6 | KEY 7 | KEY 8 | KEY 9 | KEY 10 |
 | 2 | KEY 11 | KEY 12 | KEY 13 | WIDE KEY | (covered by the wide key) |
-| 3 | page ◀ (or your own button) | **knob 1 TURN** | **knob 2 TURN** | **knob 3 TURN** | page ▶ (or your own button) |
-| 4 | | **knob 1 PUSH** | **knob 2 PUSH** | **knob 3 PUSH** | |
+| 3 | page ◀ (or your own button) | **knob 1 TURN** | **knob 2 TURN** | **knob 3 TURN** | |
+| 4 | page ▶ (or your own button) | **knob 1 PUSH** | **knob 2 PUSH** | **knob 3 PUSH** | |
 
 - **TURN buttons:** in the button editor, tick **Rotary actions**, then add actions under **Rotate left** and **Rotate right**.
 - **PUSH buttons** are normal buttons (press / release).
-- The two little round buttons beside the knobs change page (previous / next) by themselves. To put your own actions on them instead (say *jump to page 1* and *jump to page 5*): in the D200X's settings set **Little buttons beside the knobs** to **Ordinary buttons**, then program the Companion buttons at **row 3, col 0** (left) and **row 3, col 4** (right) on each page. For page jumps use the internal actions **Surface: Set to page** or **Surface: Page up / down**. They have no screen, so the button's look doesn't matter.
+- The two little round buttons beside the knobs change page (previous / next) by themselves. To put your own actions on them instead (say *jump to page 1* and *jump to page 5*): in the D200X's settings set **Little buttons beside the knobs** to **Ordinary buttons**, then program the Companion buttons at **row 3, col 0** (left) and **row 4, col 0** (right) on each page. For page jumps use the internal actions **Surface: Set to page** or **Surface: Page up / down**. They have no screen, so the button's look doesn't matter.
 
 ### A.5 Check settings for the D200X
 1. **Surfaces** → click the D200X → open its settings.
