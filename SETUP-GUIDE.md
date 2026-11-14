@@ -182,6 +182,7 @@ How the D200X maps onto Companion's grid:
 2. **Small window mode (3_2 slot):** *Full-width button (no clock overlay)*.
 3. **Enable idle blank screensaver:** **off**.
 4. **Little buttons beside the knobs:** *Previous / next page*, or *Ordinary buttons* to program them yourself (see A.4).
+5. For *Previous / next page*, also tick **Little buttons beside the knobs change page**. Companion ignores page changes from a surface until this is ticked.
 
 ---
 

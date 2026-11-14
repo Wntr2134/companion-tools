@@ -59,7 +59,10 @@ const D200Plugin: SurfacePlugin<D200PluginInfo> = {
 				pincodeMap: PINCODE_MAP,
 				configFields: CONFIG_FIELDS,
 				location: null,
-			},
+				// Companion only lets a surface change page when it says it can, and the user ticks this box
+				// in the surface's settings (newer surface API; the typings here predate it)
+				canChangePage: { label: 'Little buttons beside the knobs change page' },
+			} as OpenSurfaceResult['registerProps'],
 		}
 	},
 }
