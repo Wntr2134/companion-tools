@@ -5,6 +5,7 @@ import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const C = { key: 0x1f3a5f, wide: 0x2e5e3e, page: 0x5a4a1a, turn: 0x7a1f1f, push: 0x4a2a6a, none: 0x202020 }
+let fbId = 0
 function btn(text, bg, rotary = false) {
 	const action_sets = { down: [], up: [] }
 	if (rotary) {
@@ -25,7 +26,18 @@ function btn(text, bg, rotary = false) {
 			show_topbar: false,
 			png64: null,
 		},
-		feedbacks: [],
+		// Linked to System Tools' Key Styler, so a key built from this page can be restyled there
+		feedbacks: [
+			{
+				id: `styler-${++fbId}`,
+				type: 'feedback',
+				definitionId: 'key_style',
+				connectionId: 'system-tools',
+				options: Object.fromEntries(Object.entries({ theme: 'styler', size: 'keep', place: 'keep', textColour: 'auto' }).map(([k, v]) => [k, { isExpression: false, value: v }])),
+				upgradeIndex: -1,
+				isInverted: { isExpression: false, value: false },
+			},
+		],
 		localVariables: [],
 		steps: { 0: { action_sets, options: { runWhileHeld: [] } } },
 	}
@@ -49,7 +61,7 @@ const out = {
 	version: 12,
 	type: 'page',
 	page: { name: 'D200X Layout', controls, gridSize: { minColumn: 0, maxColumn: 4, minRow: 0, maxRow: 4 } },
-	instances: {},
+	instances: { 'system-tools': { label: 'System_Tools', moduleId: 'system-tools', lastUpgradeIndex: -1, sortOrder: 0 } },
 	connectionCollections: [],
 	oldPageNumber: 1,
 }

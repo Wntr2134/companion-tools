@@ -177,6 +177,8 @@ How the D200X maps onto Companion's grid:
 - **PUSH buttons** are normal buttons (press / release).
 - The two little round buttons beside the knobs change page (previous / next) by themselves. To put your own actions on them instead (say *jump to page 1* and *jump to page 5*): in the D200X's settings set **Little buttons beside the knobs** to **Ordinary buttons**, then program the Companion buttons at **row 3, col 0** (left) and **row 4, col 0** (right) on each page. For page jumps use the internal actions **Surface: Set to page** or **Surface: Page up / down**. They have no screen, so the button's look doesn't matter.
 
+Every key on this layout page, and on the ready-made pages and the Smart Lights Home page, is linked to System Tools' **Key Styler**, so it can be restyled there. Dragging a preset onto a key replaces the key, link included: System Tools' own presets bring the link with them, other modules' presets don't (Companion only lets a module's presets carry its own feedbacks). For those, add **System Tools → Key style** as a feedback, or restyle them in the button editor.
+
 ### A.5 Check settings for the D200X
 1. **Surfaces** → click the D200X → open its settings.
 2. **Small window mode (3_2 slot):** *Full-width button (no clock overlay)*.
