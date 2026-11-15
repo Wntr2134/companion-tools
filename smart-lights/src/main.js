@@ -244,8 +244,8 @@ class SmartLightsInstance extends InstanceBase {
 		try {
 			const s = await this.hue.state()
 			const before = this.#names()
-			for (const l of s.lights) this.targets.set(`hue:light:${l.id}`, { id: `hue:light:${l.id}`, name: l.name, source: 'hue', kind: 'light', on: l.on && l.reachable, brightness: l.brightness, warmCold: l.warmCold, reachable: l.reachable })
-			for (const g of s.groups) this.targets.set(`hue:group:${g.id}`, { id: `hue:group:${g.id}`, name: g.name, source: 'hue', kind: 'room', on: g.on, brightness: g.brightness, warmCold: null, reachable: true })
+			for (const l of s.lights) this.targets.set(`hue:light:${l.id}`, { id: `hue:light:${l.id}`, name: l.name, source: 'hue', kind: 'light', on: l.on && l.reachable, brightness: l.brightness, warmCold: l.warmCold, reachable: l.reachable, canTemp: l.canTemp, canColour: l.canColour })
+			for (const g of s.groups) this.targets.set(`hue:group:${g.id}`, { id: `hue:group:${g.id}`, name: g.name, source: 'hue', kind: 'room', on: g.on, brightness: g.brightness, warmCold: null, reachable: true, canTemp: g.canTemp, canColour: g.canColour })
 			const seen = new Set([...s.lights.map((l) => `hue:light:${l.id}`), ...s.groups.map((g) => `hue:group:${g.id}`)])
 			for (const id of [...this.targets.keys()]) if (id.startsWith('hue:') && !seen.has(id)) this.targets.delete(id)
 			const scenesChanged = JSON.stringify(s.scenes) !== JSON.stringify(this.scenes)
@@ -303,9 +303,9 @@ class SmartLightsInstance extends InstanceBase {
 		const id = `tuya:${d.id}`
 		const had = this.targets.get(id)
 		const s = d.state
-		this.targets.set(id, { id, name: d.name, source: 'tuya', kind: d.schema.kind, on: s.on, brightness: s.brightness, warmCold: s.warmCold, reachable: s.reachable })
+		this.targets.set(id, { id, name: d.name, source: 'tuya', kind: d.schema.kind, on: s.on, brightness: s.brightness, warmCold: s.warmCold, reachable: s.reachable, canTemp: !!d.schema.temp, canColour: !!d.schema.colour })
 		if (!publish) return
-		if (!had || had.kind !== d.schema.kind) this.updateDefinitions()
+		if (!had || had.kind !== d.schema.kind || had.canTemp !== !!d.schema.temp || had.canColour !== !!d.schema.colour) this.updateDefinitions()
 		if (!had || had.reachable !== s.reachable) this.#status()
 		this.#publish()
 	}
@@ -316,7 +316,7 @@ class SmartLightsInstance extends InstanceBase {
 		const id = `magic:${d.id}`
 		const had = this.targets.get(id)
 		const s = d.state
-		this.targets.set(id, { id, name: d.name, source: 'magic', kind: 'strip', on: s.on, brightness: s.brightness, warmCold: null, reachable: s.reachable })
+		this.targets.set(id, { id, name: d.name, source: 'magic', kind: 'strip', on: s.on, brightness: s.brightness, warmCold: null, reachable: s.reachable, canTemp: false, canColour: true })
 		if (!publish) return
 		if (!had) this.updateDefinitions()
 		if (!had || had.reachable !== s.reachable) this.#status()
@@ -370,7 +370,7 @@ class SmartLightsInstance extends InstanceBase {
 	// ---------- Companion ----------
 
 	#names() {
-		return [...this.targets.values()].map((t) => `${t.id}=${t.name}=${t.kind}`).join('|')
+		return [...this.targets.values()].map((t) => `${t.id}=${t.name}=${t.kind}=${t.canTemp ? 'T' : ''}${t.canColour ? 'C' : ''}`).join('|')
 	}
 
 	#list() {
@@ -384,6 +384,7 @@ class SmartLightsInstance extends InstanceBase {
 			const v = slug(`${t.source}_${t.name}`)
 			values[`${v}_brightness`] = t.on ? `${t.brightness ?? 100}%` : 'OFF'
 			values[`${v}_on`] = t.on ? 'ON' : 'OFF'
+			values[`${v}_warmth`] = t.warmCold === null || t.warmCold === undefined ? '' : t.warmCold <= 33 ? 'WARM' : t.warmCold >= 67 ? 'COOL' : 'NEUTRAL'
 		}
 		this.setVariableValues(values)
 		this.checkFeedbacks('is_on', 'unreachable')
@@ -430,9 +431,9 @@ class SmartLightsInstance extends InstanceBase {
 				callback: (a) => this.change(a.options.target, { warmCold: clamp(a.options.value) }),
 			},
 			colour: {
-				name: 'LED strip (Magic Home): colour',
+				name: 'Colour (colour bulbs, rooms and LED strips)',
 				options: [
-					{ ...target, choices: target.choices.filter((c) => c.id.startsWith('magic:')), default: list.find((t) => t.source === 'magic')?.id ?? '' },
+					{ ...target, choices: target.choices.filter((c) => this.targets.get(c.id)?.canColour), default: list.find((t) => t.canColour)?.id ?? '' },
 					{ type: 'colorpicker', id: 'colour', label: 'Colour', default: 0xffffff },
 				],
 				callback: (a) => this.change(a.options.target, { colour: toRgb(a.options.colour) }),
@@ -476,7 +477,7 @@ class SmartLightsInstance extends InstanceBase {
 		const vars = [{ variableId: 'lights_on', name: 'How many lights and plugs are on' }]
 		for (const t of list) {
 			const v = slug(`${t.source}_${t.name}`)
-			vars.push({ variableId: `${v}_brightness`, name: `${label(t)}: brightness (or OFF)` }, { variableId: `${v}_on`, name: `${label(t)}: ON / OFF` })
+			vars.push({ variableId: `${v}_brightness`, name: `${label(t)}: brightness (or OFF)` }, { variableId: `${v}_on`, name: `${label(t)}: ON / OFF` }, { variableId: `${v}_warmth`, name: `${label(t)}: WARM / NEUTRAL / COOL` })
 		}
 		this.setVariableDefinitions(vars)
 
@@ -534,13 +535,45 @@ class SmartLightsInstance extends InstanceBase {
 				}
 			}
 		}
-		for (const t of list.filter((x) => x.source === 'magic')) {
+		for (const t of list.filter((x) => x.canTemp)) {
+			// warmth: a knob (turn = warmer / cooler, push = on / off) and warm / neutral / cool keys
+			const s = slug(`${t.source}_${t.name}`)
+			const cat = t.kind === 'room' ? 'Rooms' : t.source === 'tuya' ? 'Grid Connect' : 'Hue lights'
+			const name = short(t.name.toUpperCase())
+			presets[`w_${s}`] = {
+				type: 'button',
+				category: `${cat}: warmth knobs`,
+				name: `${label(t)}: warmth knob (push = on / off)`,
+				options: { rotaryActions: true },
+				style: { text: `${name}\\n${v(`${s}_warmth`)}`, size: 'auto', color: WHITE, bgcolor: DARK, show_topbar: false },
+				steps: [
+					{
+						down: [{ actionId: 'power', options: { target: t.id, mode: 'toggle' } }],
+						up: [],
+						rotate_left: [{ actionId: 'warm_step', options: { target: t.id, direction: 'down', size: 5 } }],
+						rotate_right: [{ actionId: 'warm_step', options: { target: t.id, direction: 'up', size: 5 } }],
+					},
+				],
+				feedbacks: lit(t.id),
+			}
+			for (const [word, value, bg] of [['WARM', 0, 0xffb347], ['NEUTRAL', 50, 0xfff1d6], ['COOL', 100, 0xcfe3ff]]) {
+				presets[`wt_${s}_${word.toLowerCase()}`] = {
+					type: 'button',
+					category: 'Whites',
+					name: `${label(t)}: ${word.toLowerCase()} white`,
+					style: { text: `${short(t.name.toUpperCase(), 12)}\\n${word}`, size: 'auto', color: BLACK, bgcolor: bg, show_topbar: false },
+					steps: [{ down: [{ actionId: 'warm_set', options: { target: t.id, value } }], up: [] }],
+					feedbacks: [],
+				}
+			}
+		}
+		for (const t of list.filter((x) => x.canColour)) {
 			const s = slug(`${t.source}_${t.name}`)
 			for (const [word, rgb] of COLOURS) {
 				const fg = (rgb >> 16) * 0.3 + ((rgb >> 8) & 0xff) * 0.59 + (rgb & 0xff) * 0.11 > 140 ? BLACK : WHITE
 				presets[`c_${s}_${word.toLowerCase()}`] = {
 					type: 'button',
-					category: 'LED strips: colours',
+					category: t.source === 'magic' ? 'LED strips: colours' : 'Colours',
 					name: `${label(t)}: ${word.toLowerCase()}`,
 					style: { text: `${short(t.name.toUpperCase(), 12)}\\n${word}`, size: 'auto', color: fg, bgcolor: rgb, show_topbar: false },
 					steps: [{ down: [{ actionId: 'colour', options: { target: t.id, colour: rgb } }], up: [] }],

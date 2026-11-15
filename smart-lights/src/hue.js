@@ -106,17 +106,19 @@ export class HueBridge {
 				reachable: l.state?.reachable !== false,
 				brightness: l.state?.bri !== undefined ? toPct(l.state.bri) : null,
 				warmCold: l.state?.ct !== undefined ? toWarmCold(l.state.ct) : null,
+				canTemp: l.state?.ct !== undefined,
+				canColour: l.state?.hue !== undefined || l.state?.xy !== undefined,
 			})),
 			groups: Object.entries(groups ?? {})
 				.filter(([, g]) => g.type === 'Room' || g.type === 'Zone')
-				.map(([id, g]) => ({ id, name: g.name, type: g.type, lights: g.lights ?? [], on: !!g.state?.any_on, allOn: !!g.state?.all_on, brightness: g.action?.bri !== undefined ? toPct(g.action.bri) : null })),
+				.map(([id, g]) => ({ id, name: g.name, type: g.type, lights: g.lights ?? [], on: !!g.state?.any_on, allOn: !!g.state?.all_on, brightness: g.action?.bri !== undefined ? toPct(g.action.bri) : null, canTemp: g.action?.ct !== undefined, canColour: g.action?.hue !== undefined || g.action?.xy !== undefined })),
 			scenes: Object.entries(scenes ?? {})
 				.filter(([, s]) => s.type === 'GroupScene' && s.group)
 				.map(([id, s]) => ({ id, name: s.name, group: s.group })),
 		}
 	}
 
-	/** Change a light: { on, brightness (0-100), warmCold (0-100) }. */
+	/** Change a light: { on, brightness (0-100), warmCold (0-100), colour ({ r, g, b }) }. */
 	setLight(id, change) {
 		return this.#call('PUT', `/${this.key}/lights/${encodeURIComponent(id)}/state`, hueState(change))
 	}
@@ -131,7 +133,17 @@ export class HueBridge {
 }
 
 /** The module's change as the bridge's state body. Brightness 0 means off. */
-export function hueState({ on, brightness, warmCold, transition } = {}) {
+/** { r, g, b } (0-255) as hue 0-360, saturation and value 0-1. */
+export function rgbToHsv({ r, g, b }) {
+	const [R, G, B] = [r, g, b].map((x) => Math.max(0, Math.min(255, Number(x) || 0)) / 255)
+	const max = Math.max(R, G, B)
+	const d = max - Math.min(R, G, B)
+	let h = 0
+	if (d) h = max === R ? ((G - B) / d) % 6 : max === G ? (B - R) / d + 2 : (R - G) / d + 4
+	return { h: Math.round((h * 60 + 360) % 360), s: max ? d / max : 0, v: max }
+}
+
+export function hueState({ on, brightness, warmCold, colour, transition } = {}) {
 	const s = {}
 	if (on !== undefined) s.on = !!on
 	if (brightness !== undefined && brightness !== null) {
@@ -142,6 +154,12 @@ export function hueState({ on, brightness, warmCold, transition } = {}) {
 		}
 	}
 	if (warmCold !== undefined && warmCold !== null) s.ct = toMired(warmCold)
+	if (colour) {
+		const { h, s: sat } = rgbToHsv(colour)
+		s.hue = Math.round((h / 360) * 65535)
+		s.sat = Math.round(sat * 254)
+		if (on === undefined) s.on = true
+	}
 	if (transition !== undefined) s.transitiontime = Math.max(0, Math.round(Number(transition) * 10))
 	return s
 }
