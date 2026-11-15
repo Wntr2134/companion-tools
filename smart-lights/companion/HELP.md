@@ -4,6 +4,8 @@ Control Hue lights (through the Hue Bridge) and Grid Connect bulbs and plugs fro
 
 Light keys: **tap** = on / off, **hold** = full brightness, **keep holding (1.5 s)** = 20%.
 
+Warmth knobs, WARM / NEUTRAL / COOL keys and colour keys appear for every light that can do them (presets: *warmth knobs*, *Whites*, *Colours*).
+
 **Home page:** the settings have a *download it* link for a ready-made D200X page of your lights. Import it with Import / Export → Import → Buttons.
 
 ### Hue

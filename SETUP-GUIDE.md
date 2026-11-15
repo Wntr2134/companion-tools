@@ -769,7 +769,9 @@ Rows 1-2 and the first two keys of row 3: your rooms, then lights, LED strips an
 
 ### N.4 Keys
 - **One key per light, room and plug**: tap = on / off, **hold** (just over half a second) = full brightness, **keep holding** to 1.5 s = 20%. Amber while on, showing the brightness. Grey if a bulb can't be reached (switched off at the wall). Plugs just switch.
-- **Knobs**: brightness (push = on / off) per light and room; warm ↔ cold white in the actions.
+- **Knobs**: brightness (push = on / off) per light and room, and a **warmth knob** (warmer ↔ cooler, showing WARM / NEUTRAL / COOL) for every light and room that does white temperatures.
+- **Whites**: WARM, NEUTRAL and COOL keys per light that does white temperatures.
+- **Colours**: red, orange, yellow, green, cyan, blue, purple, pink and white keys per colour light or room (Hue colour bulbs, Grid Connect colour bulbs, Magic Home strips); any colour with the **Colour** action. On a Grid Connect bulb in colour, brightness dims the colour; a white key or the warmth knob goes back to white. Keys only appear for what each light can actually do.
 - **Hue scenes**: one key per scene, named with its room.
 - **ALL OFF**: every Hue light and Grid Connect device off.
 - **Wide key viewers**: lights on, and clock + lights on.
