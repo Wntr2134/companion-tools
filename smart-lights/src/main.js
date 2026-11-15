@@ -23,6 +23,8 @@ const COLOURS = [
 	['PINK', 0xff0080],
 	['WHITE', 0xffffff],
 ]
+const IVORY = { value: 90, bg: combineRgb(255, 246, 224) } // the two whites on the IVORY / WARM keys
+const WARM = { value: 10, bg: combineRgb(255, 169, 77) }
 const STEPS = [1, 2, 3, 5, 8, 10, 15, 20, 25, 33] // % per knob click, for the 1-10 step size
 const PAIR_SECONDS = 30
 const HOLD_MS = 600 // light keys: held this long = full brightness
@@ -245,7 +247,7 @@ class SmartLightsInstance extends InstanceBase {
 			const s = await this.hue.state()
 			const before = this.#names()
 			for (const l of s.lights) this.targets.set(`hue:light:${l.id}`, { id: `hue:light:${l.id}`, name: l.name, source: 'hue', kind: 'light', on: l.on && l.reachable, brightness: l.brightness, warmCold: l.warmCold, reachable: l.reachable, canTemp: l.canTemp, canColour: l.canColour })
-			for (const g of s.groups) this.targets.set(`hue:group:${g.id}`, { id: `hue:group:${g.id}`, name: g.name, source: 'hue', kind: 'room', on: g.on, brightness: g.brightness, warmCold: null, reachable: true, canTemp: g.canTemp, canColour: g.canColour })
+			for (const g of s.groups) this.targets.set(`hue:group:${g.id}`, { id: `hue:group:${g.id}`, name: g.name, source: 'hue', kind: 'room', on: g.on, brightness: g.brightness, warmCold: g.warmCold ?? null, reachable: true, canTemp: g.canTemp, canColour: g.canColour })
 			const seen = new Set([...s.lights.map((l) => `hue:light:${l.id}`), ...s.groups.map((g) => `hue:group:${g.id}`)])
 			for (const id of [...this.targets.keys()]) if (id.startsWith('hue:') && !seen.has(id)) this.targets.delete(id)
 			const scenesChanged = JSON.stringify(s.scenes) !== JSON.stringify(this.scenes)
@@ -384,10 +386,11 @@ class SmartLightsInstance extends InstanceBase {
 			const v = slug(`${t.source}_${t.name}`)
 			values[`${v}_brightness`] = t.on ? `${t.brightness ?? 100}%` : 'OFF'
 			values[`${v}_on`] = t.on ? 'ON' : 'OFF'
+			values[`${v}_white`] = t.warmCold === null || t.warmCold === undefined ? 'WHITE' : t.warmCold >= 50 ? 'IVORY' : 'WARM'
 			values[`${v}_warmth`] = t.warmCold === null || t.warmCold === undefined ? '' : t.warmCold <= 33 ? 'WARM' : t.warmCold >= 67 ? 'COOL' : 'NEUTRAL'
 		}
 		this.setVariableValues(values)
-		this.checkFeedbacks('is_on', 'unreachable')
+		this.checkFeedbacks('is_on', 'unreachable', 'white_is')
 	}
 
 	updateDefinitions() {
@@ -462,6 +465,20 @@ class SmartLightsInstance extends InstanceBase {
 				options: [target],
 				callback: (fb) => !!this.targets.get(fb.options.target)?.on,
 			},
+			white_is: {
+				type: 'boolean',
+				name: 'Light is on in ivory (cool) or warm white',
+				defaultStyle: { bgcolor: IVORY.bg, color: BLACK },
+				options: [
+					target,
+					{ type: 'dropdown', id: 'white', label: 'White', default: 'ivory', choices: [{ id: 'ivory', label: 'Ivory (cool, 50-100)' }, { id: 'warm', label: 'Warm (0-49)' }] },
+				],
+				callback: (fb) => {
+					const t = this.targets.get(fb.options.target)
+					if (!t?.on || t.warmCold === null || t.warmCold === undefined) return false
+					return fb.options.white === 'warm' ? t.warmCold < 50 : t.warmCold >= 50
+				},
+			},
 			unreachable: {
 				type: 'boolean',
 				name: "Light or plug can't be reached (powered off at the wall?)",
@@ -477,7 +494,7 @@ class SmartLightsInstance extends InstanceBase {
 		const vars = [{ variableId: 'lights_on', name: 'How many lights and plugs are on' }]
 		for (const t of list) {
 			const v = slug(`${t.source}_${t.name}`)
-			vars.push({ variableId: `${v}_brightness`, name: `${label(t)}: brightness (or OFF)` }, { variableId: `${v}_on`, name: `${label(t)}: ON / OFF` }, { variableId: `${v}_warmth`, name: `${label(t)}: WARM / NEUTRAL / COOL` })
+			vars.push({ variableId: `${v}_brightness`, name: `${label(t)}: brightness (or OFF)` }, { variableId: `${v}_on`, name: `${label(t)}: ON / OFF` }, { variableId: `${v}_warmth`, name: `${label(t)}: WARM / NEUTRAL / COOL` }, { variableId: `${v}_white`, name: `${label(t)}: IVORY / WARM` })
 		}
 		this.setVariableDefinitions(vars)
 
@@ -555,6 +572,26 @@ class SmartLightsInstance extends InstanceBase {
 					},
 				],
 				feedbacks: lit(t.id),
+			}
+			// one key, two whites: tap = ivory, hold = warm; lit in the white it's in, and says which
+			const on = { actionId: 'power', options: { target: t.id, mode: 'on' } }
+			presets[`iv_${s}`] = {
+				type: 'button',
+				category: 'Whites',
+				name: `${label(t)}: tap = ivory, hold = warm`,
+				style: { text: `${name}\\n${v(`${s}_white`)}`, size: 'auto', color: WHITE, bgcolor: DARK, show_topbar: false },
+				steps: [
+					{
+						down: [],
+						up: [on, { actionId: 'warm_set', options: { target: t.id, value: IVORY.value } }],
+						500: { options: { runWhileHeld: true }, actions: [on, { actionId: 'warm_set', options: { target: t.id, value: WARM.value } }] },
+					},
+				],
+				feedbacks: [
+					{ feedbackId: 'white_is', options: { target: t.id, white: 'ivory' }, style: { bgcolor: IVORY.bg, color: BLACK } },
+					{ feedbackId: 'white_is', options: { target: t.id, white: 'warm' }, style: { bgcolor: WARM.bg, color: BLACK } },
+					{ feedbackId: 'unreachable', options: { target: t.id }, style: { bgcolor: GREY, color: combineRgb(160, 160, 160) } },
+				],
 			}
 			for (const [word, value, bg] of [['WARM', 0, 0xffb347], ['NEUTRAL', 50, 0xfff1d6], ['COOL', 100, 0xcfe3ff]]) {
 				presets[`wt_${s}_${word.toLowerCase()}`] = {

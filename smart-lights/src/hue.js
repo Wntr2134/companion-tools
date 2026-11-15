@@ -111,7 +111,7 @@ export class HueBridge {
 			})),
 			groups: Object.entries(groups ?? {})
 				.filter(([, g]) => g.type === 'Room' || g.type === 'Zone')
-				.map(([id, g]) => ({ id, name: g.name, type: g.type, lights: g.lights ?? [], on: !!g.state?.any_on, allOn: !!g.state?.all_on, brightness: g.action?.bri !== undefined ? toPct(g.action.bri) : null, canTemp: g.action?.ct !== undefined, canColour: g.action?.hue !== undefined || g.action?.xy !== undefined })),
+				.map(([id, g]) => ({ id, name: g.name, type: g.type, lights: g.lights ?? [], on: !!g.state?.any_on, allOn: !!g.state?.all_on, brightness: g.action?.bri !== undefined ? toPct(g.action.bri) : null, warmCold: g.action?.ct !== undefined ? toWarmCold(g.action.ct) : null, canTemp: g.action?.ct !== undefined, canColour: g.action?.hue !== undefined || g.action?.xy !== undefined })),
 			scenes: Object.entries(scenes ?? {})
 				.filter(([, s]) => s.type === 'GroupScene' && s.group)
 				.map(([id, s]) => ({ id, name: s.name, group: s.group })),
